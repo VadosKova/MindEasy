@@ -11,7 +11,7 @@ export default function HomeScreen() {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => router.push("/tabs")}
+        onPress={() => router.push("../tabs")}
       >
         <Text style={styles.buttonText}>Перейти к вкладкам</Text>
       </TouchableOpacity>
