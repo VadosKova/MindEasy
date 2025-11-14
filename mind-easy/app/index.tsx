@@ -48,6 +48,25 @@ export default function OnBoardingScreen() {
     currentIndexRef.current = nextIndex;
   };
 
+  const startAutoScroll = () => {
+    if (autoScrollIntervalRef.current) {
+      clearInterval(autoScrollIntervalRef.current as number);
+    }
+    autoScrollIntervalRef.current = setInterval(() => {
+      scrollToNext();
+    }, 3000);
+  };
+
+  useEffect(() => {
+    startAutoScroll();
+
+    return () => {
+      if (autoScrollIntervalRef.current) {
+        clearInterval(autoScrollIntervalRef.current as number);
+      }
+    };
+  }, []);
+
   return (
     <View style={styles.container}>
       
