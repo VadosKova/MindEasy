@@ -67,6 +67,20 @@ export default function OnBoardingScreen() {
     };
   }, []);
 
+  const handleScrollBeginDrag = () => {
+    if (autoScrollIntervalRef.current) {
+      clearInterval(autoScrollIntervalRef.current as number);
+    }
+  };
+
+  const handleScrollEndDrag = () => {
+    startAutoScroll();
+  };
+
+  const handleGetStarted = () => {
+    router.replace('/login');
+  };
+
   return (
     <View style={styles.container}>
       
