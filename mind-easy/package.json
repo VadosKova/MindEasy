@@ -11,6 +11,8 @@
     "lint": "expo lint"
   },
   "dependencies": {
+    "@expo-google-fonts/istok-web": "^0.2.3",
+    "@expo-google-fonts/jua": "^0.2.3",
     "@expo/vector-icons": "^15.0.2",
     "@react-native-masked-view/masked-view": "^0.3.2",
     "@react-navigation/bottom-tabs": "^7.4.0",

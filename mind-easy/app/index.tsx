@@ -31,7 +31,7 @@ export default function OnBoardingScreen() {
   const autoScrollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const currentIndexRef = useRef(0);
 
-  const handleScroll = (event: any) => {
+  const handleScroll = (event: { nativeEvent: { contentOffset: { x: number } } }) => {
     const contentOffsetX = event.nativeEvent.contentOffset.x;
     const index = Math.round(contentOffsetX / SCREEN_WIDTH);
     setCurrentIndex(index);
