@@ -182,4 +182,98 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'ios' ? 60 : 40,
     paddingBottom: 20,
   },
+  logoSection: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  titleContainer: {
+    marginTop: 20,
+    marginBottom: 12,
+  },
+  appName: {
+    fontSize: 36,
+    fontFamily: 'Jua_400Regular',
+  },
+  description: {
+    width: 300,
+    fontSize: 16,
+    fontFamily: 'IstokWeb_400Regular',
+    color: '#78909C',
+    textAlign: 'center',
+    paddingHorizontal: 20,
+    lineHeight: 20,
+  },
+  featuresSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginBottom: 40,
+    paddingHorizontal: 10,
+  },
+  featureItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  featureIconContainer: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  featureText: {
+    fontSize: 12,
+    fontFamily: 'IstokWeb_400Regular',
+    color: '#37474F',
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    marginBottom: 30,
+    borderRadius: 25,
+    overflow: 'hidden',
+    alignSelf: 'center',
+  },
+  button: {
+    width: 306,
+    paddingVertical: 16,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    fontSize: 18,
+    fontFamily: 'Jua_400Regular',
+    color: '#FFFFFF',
+  },
+  carouselSection: {
+    height: 200,
+    marginTop: 20,
+    marginBottom: 20,
+    marginHorizontal: -20,
+  },
+  carousel: {
+    flex: 1,
+  },
+  carouselItem: {
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  carouselImage: {
+    width: 225,
+    height: 165,
+  },
+  carouselIndicators: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 12,
+    gap: 8,
+  },
+  indicator: {
+    width: 11,
+    height: 11,
+    borderRadius: 5,
+  },
 });
