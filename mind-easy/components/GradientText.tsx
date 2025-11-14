@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import MaskedView from '@react-native-masked-view/masked-view';
 
 interface GradientTextProps {
-  colors: string[];
+  colors: readonly [string, string, ...string[]];
   style?: any;
   children: React.ReactNode;
 }
