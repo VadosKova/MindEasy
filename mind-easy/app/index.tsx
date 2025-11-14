@@ -1,20 +1,28 @@
-import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { useRouter } from "expo-router";
+import { useState, useRef, useEffect } from 'react';
+import {
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  Dimensions,
+  TouchableOpacity,
+  Platform,
+  Image,
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import { Logo } from '@/components/Logo';
+import { GradientText } from '@/components/GradientText';
+import { SmileyIcon } from '@/components/icons/SmileyIcon';
+import { HeadphonesIcon } from '@/components/icons/HeadphonesIcon';
+import { JournalIcon } from '@/components/icons/JournalIcon';
 
-export default function HomeScreen() {
-  const router = useRouter();
+export default function OnBoardingScreen() {
+  
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>👋 Привет в MindEasy</Text>
-      <Text style={styles.subtitle}>Твое место для ментального баланса</Text>
-
-      <TouchableOpacity
-        style={styles.button}
-        onPress={() => router.push("../tabs")}
-      >
-        <Text style={styles.buttonText}>Перейти к вкладкам</Text>
-      </TouchableOpacity>
+      
     </View>
   );
 }
@@ -22,32 +30,6 @@ export default function HomeScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f7fb",
-    alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 20,
-  },
-  title: {
-    fontSize: 28,
-    fontWeight: "600",
-    color: "#333",
-    marginBottom: 10,
-  },
-  subtitle: {
-    fontSize: 16,
-    color: "#666",
-    textAlign: "center",
-    marginBottom: 40,
-  },
-  button: {
-    backgroundColor: "#6C63FF",
-    paddingVertical: 14,
-    paddingHorizontal: 24,
-    borderRadius: 12,
-  },
-  buttonText: {
-    color: "#fff",
-    fontWeight: "600",
-    fontSize: 16,
+    backgroundColor: "#F5F5DC",
   },
 });
