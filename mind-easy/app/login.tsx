@@ -34,7 +34,27 @@ export default function LoginScreen() {
   const { scrollViewRef, currentIndex, handleScroll, handleScrollBeginDrag, handleScrollEndDrag } =
     useCarousel(carouselImages);
 
-  
+  const handleLogin = async () => {
+    if (!email.trim() || !password.trim()) {
+      Alert.alert('Error', 'Fill in all fields');
+      return;
+    }
+
+    if (!email.includes('@')) {
+      Alert.alert('Error', 'Enter a valid email address');
+      return;
+    }
+
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      Alert.alert('Success', 'Login successful!');
+    }, 1000);
+  };
+
+  const handleRegister = () => {
+    router.push('/registration');
+  };
 
   return (
     <View style={styles.container}>
