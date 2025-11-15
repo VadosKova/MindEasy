@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import {
   Alert,
   Dimensions,
@@ -14,7 +14,9 @@ import {
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { router } from 'expo-router';
-import Svg, { Path, G, ClipPath, Defs, Rect } from 'react-native-svg';
+import { MailIcon } from '@/components/icons/MailIcon';
+import { LockIcon } from '@/components/icons/LockIcon';
+import { useCarousel } from '@/hooks/useCarousel';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
