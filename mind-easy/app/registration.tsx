@@ -37,7 +37,31 @@ export default function RegistrationScreen() {
   const { scrollViewRef, currentIndex, handleScroll, handleScrollBeginDrag, handleScrollEndDrag } =
     useCarousel(carouselImages);
 
-  
+  const handleRegister = async () => {
+    if (!name.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
+      Alert.alert('Error', 'Fill in all fields');
+      return;
+    }
+    if (!email.includes('@')) {
+      Alert.alert('Error', 'Enter a valid email address');
+      return;
+    }
+    if (password.length < 8) {
+      Alert.alert('Error', 'Password must be at least 8 characters');
+      return;
+    }
+    if (password !== confirmPassword) {
+      Alert.alert('Error', 'Passwords do not match');
+      return;
+    }
+    setIsLoading(true);
+    setTimeout(() => {
+      setIsLoading(false);
+      Alert.alert('Success', 'Registration completed!');
+    }, 1000);
+  };
+
+  const handleLogin = () => router.push('/login');
 
   return (
     <View style={styles.container}>
