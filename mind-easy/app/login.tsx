@@ -58,7 +58,98 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      
+      <KeyboardAvoidingView
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={styles.keyboardView}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}>
+          <Text style={styles.title}>Welcome back!</Text>
+          <View style={styles.form}>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                placeholder="Email Address"
+                placeholderTextColor="#A0A0A0"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+              <View style={styles.iconContainer}>
+                <MailIcon />
+              </View>
+            </View>
+
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                placeholder="Password"
+                placeholderTextColor="#A0A0A0"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                autoCapitalize="none"
+              />
+              <View style={styles.iconContainer}>
+                <LockIcon />
+              </View>
+            </View>
+
+            <TouchableOpacity style={styles.signInButton} activeOpacity={0.85} onPress={handleLogin} disabled={isLoading}>
+              <LinearGradient
+                colors={['#8CCAED', '#80CBC5']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 0 }}
+                style={styles.buttonGradient}>
+                <Text style={styles.signInText}>{isLoading ? 'Signing In...' : 'Sign In'}</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+
+            <View style={styles.signUpContainer}>
+              <Text style={styles.signUpText}>Don't have an account? </Text>
+              <TouchableOpacity onPress={handleRegister} activeOpacity={0.7}>
+                <Text style={styles.signUpLink}>Sign Up</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View style={styles.carouselSection}>
+            <ScrollView
+              ref={scrollViewRef}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onScroll={handleScroll}
+              onScrollBeginDrag={handleScrollBeginDrag}
+              onScrollEndDrag={handleScrollEndDrag}
+              scrollEventThrottle={16}
+              style={styles.carousel}
+              removeClippedSubviews={false}>
+              {carouselImages.map((image, index) => (
+                <View key={index} style={[styles.carouselItem, { width: SCREEN_WIDTH }]}> 
+                  <Image source={image} style={styles.carouselImage} resizeMode="cover" />
+                </View>
+              ))}
+            </ScrollView>
+            <View style={styles.carouselIndicators}>
+              {carouselImages.map((_, index) => (
+                <View
+                  key={index}
+                  style={[
+                    styles.indicator,
+                    {
+                      backgroundColor: index === currentIndex ? '#37474F' : '#D1D1D1',
+                    },
+                  ]}
+                />
+              ))}
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 }
