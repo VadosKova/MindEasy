@@ -65,7 +65,114 @@ export default function RegistrationScreen() {
 
   return (
     <View style={styles.container}>
-      
+      <KeyboardAvoidingView behavior={Platform.OS === 'ios' ? 'padding' : 'height'} style={styles.keyboardView}>
+        <ScrollView
+          contentContainerStyle={styles.scrollContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}>
+          <Text style={styles.title}>Create Account</Text>
+
+          <View style={styles.form}>
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                placeholder="Username"
+                placeholderTextColor="#A0A0A0"
+                value={name}
+                onChangeText={setName}
+                autoCapitalize="words"
+              />
+              <View style={styles.iconContainer}>
+                <UserIcon />
+              </View>
+            </View>
+
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                placeholder="Email Address"
+                placeholderTextColor="#A0A0A0"
+                value={email}
+                onChangeText={setEmail}
+                keyboardType="email-address"
+                autoCapitalize="none"
+                autoCorrect={false}
+              />
+              <View style={styles.iconContainer}>
+                <MailIcon />
+              </View>
+            </View>
+
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                placeholder="Password"
+                placeholderTextColor="#A0A0A0"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry
+                autoCapitalize="none"
+              />
+              <View style={styles.iconContainer}>
+                <LockIcon />
+              </View>
+            </View>
+
+            <View style={styles.inputWrapper}>
+              <TextInput
+                style={styles.input}
+                placeholder="Confirm password"
+                placeholderTextColor="#A0A0A0"
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+                secureTextEntry
+                autoCapitalize="none"
+              />
+              <View style={styles.iconContainer}>
+                <LockIcon />
+              </View>
+            </View>
+
+            <TouchableOpacity style={styles.signUpButton} activeOpacity={0.85} onPress={handleRegister} disabled={isLoading}>
+              <LinearGradient colors={['#8CCAED', '#80CBC5']} start={{ x: 0, y: 0 }} end={{ x: 1, y: 0 }} style={styles.buttonGradient}>
+                <Text style={styles.signUpText}>{isLoading ? 'Signing Up...' : 'Sign Up'}</Text>
+              </LinearGradient>
+            </TouchableOpacity>
+
+            <View style={styles.signInContainer}>
+              <Text style={styles.haveAccount}>Already have an account?</Text>
+              <TouchableOpacity onPress={handleLogin} activeOpacity={0.7}>
+                <Text style={styles.signInLink}> Sign In</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <View style={styles.carouselSection}>
+            <ScrollView
+              ref={scrollViewRef}
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onScroll={handleScroll}
+              onScrollBeginDrag={handleScrollBeginDrag}
+              onScrollEndDrag={handleScrollEndDrag}
+              scrollEventThrottle={16}
+              style={styles.carousel}
+              removeClippedSubviews={false}>
+              {carouselImages.map((image, index) => (
+                <View key={index} style={[styles.carouselItem, { width: SCREEN_WIDTH }]}> 
+                  <Image source={image} style={styles.carouselImage} resizeMode="cover" />
+                </View>
+              ))}
+            </ScrollView>
+            <View style={styles.carouselIndicators}>
+              {carouselImages.map((_, index) => (
+                <View key={index} style={[styles.indicator, { backgroundColor: index === currentIndex ? '#37474F' : '#D1D1D1' }]} />
+              ))}
+            </View>
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 }
