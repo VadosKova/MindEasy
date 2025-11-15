@@ -16,6 +16,7 @@ import { GradientText } from '@/components/GradientText';
 import { SmileyIcon } from '@/components/icons/SmileyIcon';
 import { HeadphonesIcon } from '@/components/icons/HeadphonesIcon';
 import { JournalIcon } from '@/components/icons/JournalIcon';
+import { useCarousel } from '@/hooks/useCarousel';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -26,56 +27,8 @@ const carouselImages = [
 ];
 
 export default function OnBoardingScreen() {
-  const scrollViewRef = useRef<ScrollView>(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
-  const autoScrollIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const currentIndexRef = useRef(0);
-
-  const handleScroll = (event: { nativeEvent: { contentOffset: { x: number } } }) => {
-    const contentOffsetX = event.nativeEvent.contentOffset.x;
-    const index = Math.round(contentOffsetX / SCREEN_WIDTH);
-    setCurrentIndex(index);
-    currentIndexRef.current = index;
-  };
-
-  const scrollToNext = () => {
-    const nextIndex = (currentIndexRef.current + 1) % carouselImages.length;
-    scrollViewRef.current?.scrollTo({
-      x: nextIndex * SCREEN_WIDTH,
-      animated: true,
-    });
-    setCurrentIndex(nextIndex);
-    currentIndexRef.current = nextIndex;
-  };
-
-  const startAutoScroll = () => {
-    if (autoScrollIntervalRef.current) {
-      clearInterval(autoScrollIntervalRef.current as number);
-    }
-    autoScrollIntervalRef.current = setInterval(() => {
-      scrollToNext();
-    }, 3000);
-  };
-
-  useEffect(() => {
-    startAutoScroll();
-
-    return () => {
-      if (autoScrollIntervalRef.current) {
-        clearInterval(autoScrollIntervalRef.current as number);
-      }
-    };
-  }, []);
-
-  const handleScrollBeginDrag = () => {
-    if (autoScrollIntervalRef.current) {
-      clearInterval(autoScrollIntervalRef.current as number);
-    }
-  };
-
-  const handleScrollEndDrag = () => {
-    startAutoScroll();
-  };
+  const { scrollViewRef, currentIndex, handleScroll, handleScrollBeginDrag, handleScrollEndDrag } =
+    useCarousel(carouselImages);
 
   const handleGetStarted = () => {
     router.replace('/login');
