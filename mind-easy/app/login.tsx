@@ -47,9 +47,10 @@ export default function LoginScreen() {
 
     setIsLoading(true);
     setTimeout(() => {
-      setIsLoading(false);
-      Alert.alert('Success', 'Login successful!');
-    }, 1000);
+        setIsLoading(false);
+        Alert.alert('Success', 'Login successful!');
+        router.push('/tabs/home');
+      }, 1000);
   };
 
   const handleRegister = () => {
