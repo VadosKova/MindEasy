@@ -35,7 +35,7 @@ export default function HomeScreen() {
           <View style={styles.moodRow}>
             {MOOD_OPTIONS.map(({ label, Icon }) => (
               <View key={label} style={styles.moodItem}>
-                <Icon size={32} />
+                <Icon size={40} />
                 <Text style={styles.moodLabel}>{label}</Text>
               </View>
             ))}
@@ -44,7 +44,7 @@ export default function HomeScreen() {
 
         <View style={styles.quickRow}>
           <TouchableOpacity style={[styles.quickCard, styles.meditationCard, styles.shadowPurple]}>
-            <IntroMeditateIcon size={38} />
+            <IntroMeditateIcon size={41} />
             <View>
               <Text style={styles.quickTitle}>Start Meditation</Text>
               <Text style={styles.quickSubtitle}>10 min • Guided</Text>
@@ -52,7 +52,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
 
           <TouchableOpacity style={[styles.quickCard, styles.journalCard, styles.shadowPurple]}>
-            <IntroJournalIcon size={38} />
+            <IntroJournalIcon size={41} />
             <View>
               <Text style={styles.quickTitle}>Daily Reflection</Text>
               <Text style={styles.quickSubtitle}>Write your thoughts</Text>
@@ -154,6 +154,7 @@ const styles = StyleSheet.create({
     gap: 14,
   },
   quickCard: {
+    height: 117,
     flex: 1,
     borderRadius: 18,
     padding: 16,
@@ -165,7 +166,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#7974D0',
   },
   journalCard: {
-    backgroundColor: '#43A047',
+    backgroundColor: '#54B56E',
   },
   quickTitle: {
     fontFamily: 'Jua_400Regular',
@@ -222,6 +223,7 @@ const styles = StyleSheet.create({
   quoteText: {
     flex: 1,
     fontFamily: 'IstokWeb_400Regular',
+    fontStyle: 'italic',
     fontSize: 14,
     color: '#37474F',
   },
@@ -232,6 +234,13 @@ const styles = StyleSheet.create({
   },
   shadowPurple: {
     shadowColor: '#7974D0',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 4,
+    elevation: 6,
+  },
+  shadowGreen: {
+    shadowColor: '#54B56E',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.5,
     shadowRadius: 4,
