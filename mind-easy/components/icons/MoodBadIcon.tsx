@@ -2,8 +2,10 @@ import React from 'react';
 import Svg, { Rect, Ellipse, Path } from 'react-native-svg';
 
 export function MoodBadIcon({ size = 41 }: { size?: number }) {
+  const scaledSize = size * 1.1;
+
   return (
-    <Svg width={size} height={size} viewBox="0 0 41 41" fill="none">
+    <Svg width={scaledSize} height={scaledSize} viewBox="0 0 41 41" fill="none">
       <Rect x="14.0938" y="24.3438" width="12.8125" height="6.40625" fill="black" />
       <Rect x="11.5312" y="15.375" width="19.2188" height="7.6875" fill="black" />
       <Ellipse

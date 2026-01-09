@@ -1,5 +1,6 @@
-import { ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ImageBackground, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import Svg, { Circle } from 'react-native-svg';
 import { HomeIcon } from '@/components/icons/HomeIcon';
 import { MoodBadIcon } from '@/components/icons/MoodBadIcon';
 import { MoodLowIcon } from '@/components/icons/MoodLowIcon';
@@ -12,6 +13,7 @@ import { QuoteIcon } from '@/components/icons/QuoteIcon';
 import { HandIcon } from '@/components/icons/HandIcon';
 
 const introImage = require('@/assets/images/home-intro.png');
+const PROGRESS_VALUE = 0.6;
 
 const MOOD_OPTIONS = [
   { label: 'Bad', Icon: MoodBadIcon },
@@ -20,6 +22,54 @@ const MOOD_OPTIONS = [
   { label: 'Good', Icon: MoodGoodIcon },
   { label: 'Great', Icon: MoodGreatIcon },
 ];
+
+// Web-only box shadow to better match Figma for colored cards
+const shadowPurpleWeb: any =
+  Platform.OS === 'web'
+    ? { boxShadow: '0px 0px 4px 4px rgba(121, 116, 208, 0.5)' }
+    : {};
+
+const shadowGreenWeb: any =
+  Platform.OS === 'web'
+    ? { boxShadow: '0px 0px 4px 4px rgba(84, 181, 110, 0.5)' }
+    : {};
+
+function ProgressRing() {
+  const size = 80;
+  const strokeWidth = 8;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference * (1 - PROGRESS_VALUE);
+
+  return (
+    <View style={styles.progressRingContainer}>
+      <Svg width={size} height={size}>
+        <Circle
+          stroke="#E0E0E0"
+          fill="transparent"
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          strokeWidth={strokeWidth}
+        />
+        <Circle
+          stroke="#7ACCC8"
+          fill="transparent"
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          strokeWidth={strokeWidth}
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+        />
+      </Svg>
+      <View style={styles.progressRingLabel}>
+        <Text style={styles.progressPercentText}>{Math.round(PROGRESS_VALUE * 100)}%</Text>
+      </View>
+    </View>
+  );
+}
 
 export default function HomeScreen() {
   return (
@@ -43,50 +93,54 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.quickRow}>
-          <TouchableOpacity style={[styles.quickCard, styles.meditationCard, styles.shadowPurple]}>
+          <TouchableOpacity
+            style={[styles.quickCard, styles.meditationCard, styles.shadowPurple, shadowPurpleWeb]}>
             <IntroMeditateIcon size={41} />
-            <View>
-              <Text style={styles.quickTitle}>Start Meditation</Text>
-              <Text style={styles.quickSubtitle}>10 min • Guided</Text>
-            </View>
+            <Text style={styles.quickTitle}>Start Meditation</Text>
+            <Text style={styles.quickSubtitle}>5 min • Guided</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.quickCard, styles.journalCard, styles.shadowPurple]}>
+          <TouchableOpacity
+            style={[styles.quickCard, styles.journalCard, styles.shadowGreen, shadowGreenWeb]}>
             <IntroJournalIcon size={41} />
-            <View>
-              <Text style={styles.quickTitle}>Daily Reflection</Text>
-              <Text style={styles.quickSubtitle}>Write your thoughts</Text>
-            </View>
+            <Text style={styles.quickTitle}>Daily Reflection</Text>
+            <Text style={styles.quickSubtitle}>Write your thoughts</Text>
           </TouchableOpacity>
         </View>
 
         <View style={[styles.card, styles.shadowSoft]}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.sectionTitle}>Your progress</Text>
-            <Text style={styles.progressPercent}>60%</Text>
-          </View>
+          <Text style={styles.sectionTitle}>Your progress</Text>
           <View style={styles.progressRow}>
-            <View style={styles.statBadge}>
-              <Text style={styles.statLabel}>Streak</Text>
-              <Text style={styles.statValue}>4 Days</Text>
-            </View>
-            <View style={styles.statBadge}>
-              <Text style={styles.statLabel}>Total Days</Text>
-              <Text style={styles.statValue}>25 Days</Text>
-            </View>
-            <View style={styles.statBadge}>
-              <Text style={styles.statLabel}>Meditated</Text>
-              <Text style={styles.statValue}>142 Min</Text>
+            <ProgressRing />
+            <View style={styles.progressStats}>
+              <View style={styles.progressStatsRow}>
+                <View style={styles.statBadge}>
+                  <Text style={styles.statLabel}>Streak</Text>
+                  <Text style={styles.statValue}>4 Days</Text>
+                </View>
+                <View style={styles.statBadge}>
+                  <Text style={styles.statLabel}>Total Days</Text>
+                  <Text style={styles.statValue}>25 Days</Text>
+                </View>
+              </View>
+              <View style={[styles.statBadge, styles.progressStatBottom]}>
+                <Text style={styles.statLabel}>Meditated</Text>
+                <Text style={styles.statValue}>142 Min</Text>
+              </View>
             </View>
           </View>
         </View>
 
         <View style={[styles.quoteCard, styles.shadowSoft]}>
-          <QuoteIcon />
-          <Text style={styles.quoteText}>
-            “Peace comes from within. Do not seek it without.”{'\n'}
+          <View style={styles.quoteIconContainer}>
+            <QuoteIcon />
+          </View>
+          <View style={styles.quoteContent}>
+            <Text style={styles.quoteText}>
+              "Peace comes from within. Do not seek it without."
+            </Text>
             <Text style={styles.quoteAuthor}>– Buddha</Text>
-          </Text>
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -157,10 +211,11 @@ const styles = StyleSheet.create({
     height: 117,
     flex: 1,
     borderRadius: 18,
-    padding: 16,
-    flexDirection: 'row',
+    paddingVertical: 18,
+    paddingHorizontal: 12,
     alignItems: 'center',
-    gap: 12,
+    justifyContent: 'center',
+    gap: 8,
   },
   meditationCard: {
     backgroundColor: '#7974D0',
@@ -172,26 +227,48 @@ const styles = StyleSheet.create({
     fontFamily: 'Jua_400Regular',
     fontSize: 16,
     color: '#FFFFFF',
+    textAlign: 'center',
   },
   quickSubtitle: {
     fontFamily: 'IstokWeb_400Regular',
     fontSize: 12,
     color: '#E1F5FE',
-  },
-  cardHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  progressPercent: {
-    fontFamily: 'Jua_400Regular',
-    fontSize: 22,
-    color: '#43A047',
+    textAlign: 'center',
   },
   progressRow: {
     flexDirection: 'row',
     marginTop: 16,
+    alignItems: 'center',
+    gap: 24,
+  },
+  progressRingContainer: {
+    width: 80,
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  progressRingLabel: {
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  progressPercentText: {
+    fontFamily: 'Jua_400Regular',
+    fontSize: 18,
+    color: '#37474F',
+  },
+  progressStats: {
+    flex: 1,
+    justifyContent: 'center',
+    gap: 8,
+  },
+  progressStatsRow: {
+    flexDirection: 'row',
     gap: 10,
+  },
+  progressStatBottom: {
+    alignSelf: 'center',
+    paddingHorizontal: 24,
   },
   statBadge: {
     flex: 1,
@@ -213,43 +290,51 @@ const styles = StyleSheet.create({
     color: '#263238',
   },
   quoteCard: {
-    flexDirection: 'row',
-    gap: 16,
+    flexDirection: 'column',
     backgroundColor: '#E4F2D4',
     borderRadius: 18,
     padding: 18,
-    alignItems: 'flex-start',
+    alignItems: 'center',
+  },
+  quoteIconContainer: {
+    marginBottom: 12,
+  },
+  quoteContent: {
+    width: '100%',
+    alignItems: 'center',
   },
   quoteText: {
-    flex: 1,
     fontFamily: 'IstokWeb_400Regular',
     fontStyle: 'italic',
     fontSize: 14,
     color: '#37474F',
+    textAlign: 'center',
+    marginBottom: 8,
   },
   quoteAuthor: {
     fontFamily: 'Jua_400Regular',
     fontSize: 14,
     color: '#37474F',
+    textAlign: 'center',
   },
   shadowPurple: {
     shadowColor: '#7974D0',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 6,
+    shadowRadius: 8,
+    elevation: 10,
   },
   shadowGreen: {
     shadowColor: '#54B56E',
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 0 },
     shadowOpacity: 0.5,
-    shadowRadius: 4,
-    elevation: 6,
+    shadowRadius: 8,
+    elevation: 10,
   },
   shadowSoft: {
     shadowColor: '#000000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
+    shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 4,
   },
