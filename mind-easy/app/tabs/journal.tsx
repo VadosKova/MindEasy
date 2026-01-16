@@ -42,7 +42,40 @@ export default function JournalScreen() {
           </TouchableOpacity>
         </View>
 
-        
+        <View style={styles.moodSection}>
+          <Text style={styles.moodQuestion}>How do you feel today?</Text>
+          <View style={styles.moodButtons}>
+            <TouchableOpacity
+              style={[
+                styles.moodButton,
+                selectedMood === 'great' && styles.moodButtonSelected,
+              ]}
+              onPress={() => setSelectedMood('great')}
+            >
+              <Text style={styles.moodButtonText}>😊 Great</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.moodButton,
+                selectedMood === 'okay' && styles.moodButtonSelected,
+              ]}
+              onPress={() => setSelectedMood('okay')}
+            >
+              <Text style={styles.moodButtonText}>😐 Okay</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.moodButton,
+                selectedMood === 'low' && styles.moodButtonSelected,
+              ]}
+              onPress={() => setSelectedMood('low')}
+            >
+              <Text style={styles.moodButtonText}>😔 Low</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
