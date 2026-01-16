@@ -27,6 +27,29 @@ export default function JournalScreen() {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [selectedMood, setSelectedMood] = useState<'great' | 'okay' | 'low' | null>(null);
   const [journalText, setJournalText] = useState('');
+
+  const handleSaveEntry = () => {
+    if (!selectedMood) {
+      Alert.alert('Please select your mood before saving');
+      return;
+    }
+
+    if (journalText.trim() === '') {
+      Alert.alert('Please write something in your journal');
+      return;
+    }
+
+    const newEntry: JournalEntry = {
+      id: Date.now().toString(),
+      mood: selectedMood,
+      text: journalText,
+      timestamp: new Date(),
+    };
+
+    setEntries([newEntry, ...entries]);
+    setJournalText('');
+    setSelectedMood(null);
+  };
   
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -75,6 +98,30 @@ export default function JournalScreen() {
               <Text style={styles.moodButtonText}>😔 Low</Text>
             </TouchableOpacity>
           </View>
+        </View>
+
+        <TextInput
+          style={styles.textInput}
+          placeholder="Write your thoughts here..."
+          placeholderTextColor="#999"
+          multiline
+          numberOfLines={5}
+          value={journalText}
+          onChangeText={setJournalText}
+          textAlignVertical="top"
+        />
+
+        <View style={styles.actionButtons}>
+          <TouchableOpacity style={styles.voiceButton}>
+            <View style={styles.voiceButtonContent}>
+              <MicIcon />
+              <Text style={styles.voiceButtonText}>Voice Note</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={styles.saveButton} onPress={handleSaveEntry}>
+            <Text style={styles.saveButtonText}>Save Entry</Text>
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
