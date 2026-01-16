@@ -104,4 +104,37 @@ const styles = StyleSheet.create({
   searchButton: {
     padding: 8,
   },
+  moodSection: {
+    marginBottom: 20,
+  },
+  moodQuestion: {
+    fontFamily: 'IstokWeb_400Regular',
+    fontSize: 16,
+    color: '#263238',
+    marginBottom: 12,
+  },
+  moodButtons: {
+    flexDirection: 'row',
+    gap: 10,
+    justifyContent: 'space-between',
+  },
+  moodButton: {
+    flex: 1,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    borderRadius: 20,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 2,
+    borderColor: '#E0E0E0',
+    alignItems: 'center',
+  },
+  moodButtonSelected: {
+    backgroundColor: '#FFD700',
+    borderColor: '#F4B35E',
+  },
+  moodButtonText: {
+    fontFamily: 'IstokWeb_400Regular',
+    fontSize: 13,
+    color: '#263238',
+  },
 });
