@@ -10,3 +10,22 @@ interface JournalEntry {
   text: string;
   timestamp: Date;
 }
+
+const moodEmojis = {
+  great: '😊',
+  okay: '😐',
+  low: '😔',
+};
+
+const moodLabels = {
+  great: 'Great',
+  okay: 'Okay',
+  low: 'Low',
+};
+
+export default function JournalScreen() {
+  const [entries, setEntries] = useState<JournalEntry[]>([]);
+  const [selectedMood, setSelectedMood] = useState<'great' | 'okay' | 'low' | null>(null);
+  const [journalText, setJournalText] = useState('');
+
+}
