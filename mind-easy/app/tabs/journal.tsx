@@ -3,6 +3,7 @@ import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert,
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SearchIcon } from '@/components/icons/SearchIcon';
 import { MicIcon } from '@/components/icons/MicIcon';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface JournalEntry {
   id: string;
@@ -137,8 +138,15 @@ export default function JournalScreen() {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.saveButton} onPress={handleSaveEntry}>
-            <Text style={styles.saveButtonText}>Save Entry</Text>
+          <TouchableOpacity style={styles.saveButton} onPress={handleSaveEntry} activeOpacity={0.8}>
+            <LinearGradient
+              colors={['#8CCAED', '#80CBC5']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.gradientButton}
+            >
+              <Text style={styles.saveButtonText}>Save Entry</Text>
+            </LinearGradient>
           </TouchableOpacity>
         </View>
 
@@ -177,7 +185,7 @@ const styles = StyleSheet.create({
   header: {
     fontFamily: 'Jua_400Regular',
     fontSize: 28,
-    color: '#263238',
+    color: '#37474F',
   },
   searchButton: {
     padding: 8,
@@ -186,9 +194,9 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   moodQuestion: {
-    fontFamily: 'IstokWeb_400Regular',
-    fontSize: 16,
-    color: '#263238',
+    fontFamily: 'Jua_400Regular',
+    fontSize: 20,
+    color: '#37474F',
     marginBottom: 12,
   },
   moodButtons: {
@@ -201,9 +209,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 12,
     borderRadius: 20,
-    backgroundColor: '#FFFFFF',
     borderWidth: 2,
-    borderColor: '#E0E0E0',
+    borderColor: '#000000',
     alignItems: 'center',
   },
   moodButtonSelected: {
@@ -212,16 +219,16 @@ const styles = StyleSheet.create({
   },
   moodButtonText: {
     fontFamily: 'IstokWeb_400Regular',
-    fontSize: 13,
+    fontSize: 16,
     color: '#263238',
   },
   textInput: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#E0E0C9',
     borderRadius: 12,
     padding: 14,
     fontFamily: 'IstokWeb_400Regular',
     fontSize: 14,
-    color: '#263238',
+    color: '#37474F',
     minHeight: 120,
     marginBottom: 16,
     textAlignVertical: 'top',
@@ -232,6 +239,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   voiceButton: {
+    width: 140,
     flex: 1,
     backgroundColor: '#D4F041',
     paddingVertical: 12,
@@ -245,23 +253,26 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   voiceButtonText: {
-    fontFamily: 'IstokWeb_400Regular',
-    fontSize: 14,
-    color: '#2A6F50',
+    fontFamily: 'Jua_400Regular',
+    fontSize: 16,
+    color: '#000000',
     fontWeight: '600',
   },
   saveButton: {
     flex: 1,
-    backgroundColor: '#87CEEB',
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+  gradientButton: {
     paddingVertical: 12,
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
   },
   saveButtonText: {
-    fontFamily: 'IstokWeb_400Regular',
-    fontSize: 14,
-    color: '#2A6F50',
+    fontFamily: 'Jua_400Regular',
+    fontSize: 16,
+    color: '#FFFFFF',
     fontWeight: '600',
   },
   entriesContainer: {
