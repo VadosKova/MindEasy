@@ -159,7 +159,6 @@ export default function ProfileScreen() {
         </View>
       </Modal>
 
-      {/* Edit Why Modal */}
       <Modal
         visible={editWhyModal}
         transparent
@@ -195,7 +194,6 @@ export default function ProfileScreen() {
         </View>
       </Modal>
 
-      {/* Edit Picture Modal */}
       <Modal
         visible={editPictureModal}
         transparent
@@ -251,7 +249,7 @@ const styles = StyleSheet.create({
   header: {
     fontFamily: 'Jua_400Regular',
     fontSize: 28,
-    color: '#263238',
+    color: '#37474F',
   },
   settingsButton: {
     padding: 8,
@@ -284,7 +282,7 @@ const styles = StyleSheet.create({
   name: {
     fontFamily: 'Jua_400Regular',
     fontSize: 22,
-    color: '#263238',
+    color: '#000000',
   },
   joinDate: {
     fontFamily: 'IstokWeb_400Regular',
@@ -306,7 +304,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontFamily: 'Jua_400Regular',
     fontSize: 14,
-    color: '#263238',
+    color: '#000000',
   },
   cardText: {
     fontFamily: 'IstokWeb_400Regular',
@@ -336,7 +334,7 @@ const styles = StyleSheet.create({
   listText: {
     fontFamily: 'IstokWeb_400Regular',
     fontSize: 12,
-    color: '#6D6D6D',
+    color: '#263238',
   },
   modalOverlay: {
     flex: 1,
