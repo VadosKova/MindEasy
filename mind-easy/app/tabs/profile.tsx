@@ -70,7 +70,7 @@ export default function ProfileScreen() {
           onPressOut={() => setHoverPicture(false)}
         >
           <ImageBackground
-            source={require('@/assets/images/Ellipse23.png')}
+            source={require('@/assets/images/Ellipse 23.png')}
             style={styles.profilePicture}
             imageStyle={styles.profilePictureImage}
           >
