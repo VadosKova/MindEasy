@@ -126,6 +126,108 @@ export default function ProfileScreen() {
             ))}
           </View>
         </View>
+
+        <Modal
+        visible={editNameModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setEditNameModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setEditNameModal(false)}
+            >
+              <Text style={styles.closeText}>✕</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.modalTitle}>Edit name</Text>
+
+            <TextInput
+              style={styles.modalInput}
+              value={editingName}
+              onChangeText={setEditingName}
+              placeholder="Enter your name"
+              placeholderTextColor="#999"
+            />
+
+            <TouchableOpacity style={styles.saveButton} onPress={handleSaveName}>
+              <Text style={styles.saveButtonText}>Save</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Edit Why Modal */}
+      <Modal
+        visible={editWhyModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setEditWhyModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setEditWhyModal(false)}
+            >
+              <Text style={styles.closeText}>✕</Text>
+            </TouchableOpacity>
+
+            <Text style={styles.modalTitle}>Why I use this app</Text>
+
+            <TextInput
+              style={[styles.modalInput, styles.modalTextArea]}
+              value={editingWhy}
+              onChangeText={setEditingWhy}
+              placeholder="Tell us why you use this app"
+              placeholderTextColor="#999"
+              multiline
+              numberOfLines={4}
+              textAlignVertical="top"
+            />
+
+            <TouchableOpacity style={styles.saveButton} onPress={handleSaveWhy}>
+              <Text style={styles.saveButtonText}>Save</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Edit Picture Modal */}
+      <Modal
+        visible={editPictureModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setEditPictureModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <TouchableOpacity
+              style={styles.closeButton}
+              onPress={() => setEditPictureModal(false)}
+            >
+              <Text style={styles.closeText}>✕</Text>
+            </TouchableOpacity>
+
+            <LinearGradient
+              colors={['#FFB6E1', '#DDA0DD', '#9370DB']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.largeProfilePicture}
+            >
+              <Text style={styles.largeCameraIcon}>📷</Text>
+            </LinearGradient>
+
+            <Text style={styles.modalTitle}>{profile.name}</Text>
+
+            <TouchableOpacity style={styles.saveButton} onPress={handleSavePicture}>
+              <Text style={styles.saveButtonText}>Save</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
       </ScrollView>
     </SafeAreaView>
   );
