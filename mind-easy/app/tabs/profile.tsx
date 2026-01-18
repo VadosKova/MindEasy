@@ -12,3 +12,18 @@ interface ProfileData {
   goals: string[];
   reminders: string[];
 }
+
+export default function ProfileScreen() {
+  const [profile, setProfile] = useState<ProfileData>({
+    name: 'User',
+    joinDate: 'May 2025',
+    whyUseApp: 'To feel calmer and understand myself better',
+    goals: ['Feel calmer', 'Sleep better', 'Handle anxiety'],
+    reminders: ['Daily check-in', 'Meditation reminder'],
+  });
+
+
+  return (
+    
+  );
+}
