@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, Alert } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, Alert, Image, ImageBackground, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { LinearGradient } from 'expo-linear-gradient';
 import { SettingsIcon } from '@/components/icons/SettingsIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
+import { CameraIcon } from '@/components/icons/CameraIcon';
+import { LinearGradient } from 'expo-linear-gradient';
 
 interface ProfileData {
   name: string;
@@ -25,6 +26,7 @@ export default function ProfileScreen() {
   const [editNameModal, setEditNameModal] = useState(false);
   const [editWhyModal, setEditWhyModal] = useState(false);
   const [editPictureModal, setEditPictureModal] = useState(false);
+  const [hoverPicture, setHoverPicture] = useState(false);
 
   const [editingName, setEditingName] = useState(profile.name);
   const [editingWhy, setEditingWhy] = useState(profile.whyUseApp);
@@ -64,15 +66,20 @@ export default function ProfileScreen() {
         <TouchableOpacity
           style={styles.profilePictureContainer}
           onPress={() => setEditPictureModal(true)}
+          onPressIn={() => setHoverPicture(true)}
+          onPressOut={() => setHoverPicture(false)}
         >
-          <LinearGradient
-            colors={['#FFB6E1', '#DDA0DD', '#9370DB']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
+          <ImageBackground
+            source={require('@/assets/images/Ellipse23.png')}
             style={styles.profilePicture}
+            imageStyle={styles.profilePictureImage}
           >
-            <Text style={styles.cameraIcon}>📷</Text>
-          </LinearGradient>
+            {hoverPicture && (
+              <View style={styles.cameraOverlay}>
+                <CameraIcon size={40} color="#FFFFFF" />
+              </View>
+            )}
+          </ImageBackground>
         </TouchableOpacity>
 
         <View style={styles.nameSection}>
@@ -215,7 +222,7 @@ export default function ProfileScreen() {
               end={{ x: 1, y: 1 }}
               style={styles.largeProfilePicture}
             >
-              <Text style={styles.largeCameraIcon}>📷</Text>
+              <CameraIcon size={50} color="#FFFFFF" />
             </LinearGradient>
 
             <Text style={styles.modalTitle}>{profile.name}</Text>
@@ -264,9 +271,17 @@ const styles = StyleSheet.create({
     borderRadius: 50,
     justifyContent: 'center',
     alignItems: 'center',
+    overflow: 'hidden',
   },
-  cameraIcon: {
-    fontSize: 40,
+  profilePictureImage: {
+    borderRadius: 50,
+  },
+  cameraOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.4)',
+    borderRadius: 50,
   },
   nameSection: {
     alignItems: 'center',
@@ -396,9 +411,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: 20,
     marginBottom: 16,
-  },
-  largeCameraIcon: {
-    fontSize: 50,
   },
   saveButton: {
     backgroundColor: '#D4F041',
