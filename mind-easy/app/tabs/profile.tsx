@@ -29,6 +29,28 @@ export default function ProfileScreen() {
   const [editingName, setEditingName] = useState(profile.name);
   const [editingWhy, setEditingWhy] = useState(profile.whyUseApp);
 
+  const handleSaveName = () => {
+    if (editingName.trim() === '') {
+      Alert.alert('Please enter a name');
+      return;
+    }
+    setProfile({ ...profile, name: editingName });
+    setEditNameModal(false);
+  };
+
+  const handleSaveWhy = () => {
+    if (editingWhy.trim() === '') {
+      Alert.alert('Please enter your reason');
+      return;
+    }
+    setProfile({ ...profile, whyUseApp: editingWhy });
+    setEditWhyModal(false);
+  };
+
+  const handleSavePicture = () => {
+    setEditPictureModal(false);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -66,6 +88,43 @@ export default function ProfileScreen() {
             </TouchableOpacity>
           </View>
           <Text style={styles.joinDate}>Mindful since {profile.joinDate}</Text>
+        </View>
+
+        <View style={styles.card}>
+          <View style={styles.cardHeader}>
+            <Text style={styles.cardTitle}>Why I use this app</Text>
+            <TouchableOpacity
+              onPress={() => {
+                setEditingWhy(profile.whyUseApp);
+                setEditWhyModal(true);
+              }}
+            >
+              <EditIcon size={18} color="#37474F" />
+            </TouchableOpacity>
+          </View>
+          <Text style={styles.cardText}>"{profile.whyUseApp}"</Text>
+        </View>
+
+        <View style={styles.twoColumnContainer}>
+          <View style={[styles.card, styles.halfCard]}>
+            <Text style={styles.cardTitle}>My goals</Text>
+            {profile.goals.map((goal, index) => (
+              <View key={index} style={styles.listItem}>
+                <Text style={styles.checkbox}>☑</Text>
+                <Text style={styles.listText}>{goal}</Text>
+              </View>
+            ))}
+          </View>
+
+          <View style={[styles.card, styles.halfCard]}>
+            <Text style={styles.cardTitle}>Reminders</Text>
+            {profile.reminders.map((reminder, index) => (
+              <View key={index} style={styles.listItem}>
+                <Text style={styles.checkbox}>☑</Text>
+                <Text style={styles.listText}>{reminder}</Text>
+              </View>
+            ))}
+          </View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -129,5 +188,52 @@ const styles = StyleSheet.create({
     fontFamily: 'IstokWeb_400Regular',
     fontSize: 13,
     color: '#999',
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    padding: 14,
+    marginBottom: 12,
+  },
+  cardHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 10,
+  },
+  cardTitle: {
+    fontFamily: 'Jua_400Regular',
+    fontSize: 14,
+    color: '#263238',
+  },
+  cardText: {
+    fontFamily: 'IstokWeb_400Regular',
+    fontSize: 13,
+    color: '#263238',
+    lineHeight: 18,
+    fontStyle: 'italic',
+  },
+  twoColumnContainer: {
+    flexDirection: 'row',
+    gap: 12,
+  },
+  halfCard: {
+    flex: 1,
+    marginBottom: 0,
+  },
+  listItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    marginTop: 8,
+  },
+  checkbox: {
+    fontSize: 14,
+    color: '#6D6D6D',
+  },
+  listText: {
+    fontFamily: 'IstokWeb_400Regular',
+    fontSize: 12,
+    color: '#6D6D6D',
   },
 });
