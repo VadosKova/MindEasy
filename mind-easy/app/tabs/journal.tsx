@@ -241,7 +241,7 @@ const styles = StyleSheet.create({
   voiceButton: {
     width: 140,
     flex: 1,
-    backgroundColor: '#D4F041',
+    backgroundColor: '#C4CF01',
     paddingVertical: 12,
     borderRadius: 20,
     justifyContent: 'center',

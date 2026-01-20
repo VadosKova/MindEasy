@@ -413,7 +413,7 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   saveButton: {
-    backgroundColor: '#D4F041',
+    backgroundColor: '#60DD00',
     paddingHorizontal: 24,
     paddingVertical: 10,
     borderRadius: 20,
@@ -421,9 +421,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   saveButtonText: {
-    fontFamily: 'IstokWeb_400Regular',
+    fontFamily: 'Jua_400Regular',
     fontSize: 14,
-    color: '#2A6F50',
+    color: '#000000',
     fontWeight: '600',
   },
 });

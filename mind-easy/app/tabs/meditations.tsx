@@ -187,16 +187,16 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
   },
   tilePurple: {
-    backgroundColor: '#7A72D8',
+    backgroundColor: '#667BD6',
   },
   tileGreen: {
     backgroundColor: '#54B56E',
   },
   tileLilac: {
-    backgroundColor: '#8B7AE0',
+    backgroundColor: '#7974D0',
   },
   tileOrange: {
-    backgroundColor: '#F4B35E',
+    backgroundColor: '#F2B04D',
   },
 });
 
