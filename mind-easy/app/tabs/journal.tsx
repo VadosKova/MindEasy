@@ -61,12 +61,12 @@ export default function JournalScreen() {
 
   const renderEntry = ({ item }: { item: JournalEntry }) => (
     <View style={styles.entryCard}>
+      <Text style={styles.entryTime}>{formatTime(item.timestamp)}</Text>
       <View style={styles.entryHeader}>
         <Text style={styles.entryMood}>{moodEmojis[item.mood]}</Text>
-        <Text style={styles.entryMoodLabel}>{moodLabels[item.mood]}</Text>
+        <Text style={styles.entryMoodLabel}>Feeling {moodLabels[item.mood]}</Text>
       </View>
       <Text style={styles.entryText}>{item.text}</Text>
-      <Text style={styles.entryTime}>{formatTime(item.timestamp)}</Text>
     </View>
   );
   
@@ -122,7 +122,7 @@ export default function JournalScreen() {
         <TextInput
           style={styles.textInput}
           placeholder="Write your thoughts here..."
-          placeholderTextColor="#999"
+          placeholderTextColor="#37474F"
           multiline
           numberOfLines={5}
           value={journalText}
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     padding: 14,
     fontFamily: 'IstokWeb_400Regular',
-    fontSize: 14,
+    fontSize: 16,
     color: '#37474F',
     minHeight: 120,
     marginBottom: 16,
@@ -254,7 +254,7 @@ const styles = StyleSheet.create({
   },
   voiceButtonText: {
     fontFamily: 'Jua_400Regular',
-    fontSize: 16,
+    fontSize: 18,
     color: '#000000',
     fontWeight: '600',
   },
@@ -271,49 +271,51 @@ const styles = StyleSheet.create({
   },
   saveButtonText: {
     fontFamily: 'Jua_400Regular',
-    fontSize: 16,
+    fontSize: 18,
     color: '#FFFFFF',
     fontWeight: '600',
   },
   entriesContainer: {
-    marginTop: 12,
+    marginTop: 50,
   },
   entryTitle: {
     fontFamily: 'Jua_400Regular',
     fontSize: 20,
     color: '#37474F',
     marginBottom: 12,
+    marginLeft: 10,
   },
   entryCard: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#E0E0C9',
     borderRadius: 12,
     padding: 14,
     marginBottom: 12,
   },
+  entryTime: {
+    fontFamily: 'IstokWeb_400Regular',
+    fontSize: 13,
+    color: '#78909C',
+    marginBottom: 10,
+  },
   entryHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 12,
     gap: 8,
   },
   entryMood: {
-    fontSize: 20,
+    fontSize: 24,
   },
   entryMoodLabel: {
-    fontFamily: 'IstokWeb_400Regular',
-    fontSize: 13,
-    color: '#999',
+    fontFamily: 'IstokWeb_700Bold',
+    fontSize: 16,
+    color: '#37474F',
+    marginTop: 4,
   },
   entryText: {
     fontFamily: 'IstokWeb_400Regular',
-    fontSize: 13,
-    color: '#263238',
-    lineHeight: 18,
-    marginBottom: 8,
-  },
-  entryTime: {
-    fontFamily: 'IstokWeb_400Regular',
-    fontSize: 11,
-    color: '#999',
+    fontSize: 14,
+    color: '#37474F',
+    lineHeight: 20,
   },
 });
