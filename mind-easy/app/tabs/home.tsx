@@ -272,8 +272,9 @@ const styles = StyleSheet.create({
   },
   statBadge: {
     flex: 1,
-    backgroundColor: '#FFF6CC',
-    borderRadius: 12,
+    height: 45,
+    backgroundColor: '#F4F499',
+    borderRadius: 7,
     paddingVertical: 10,
     alignItems: 'center',
     justifyContent: 'center',
@@ -281,13 +282,13 @@ const styles = StyleSheet.create({
   statLabel: {
     fontFamily: 'IstokWeb_400Regular',
     fontSize: 12,
-    color: '#6D6D6D',
+    color: '#37474F',
     marginBottom: 4,
   },
   statValue: {
     fontFamily: 'Jua_400Regular',
     fontSize: 14,
-    color: '#263238',
+    color: '#00000',
   },
   quoteCard: {
     flexDirection: 'column',
@@ -307,7 +308,7 @@ const styles = StyleSheet.create({
     fontFamily: 'IstokWeb_400Regular',
     fontStyle: 'italic',
     fontSize: 14,
-    color: '#37474F',
+    color: '#000000',
     textAlign: 'center',
     marginBottom: 8,
   },

@@ -14,9 +14,10 @@ export default function MeditationsScreen() {
 				<Text style={styles.header}>Find your peace</Text>
 
 				<View style={styles.heroCard}>
-					<ImageBackground source={heroImage} style={styles.heroImage} imageStyle={styles.heroImageStyle} />
-					<View style={styles.heroInner}>
+					<ImageBackground source={heroImage} style={styles.heroImage} imageStyle={styles.heroImageStyle}>
 						<Text style={styles.recommended}>Recommended{"\n"}Meditation</Text>
+					</ImageBackground>
+					<View style={styles.heroInner}>
 						<View style={styles.recommendRow}>
 							<View>
 								<Text style={styles.meditTitle}>Calm Breathing</Text>
@@ -31,45 +32,37 @@ export default function MeditationsScreen() {
 
 				<View style={styles.gridRow}>
 					<TouchableOpacity style={[styles.tile, styles.tilePurple]}>
-						<View style={styles.tileRow}>
-							<View style={styles.iconCol}>
-								<BreathingExercisesIcon />
-								<Text style={styles.tileTimeUnder}>3–10 min</Text>
-							</View>
-							<Text style={styles.tileTitle}>Breathing exercises</Text>
+						<View style={styles.tileIconCol}>
+							<BreathingExercisesIcon />
+							<Text style={styles.tileTimeUnder}>3–10 min</Text>
 						</View>
+						<Text style={styles.tileTitle}>Breathing{"\n"}exercises</Text>
 					</TouchableOpacity>
 
 					<TouchableOpacity style={[styles.tile, styles.tileGreen]}>
-						<View style={styles.tileRow}>
-							<View style={styles.iconCol}>
-								<StressReliefIcon />
-								<Text style={styles.tileTimeUnder}>5–12 min</Text>
-							</View>
-							<Text style={styles.tileTitle}>Stress relief</Text>
+						<View style={styles.tileIconCol}>
+							<StressReliefIcon />
+							<Text style={styles.tileTimeUnder}>5–12 min</Text>
 						</View>
+						<Text style={styles.tileTitle}>Stress{"\n"}relief</Text>
 					</TouchableOpacity>
 				</View>
 
 				<View style={styles.gridRow}>
 					<TouchableOpacity style={[styles.tile, styles.tileLilac]}>
-						<View style={styles.tileRow}>
-							<View style={styles.iconCol}>
-								<SleepRelaxationIcon />
-								<Text style={styles.tileTimeUnder}>10–20 min</Text>
-							</View>
-							<Text style={styles.tileTitle}>Sleep & Relaxation</Text>
+						<View style={styles.tileIconCol}>
+							<SleepRelaxationIcon />
+							<Text style={styles.tileTimeUnder}>10–20 min</Text>
 						</View>
+						<Text style={styles.tileTitle}>Sleep &{"\n"}Relaxation</Text>
 					</TouchableOpacity>
 
 					<TouchableOpacity style={[styles.tile, styles.tileOrange]}>
-						<View style={styles.tileRow}>
-							<View style={styles.iconCol}>
-								<FocusClarityIcon />
-								<Text style={styles.tileTimeUnder}>5–15 min</Text>
-							</View>
-							<Text style={styles.tileTitle}>Focus & Clarity</Text>
+						<View style={styles.tileIconCol}>
+							<FocusClarityIcon />
+							<Text style={styles.tileTimeUnder}>5–15 min</Text>
 						</View>
+						<Text style={styles.tileTitle}>Focus &{"\n"}Clarity</Text>
 					</TouchableOpacity>
 				</View>
 			</ScrollView>
@@ -83,9 +76,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5DC',
   },
   content: {
-    padding: 18,
-    gap: 18,
+    paddingHorizontal: 18,
+    paddingTop: 18,
     paddingBottom: 40,
+    gap: 18,
   },
   header: {
     fontFamily: 'Jua_400Regular',
@@ -100,9 +94,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   heroImage: {
-    width: '100%',
+    width: 368,
     height: 140,
     resizeMode: 'cover',
+    justifyContent: 'flex-end',
+    paddingBottom: 12,
+    paddingLeft: 12,
   },
   heroImageStyle: {
     width: '100%',
@@ -116,10 +113,10 @@ const styles = StyleSheet.create({
   },
   recommended: {
     fontFamily: 'Jua_400Regular',
-    fontSize: 20,
-    color: '#263238',
+    fontSize: 28,
+    color: '#FFFFFF',
+    marginLeft: 8,
     includeFontPadding: false,
-    marginBottom: 8,
   },
   recommendRow: {
     flexDirection: 'row',
@@ -128,26 +125,32 @@ const styles = StyleSheet.create({
   },
   meditTitle: {
     fontFamily: 'Jua_400Regular',
-    fontSize: 16,
+    fontSize: 18,
     color: '#263238',
+    marginLeft: 8,
   },
   meditSub: {
     fontFamily: 'IstokWeb_400Regular',
-    fontSize: 12,
+    fontSize: 13,
     color: '#6D6D6D',
     marginTop: 4,
+    marginLeft: 8,
   },
   startButton: {
+    width: 69,
+    height: 36.73,
     backgroundColor: '#C6F0DA',
     paddingHorizontal: 14,
     paddingVertical: 8,
-    borderRadius: 20,
+    borderRadius: 16,
     alignSelf: 'center',
   },
   startText: {
-    fontFamily: 'IstokWeb_400Regular',
-    fontSize: 14,
-    color: '#2A6F50',
+    fontFamily: 'Jua_400Regular',
+    fontSize: 15,
+    color: '#1D3D30',
+    textAlign: 'center',
+    marginTop: 2,
   },
   gridRow: {
     flexDirection: 'row',
@@ -164,27 +167,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
   },
+  tileIconCol: {
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    marginRight: -2,
+    marginLeft: -10,
+  },
   tile: {
     flex: 1,
     height: 110,
     borderRadius: 12,
     padding: 12,
-    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    gap: 0,
   },
   tileTitle: {
     fontFamily: 'Jua_400Regular',
-    fontSize: 16,
+    fontSize: 18,
     color: '#FFFFFF',
-    textAlign: 'left',
-    flexShrink: 1,
+    lineHeight: 20,
+    flex: 1,
+    marginTop: 8,
   },
   tileTimeUnder: {
     fontFamily: 'IstokWeb_400Regular',
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.95)',
-    marginTop: 8,
-    marginLeft: 6,
-    alignSelf: 'flex-start',
+    fontSize: 16,
+    color: 'rgba(255,255,255,0.9)',
+    marginTop: 4,
+    marginLeft: 8,
   },
   tilePurple: {
     backgroundColor: '#667BD6',
