@@ -77,13 +77,13 @@ const styles = StyleSheet.create({
   },
   content: {
     paddingHorizontal: 18,
-    paddingTop: 18,
+    paddingTop: 30,
     paddingBottom: 40,
     gap: 18,
   },
   header: {
     fontFamily: 'Jua_400Regular',
-    fontSize: 28,
+    fontSize: 32,
     color: '#263238',
     marginBottom: 6,
   },
@@ -92,6 +92,7 @@ const styles = StyleSheet.create({
     borderRadius: 14,
     overflow: 'hidden',
     backgroundColor: 'transparent',
+    marginTop: 8,
   },
   heroImage: {
     width: 368,
