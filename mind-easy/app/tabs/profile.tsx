@@ -30,6 +30,8 @@ export default function ProfileScreen() {
 
   const [editingName, setEditingName] = useState(profile.name);
   const [editingWhy, setEditingWhy] = useState(profile.whyUseApp);
+  const [goalsChecked, setGoalsChecked] = useState<boolean[]>(profile.goals.map(() => false));
+  const [remindersChecked, setRemindersChecked] = useState<boolean[]>(profile.reminders.map(() => false));
 
   const handleSaveName = () => {
     if (editingName.trim() === '') {
@@ -116,20 +118,40 @@ export default function ProfileScreen() {
           <View style={[styles.card, styles.halfCard]}>
             <Text style={styles.cardTitle}>My goals</Text>
             {profile.goals.map((goal, index) => (
-              <View key={index} style={styles.listItem}>
-                <Text style={styles.checkbox}>☑</Text>
-                <Text style={styles.listText}>{goal}</Text>
-              </View>
+              <Pressable
+                key={index}
+                style={styles.listItem}
+                onPress={() => {
+                  const updated = [...goalsChecked];
+                  updated[index] = !updated[index];
+                  setGoalsChecked(updated);
+                }}
+              >
+                <View style={[styles.checkboxBox, goalsChecked[index] && styles.checkboxBoxChecked]}>
+                  {goalsChecked[index] && <Text style={styles.checkboxCheck}>✓</Text>}
+                </View>
+                <Text style={[styles.listText, goalsChecked[index] && styles.listTextChecked]}>{goal}</Text>
+              </Pressable>
             ))}
           </View>
 
           <View style={[styles.card, styles.halfCard]}>
             <Text style={styles.cardTitle}>Reminders</Text>
             {profile.reminders.map((reminder, index) => (
-              <View key={index} style={styles.listItem}>
-                <Text style={styles.checkbox}>☑</Text>
-                <Text style={styles.listText}>{reminder}</Text>
-              </View>
+              <Pressable
+                key={index}
+                style={styles.listItem}
+                onPress={() => {
+                  const updated = [...remindersChecked];
+                  updated[index] = !updated[index];
+                  setRemindersChecked(updated);
+                }}
+              >
+                <View style={[styles.checkboxBox, remindersChecked[index] && styles.checkboxBoxChecked]}>
+                  {remindersChecked[index] && <Text style={styles.checkboxCheck}>✓</Text>}
+                </View>
+                <Text style={[styles.listText, remindersChecked[index] && styles.listTextChecked]}>{reminder}</Text>
+              </Pressable>
             ))}
           </View>
         </View>
@@ -339,17 +361,34 @@ const styles = StyleSheet.create({
   listItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 12,
     marginTop: 8,
   },
-  checkbox: {
+  checkboxBox: {
+    width: 20,
+    height: 20,
+    borderRadius: 4,
+    borderWidth: 2,
+    borderColor: '#D9D9D9',
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: '#FFFFFF',
+  },
+  checkboxBoxChecked: {
+    backgroundColor: '#D9D9D9',
+  },
+  checkboxCheck: {
     fontSize: 14,
-    color: '#6D6D6D',
+    color: '#FFFFFF',
+    fontWeight: 'bold',
   },
   listText: {
     fontFamily: 'IstokWeb_400Regular',
     fontSize: 12,
     color: '#263238',
+  },
+  listTextChecked: {
+    color: '#54B56E',
   },
   modalOverlay: {
     flex: 1,
