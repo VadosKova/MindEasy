@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, Alert, Image, ImageBackground, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { SettingsIcon } from '@/components/icons/SettingsIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
 import { CameraIcon } from '@/components/icons/CameraIcon';
@@ -15,6 +16,7 @@ interface ProfileData {
 }
 
 export default function ProfileScreen() {
+  const router = useRouter();
   const [profile, setProfile] = useState<ProfileData>({
     name: 'User',
     joinDate: 'May 2025',
@@ -60,7 +62,7 @@ export default function ProfileScreen() {
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.headerContainer}>
           <Text style={styles.header}>Profile</Text>
-          <TouchableOpacity style={styles.settingsButton}>
+          <TouchableOpacity style={styles.settingsButton} onPress={() => router.push('/settings')}>
             <SettingsIcon size={28} color="#37474F" />
           </TouchableOpacity>
         </View>
