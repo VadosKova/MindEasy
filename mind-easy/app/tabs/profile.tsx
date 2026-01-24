@@ -320,6 +320,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Jua_400Regular',
     fontSize: 32,
     color: '#000000',
+    marginLeft: 10,
   },
   joinDate: {
     fontFamily: 'IstokWeb_400Regular',
