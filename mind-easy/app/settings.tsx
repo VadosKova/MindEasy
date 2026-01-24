@@ -22,7 +22,7 @@ export default function SettingsScreen() {
   };
 
   const themes = ['Light', 'Dark'];
-  const languages = ['English', 'Russian', 'Spanish', 'French'];
+  const languages = ['English', 'Ukrainian'];
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -34,7 +34,18 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
 
-        
+        <View style={styles.settingCard}>
+          <View style={styles.settingContent}>
+            <NotificationsIcon size={24} color="#FFC01E" />
+            <Text style={styles.settingLabel}>Notifications</Text>
+          </View>
+          <Switch
+            value={notificationsEnabled}
+            onValueChange={setNotificationsEnabled}
+            trackColor={{ false: '#E0E0E0', true: '#54B56E' }}
+            thumbColor={notificationsEnabled ? '#FFFFFF' : '#FFFFFF'}
+          />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -59,5 +70,44 @@ const styles = StyleSheet.create({
     fontFamily: 'Jua_400Regular',
     fontSize: 28,
     color: '#263238',
+  },
+  settingCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 12,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  settingContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    flex: 1,
+  },
+  settingLabel: {
+    fontFamily: 'IstokWeb_700Bold',
+    fontSize: 16,
+    color: '#263238',
+  },
+  settingValue: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 8,
+    backgroundColor: '#F5F5F5',
+  },
+  settingValueText: {
+    fontFamily: 'IstokWeb_400Regular',
+    fontSize: 14,
+    color: '#37474F',
   },
 });
