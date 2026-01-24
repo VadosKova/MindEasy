@@ -46,6 +46,39 @@ export default function SettingsScreen() {
             thumbColor={notificationsEnabled ? '#FFFFFF' : '#FFFFFF'}
           />
         </View>
+
+        <View style={styles.settingCard}>
+          <View style={styles.settingContent}>
+            <ThemeIcon size={24} color="#37474F" />
+            <Text style={styles.settingLabel}>Theme</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.settingValue}
+            onPress={() => setShowThemeMenu(!showThemeMenu)}
+          >
+            <Text style={styles.settingValueText}>{theme}</Text>
+            <DownArrowIcon size={18} color="#37474F" />
+          </TouchableOpacity>
+        </View>
+
+        {showThemeMenu && (
+          <View style={styles.dropdownMenu}>
+            {themes.map((t) => (
+              <TouchableOpacity
+                key={t}
+                style={styles.menuItem}
+                onPress={() => {
+                  setTheme(t);
+                  setShowThemeMenu(false);
+                }}
+              >
+                <Text style={[styles.menuItemText, theme === t && styles.menuItemTextActive]}>
+                  {t}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -109,5 +142,33 @@ const styles = StyleSheet.create({
     fontFamily: 'IstokWeb_400Regular',
     fontSize: 14,
     color: '#37474F',
+  },
+  dropdownMenu: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 12,
+    marginBottom: 12,
+    marginLeft: 0,
+    marginRight: 0,
+    overflow: 'hidden',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  menuItem: {
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
+  menuItemText: {
+    fontFamily: 'IstokWeb_400Regular',
+    fontSize: 14,
+    color: '#37474F',
+  },
+  menuItemTextActive: {
+    fontFamily: 'IstokWeb_700Bold',
+    color: '#54B56E',
   },
 });
