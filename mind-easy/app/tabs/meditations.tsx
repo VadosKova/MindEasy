@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
   tileIconCol: {
     alignItems: 'center',
     justifyContent: 'flex-start',
-    marginRight: -2,
+    marginRight: -7,
     marginLeft: -10,
   },
   tile: {
