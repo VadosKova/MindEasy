@@ -153,16 +153,18 @@ const styles = StyleSheet.create({
     backgroundColor: '#F5F5DC',
   },
   content: {
-    padding: 20,
-    gap: 18,
+    paddingHorizontal: 20,
+    paddingTop: 20,
     paddingBottom: 40,
+    gap: 18,
   },
   heroCard: {
     width: '100%',
     minHeight: 150,
     borderRadius: 18,
     overflow: 'hidden',
-    padding: 20,
+    paddingVertical: 20,
+    paddingHorizontal: 20,
     justifyContent: 'flex-end',
   },
   heroImage: {
@@ -170,13 +172,13 @@ const styles = StyleSheet.create({
   },
   heroGreeting: {
     fontFamily: 'Jua_400Regular',
-    fontSize: 24,
+    fontSize: 32,
     color: '#FFFFFF',
     marginBottom: 6,
   },
   heroSubtitle: {
     fontFamily: 'IstokWeb_400Regular',
-    fontSize: 16,
+    fontSize: 20,
     color: '#FFFFFF',
   },
   card: {
@@ -295,21 +297,23 @@ const styles = StyleSheet.create({
     backgroundColor: '#E4F2D4',
     borderRadius: 18,
     padding: 18,
-    alignItems: 'center',
+    alignItems: 'flex-start',
+    gap: 14,
   },
   quoteIconContainer: {
-    marginBottom: 12,
+    marginBottom: 8,
+    marginTop: 0,
   },
   quoteContent: {
     width: '100%',
-    alignItems: 'center',
+    alignItems: 'flex-start',
   },
   quoteText: {
     fontFamily: 'IstokWeb_400Regular',
     fontStyle: 'italic',
     fontSize: 14,
     color: '#000000',
-    textAlign: 'center',
+    textAlign: 'left',
     marginBottom: 8,
   },
   quoteAuthor: {
@@ -317,6 +321,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#37474F',
     textAlign: 'center',
+    width: '100%',
   },
   shadowPurple: {
     shadowColor: '#7974D0',

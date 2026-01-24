@@ -296,13 +296,13 @@ const styles = StyleSheet.create({
   },
   name: {
     fontFamily: 'Jua_400Regular',
-    fontSize: 22,
+    fontSize: 32,
     color: '#000000',
   },
   joinDate: {
     fontFamily: 'IstokWeb_400Regular',
-    fontSize: 13,
-    color: '#999',
+    fontSize: 14,
+    color: '#37474F',
   },
   card: {
     backgroundColor: '#FFFFFF',
