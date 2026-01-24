@@ -79,6 +79,43 @@ export default function SettingsScreen() {
             ))}
           </View>
         )}
+
+        <View style={styles.settingCard}>
+          <View style={styles.settingContent}>
+            <LanguageIcon size={24} color="#80CBC5" />
+            <Text style={styles.settingLabel}>Language</Text>
+          </View>
+          <TouchableOpacity
+            style={styles.settingValue}
+            onPress={() => setShowLanguageMenu(!showLanguageMenu)}
+          >
+            <Text style={styles.settingValueText}>{language}</Text>
+            <DownArrowIcon size={18} color="#37474F" />
+          </TouchableOpacity>
+        </View>
+
+        {showLanguageMenu && (
+          <View style={styles.dropdownMenu}>
+            {languages.map((lang) => (
+              <TouchableOpacity
+                key={lang}
+                style={styles.menuItem}
+                onPress={() => {
+                  setLanguage(lang);
+                  setShowLanguageMenu(false);
+                }}
+              >
+                <Text style={[styles.menuItemText, language === lang && styles.menuItemTextActive]}>
+                  {lang}
+                </Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+        )}
+
+        <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
+          <Text style={styles.signOutButtonText}>Sign out</Text>
+        </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
@@ -101,8 +138,8 @@ const styles = StyleSheet.create({
   },
   headerTitle: {
     fontFamily: 'Jua_400Regular',
-    fontSize: 28,
-    color: '#263238',
+    fontSize: 32,
+    color: '#37474F',
   },
   settingCard: {
     backgroundColor: '#FFFFFF',
@@ -170,5 +207,23 @@ const styles = StyleSheet.create({
   menuItemTextActive: {
     fontFamily: 'IstokWeb_700Bold',
     color: '#54B56E',
+  },
+  signOutButton: {
+    backgroundColor: '#E50000',
+    borderRadius: 24,
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    alignItems: 'center',
+    marginTop: 32,
+    shadowColor: '#E50000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  signOutButtonText: {
+    fontFamily: 'IstokWeb_700Bold',
+    fontSize: 16,
+    color: '#FFFFFF',
   },
 });
