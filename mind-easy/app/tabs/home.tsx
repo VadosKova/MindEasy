@@ -315,6 +315,7 @@ const styles = StyleSheet.create({
     color: '#000000',
     textAlign: 'left',
     marginBottom: 8,
+    marginTop: -15,
   },
   quoteAuthor: {
     fontFamily: 'Jua_400Regular',
