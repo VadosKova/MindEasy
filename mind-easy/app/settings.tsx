@@ -36,7 +36,7 @@ export default function SettingsScreen() {
 
         <View style={styles.settingCard}>
           <View style={styles.settingContent}>
-            <NotificationsIcon size={24} color="#FFC01E" />
+            <NotificationsIcon size={30} color="#FFC01E" />
             <Text style={styles.settingLabel}>Notifications</Text>
           </View>
           <Switch
@@ -49,7 +49,7 @@ export default function SettingsScreen() {
 
         <View style={styles.settingCard}>
           <View style={styles.settingContent}>
-            <ThemeIcon size={24} color="#37474F" />
+            <ThemeIcon size={30} color="#37474F" />
             <Text style={styles.settingLabel}>Theme</Text>
           </View>
           <TouchableOpacity
@@ -82,7 +82,7 @@ export default function SettingsScreen() {
 
         <View style={styles.settingCard}>
           <View style={styles.settingContent}>
-            <LanguageIcon size={24} color="#80CBC5" />
+            <LanguageIcon size={30} color="#80CBC5" />
             <Text style={styles.settingLabel}>Language</Text>
           </View>
           <TouchableOpacity
@@ -162,9 +162,10 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   settingLabel: {
-    fontFamily: 'IstokWeb_700Bold',
+    fontFamily: 'Jua_400Regular',
     fontSize: 16,
     color: '#263238',
+    marginTop: 2,
   },
   settingValue: {
     flexDirection: 'row',
@@ -200,7 +201,7 @@ const styles = StyleSheet.create({
     borderBottomColor: '#E0E0E0',
   },
   menuItemText: {
-    fontFamily: 'IstokWeb_400Regular',
+    fontFamily: 'Jua_400Regular',
     fontSize: 14,
     color: '#37474F',
   },
@@ -209,8 +210,10 @@ const styles = StyleSheet.create({
     color: '#54B56E',
   },
   signOutButton: {
+    alignSelf: 'center',
+    width: 120,
     backgroundColor: '#E50000',
-    borderRadius: 24,
+    borderRadius: 20,
     paddingVertical: 14,
     paddingHorizontal: 24,
     alignItems: 'center',
@@ -222,7 +225,7 @@ const styles = StyleSheet.create({
     elevation: 6,
   },
   signOutButtonText: {
-    fontFamily: 'IstokWeb_700Bold',
+    fontFamily: 'Jua_400Regular',
     fontSize: 16,
     color: '#FFFFFF',
   },
