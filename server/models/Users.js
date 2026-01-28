@@ -5,6 +5,13 @@ const userSchema = new mongoose.Schema({
   username: { type: String, default: "", required: true },
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
-});
+  streak: { type: Number, default: 0 },
+    totalDays: { type: Number, default: 0 },
+    totalMinutes: { type: Number, default: 0 },
+
+    lastMeditationDate: { type: Date },
+  },
+  { timestamps: true }
+);
 
 export default mongoose.model("User", userSchema);
