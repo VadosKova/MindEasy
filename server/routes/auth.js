@@ -31,8 +31,12 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    const user = await Users.findOne({ email });
 
+    if (!email || !password) {
+      return res.status(400).json({ message: 'Email and password are required' });
+    }
+
+    const user = await Users.findOne({ email });
     if (!user) {
       return res.status(401).json({ error: "Authentication failed" });
     }
@@ -43,7 +47,7 @@ router.post("/login", async (req, res) => {
     }
 
     const token = jwt.sign({ userId: user._id, email: user.email }, "Secret", {
-      expiresIn: "1h",
+      expiresIn: "7d",
     });
     res.status(200).json({  message: "User registered successfully", token });
   } catch (error) {
