@@ -45,12 +45,37 @@ export default function LoginScreen() {
       return;
     }
 
-    setIsLoading(true);
-    setTimeout(() => {
-        setIsLoading(false);
-        Alert.alert('Success', 'Login successful!');
-        router.push('/tabs/home');
-      }, 1000);
+    try {
+      setIsLoading(true);
+
+      const response = await fetch("http://YOUR_IP:5000/api/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        Alert.alert("Error", data.message || "Login failed");
+        return;
+      }
+
+      console.log("TOKEN:", data.token);
+      console.log("USER:", data.user);
+
+      Alert.alert("Success", "Login successful!");
+      router.replace("/tabs/home");
+    } catch (error) {
+      Alert.alert("Error", "Server connection error");
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleRegister = () => {
