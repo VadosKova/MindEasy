@@ -62,7 +62,7 @@ export default function LoginScreen() {
       const data = await response.json();
 
       if (!response.ok) {
-        Alert.alert("Error", data.message || "Login failed");
+        Alert.alert("Error", data.error || "Login failed");
         return;
       }
 

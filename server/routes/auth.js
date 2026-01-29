@@ -46,10 +46,21 @@ router.post("/login", async (req, res) => {
       return res.status(401).json({ error: "Authentication failed" });
     }
 
-    const token = jwt.sign({ userId: user._id, email: user.email }, "Secret", {
+    const token = jwt.sign({ userId: user._id, email: user.email }, process.env.JWT_SECRET, {
       expiresIn: "7d",
     });
-    res.status(200).json({  message: "User registered successfully", token });
+    res.status(200).json({
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        avatar: user.avatar,
+        streak: user.streak,
+        totalDays: user.totalDays,
+        totalMinutes: user.totalMinutes,
+      },
+    });
   } catch (error) {
     console.error("Login error:", error.message);
     res.status(500).json({ error: "Login failed" });

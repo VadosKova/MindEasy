@@ -28,7 +28,7 @@ const carouselImages = [
 ];
 
 export default function RegistrationScreen() {
-  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
@@ -38,7 +38,7 @@ export default function RegistrationScreen() {
     useCarousel(carouselImages);
 
   const handleRegister = async () => {
-    if (!name.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
+    if (!username.trim() || !email.trim() || !password.trim() || !confirmPassword.trim()) {
       Alert.alert('Error', 'Fill in all fields');
       return;
     }
@@ -54,11 +54,36 @@ export default function RegistrationScreen() {
       Alert.alert('Error', 'Passwords do not match');
       return;
     }
-    setIsLoading(true);
-    setTimeout(() => {
+
+    try {
+      setIsLoading(true);
+
+      const response = await fetch("http://192.168.88.15:5000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username,
+          email,
+          password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        Alert.alert("Error", data.error || "Registration failed");
+        return;
+      }
+
+      Alert.alert("Success", "Registration completed!");
+      router.replace("/login");
+    } catch (error) {
+      Alert.alert("Error", "Server connection error");
+    } finally {
       setIsLoading(false);
-      Alert.alert('Success', 'Registration completed!');
-    }, 1000);
+    }
   };
 
   const handleLogin = () => router.push('/login');
@@ -78,8 +103,8 @@ export default function RegistrationScreen() {
                 style={styles.input}
                 placeholder="Username"
                 placeholderTextColor="#A0A0A0"
-                value={name}
-                onChangeText={setName}
+                value={username}
+                onChangeText={setUsername}
                 autoCapitalize="words"
               />
               <View style={styles.iconContainer}>
