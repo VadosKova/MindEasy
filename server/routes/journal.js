@@ -21,3 +21,16 @@ router.post("/", authMiddleware, async (req, res) => {
     res.status(400).json({ message: error.message });
   }
 });
+
+router.get("/", authMiddleware, async (req, res) => {
+  try {
+    const entries = await JournalEntry.find({ user: req.userId })
+      .sort({ createdAt: -1 });
+
+    res.json(entries);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to load journal" });
+  }
+});
+
+export default router;
