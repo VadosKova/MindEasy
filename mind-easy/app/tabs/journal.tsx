@@ -1,16 +1,20 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert, FlatList } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { SearchIcon } from '@/components/icons/SearchIcon';
 import { MicIcon } from '@/components/icons/MicIcon';
 import { LinearGradient } from 'expo-linear-gradient';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface JournalEntry {
-  id: string;
+  _id: string;
   mood: 'great' | 'okay' | 'low';
   text: string;
-  timestamp: Date;
+  audioUrl?: string;
+  createdAt: string;
 }
+
+const API_URL = "http://192.168.88.15:5000/api/journal";
 
 const moodEmojis = {
   great: '😊',
@@ -28,6 +32,29 @@ export default function JournalScreen() {
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [selectedMood, setSelectedMood] = useState<'great' | 'okay' | 'low' | null>(null);
   const [journalText, setJournalText] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    loadEntries();
+  }, []);
+
+  const loadEntries = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      if (!token) return;
+
+      const response = await fetch(API_URL, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await response.json();
+      setEntries(data);
+    } catch (error) {
+      console.error("Load journal error:", error);
+    }
+  };
 
   const handleSaveEntry = () => {
     if (!selectedMood) {
