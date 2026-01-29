@@ -97,7 +97,8 @@ export default function JournalScreen() {
     }
   };
 
-  const formatTime = (date: Date) => {
+  const formatTime = (isoDate: string) => {
+    const date = new Date(isoDate);
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -106,12 +107,12 @@ export default function JournalScreen() {
 
   const renderEntry = ({ item }: { item: JournalEntry }) => (
     <View style={styles.entryCard}>
-      <Text style={styles.entryTime}>{formatTime(item.timestamp)}</Text>
+      <Text style={styles.entryTime}>{formatTime(item.createdAt)}</Text>
       <View style={styles.entryHeader}>
         <Text style={styles.entryMood}>{moodEmojis[item.mood]}</Text>
         <Text style={styles.entryMoodLabel}>Feeling {moodLabels[item.mood]}</Text>
       </View>
-      <Text style={styles.entryText}>{item.text}</Text>
+      {!!item.text && <Text style={styles.entryText}>{item.text}</Text>}
     </View>
   );
   
@@ -201,7 +202,7 @@ export default function JournalScreen() {
             <FlatList
               data={entries}
               renderItem={renderEntry}
-              keyExtractor={(item) => item.id}
+              keyExtractor={(item) => item._id}
               scrollEnabled={false}
               ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
             />
