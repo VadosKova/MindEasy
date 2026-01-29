@@ -56,27 +56,45 @@ export default function JournalScreen() {
     }
   };
 
-  const handleSaveEntry = () => {
+  const handleSaveEntry = async () => {
     if (!selectedMood) {
-      Alert.alert('Please select your mood before saving');
+      Alert.alert('Please select your mood');
       return;
     }
 
-    if (journalText.trim() === '') {
-      Alert.alert('Please write something in your journal');
+    if (!journalText.trim()) {
+      Alert.alert('Please write something');
       return;
     }
 
-    const newEntry: JournalEntry = {
-      id: Date.now().toString(),
-      mood: selectedMood,
-      text: journalText,
-      timestamp: new Date(),
-    };
+    try {
+      setLoading(true);
 
-    setEntries([newEntry, ...entries]);
-    setJournalText('');
-    setSelectedMood(null);
+      const token = await AsyncStorage.getItem("token");
+      if (!token) return;
+
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          mood: selectedMood,
+          text: journalText,
+        }),
+      });
+
+      const savedEntry = await response.json();
+
+      setEntries([savedEntry, ...entries]);
+      setJournalText("");
+      setSelectedMood(null);
+    } catch (error) {
+      Alert.alert("Error saving journal entry");
+    } finally {
+      setLoading(false);
+    }
   };
 
   const formatTime = (date: Date) => {
