@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Switch } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Switch, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { BackIcon } from '@/components/icons/BackIcon';
@@ -7,6 +7,8 @@ import { NotificationsIcon } from '@/components/icons/NotificationsIcon';
 import { ThemeIcon } from '@/components/icons/ThemeIcon';
 import { LanguageIcon } from '@/components/icons/LanguageIcon';
 import { DownArrowIcon } from '@/components/icons/DownArrowIcon';
+import { requestNotificationPermission } from '@/utils/notifications';
+import { syncReminders } from '@/utils/notifications';
 
 
 export default function SettingsScreen() {
@@ -16,6 +18,24 @@ export default function SettingsScreen() {
   const [language, setLanguage] = useState('English');
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
+
+  const toggleNotifications = async (value: boolean) => {
+    if (value) {
+      const granted = await requestNotificationPermission();
+      if (!granted) {
+        Alert.alert('Permission denied');
+        return;
+      }
+    }
+
+    setNotificationsEnabled(value);
+
+    await syncReminders(
+      value,
+      []
+    );
+  };
+
 
   const handleSignOut = () => {
     console.log('Sign out');
@@ -41,7 +61,7 @@ export default function SettingsScreen() {
           </View>
           <Switch
             value={notificationsEnabled}
-            onValueChange={setNotificationsEnabled}
+            onValueChange={toggleNotifications}
             trackColor={{ false: '#E0E0E0', true: '#54B56E' }}
             thumbColor={notificationsEnabled ? '#FFFFFF' : '#FFFFFF'}
           />
