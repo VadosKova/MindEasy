@@ -5,14 +5,21 @@ const userSchema = new mongoose.Schema({
   username: { type: String, default: "", required: true },
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
-  whyUseApp: { type: String, default: "" },
+  whyUseApp: { type: String, default: "To feel calmer and understand myself better" },
   goals: {
     type: [String],
-    default: [],
+    default: [
+      "Feel calmer",
+      "Sleep better",
+      "Handle anxiety",
+    ],
   },
   reminders: {
     type: [String],
-    default: [],
+    default: [
+      "Daily check-in",
+      "Meditation reminder",
+    ],
   },
   streak: { type: Number, default: 0 },
   totalDays: { type: Number, default: 0 },
