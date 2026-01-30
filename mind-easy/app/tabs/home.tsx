@@ -1,6 +1,7 @@
 import { ImageBackground, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
+import { useState, useEffect } from 'react';
 import { HomeIcon } from '@/components/icons/HomeIcon';
 import { MoodBadIcon } from '@/components/icons/MoodBadIcon';
 import { MoodLowIcon } from '@/components/icons/MoodLowIcon';
@@ -23,7 +24,32 @@ const MOOD_OPTIONS = [
   { label: 'Great', Icon: MoodGreatIcon },
 ];
 
-// Web-only box shadow to better match Figma for colored cards
+interface Quote {
+  _id: string;
+  text: string;
+  author: string;
+}
+
+const [quote, setQuote] = useState<Quote | null>(null);
+const [loading, setLoading] = useState(true);
+
+useEffect(() => {
+  const fetchQuote = async () => {
+    try {
+      const res = await fetch("http://192.168.88.15:5000/api/quotes/random");
+      const data = await res.json();
+      setQuote(data);
+    } catch (error) {
+      console.log("Failed to load quote", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchQuote();
+}, []);
+
+
 const shadowPurpleWeb: any =
   Platform.OS === 'web'
     ? { boxShadow: '0px 0px 4px 4px rgba(121, 116, 208, 0.5)' }
