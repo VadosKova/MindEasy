@@ -13,3 +13,27 @@ export async function requestNotificationPermission() {
 
   return true;
 }
+
+export async function scheduleDailyNotification(
+  id: string,
+  title: string,
+  body: string,
+  hour: number,
+  minute: number
+) {
+  await Notifications.cancelScheduledNotificationAsync(id);
+
+  await Notifications.scheduleNotificationAsync({
+    identifier: id,
+    content: {
+      title,
+      body,
+    },
+    trigger: {
+      type: Notifications.SchedulableTriggerInputTypes.CALENDAR,
+      hour,
+      minute,
+      repeats: true,
+    },
+  });
+}
