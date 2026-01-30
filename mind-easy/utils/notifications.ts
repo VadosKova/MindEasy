@@ -1,5 +1,4 @@
 import * as Notifications from 'expo-notifications';
-import { Platform } from 'react-native';
 
 export async function requestNotificationPermission() {
   const { status } = await Notifications.getPermissionsAsync();

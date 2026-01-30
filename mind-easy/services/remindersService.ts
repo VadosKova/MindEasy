@@ -25,3 +25,28 @@ const REMINDERS: Record<string, ReminderConfig> = {
     minute: 0,
   },
 };
+
+export async function syncReminders(
+  notificationsEnabled: boolean,
+  reminders: string[]
+) {
+  if (!notificationsEnabled) {
+    await Notifications.cancelAllScheduledNotificationsAsync();
+    return;
+  }
+
+  await Notifications.cancelAllScheduledNotificationsAsync();
+
+  for (const reminder of reminders) {
+    const config = REMINDERS[reminder];
+    if (!config) continue;
+
+    await scheduleDailyNotification(
+      config.key,
+      config.title,
+      config.body,
+      config.hour,
+      config.minute
+    );
+  }
+}
