@@ -7,6 +7,7 @@ import { EditIcon } from '@/components/icons/EditIcon';
 import { CameraIcon } from '@/components/icons/CameraIcon';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as ImagePicker from 'expo-image-picker';
 
 interface ProfileData {
   name: string;
@@ -14,19 +15,15 @@ interface ProfileData {
   whyUseApp: string;
   goals: string[];
   reminders: string[];
+  avatar?: string;
 }
 
 const API_URL = 'http://192.168.88.15:5000';
 
 export default function ProfileScreen() {
   const router = useRouter();
-  const [profile, setProfile] = useState<ProfileData>({
-    name: 'User',
-    joinDate: 'May 2025',
-    whyUseApp: 'To feel calmer and understand myself better',
-    goals: ['Feel calmer', 'Sleep better', 'Handle anxiety'],
-    reminders: ['Daily check-in', 'Meditation reminder'],
-  });
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [loading, setLoading] = useState(true);
 
   const [editNameModal, setEditNameModal] = useState(false);
   const [editWhyModal, setEditWhyModal] = useState(false);
@@ -63,6 +60,7 @@ export default function ProfileScreen() {
         whyUseApp: data.whyUseApp || '',
         goals: data.goals || [],
         reminders: data.reminders || [],
+        avatar: data.avatar || '',
       };
 
       setProfile(formattedProfile);
@@ -104,7 +102,7 @@ export default function ProfileScreen() {
       Alert.alert('Please enter a name');
       return;
     }
-    setProfile({ ...profile, name: editingName });
+    saveProfile({ name: editingName });
     setEditNameModal(false);
   };
 
@@ -113,12 +111,27 @@ export default function ProfileScreen() {
       Alert.alert('Please enter your reason');
       return;
     }
-    setProfile({ ...profile, whyUseApp: editingWhy });
+    saveProfile({ whyUseApp: editingWhy });
     setEditWhyModal(false);
   };
 
-  const handleSavePicture = () => {
-    setEditPictureModal(false);
+  const pickAvatar = async () => {
+    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+    if (!permission.granted) {
+      Alert.alert('Permission required');
+      return;
+    }
+
+    const result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      base64: true,
+      quality: 0.5,
+    });
+
+    if (!result.canceled) {
+      const base64Image = `data:image/jpeg;base64,${result.assets[0].base64}`;
+      saveAvatar(base64Image);
+    }
   };
 
   return (
