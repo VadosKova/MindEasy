@@ -8,6 +8,8 @@ import { CameraIcon } from '@/components/icons/CameraIcon';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from 'expo-image-picker';
+import { syncReminders } from '@/utils/notifications';
+
 
 interface ProfileData {
   name: string;
@@ -15,6 +17,7 @@ interface ProfileData {
   whyUseApp: string;
   goals: string[];
   reminders: string[];
+  notificationsEnabled?: boolean;
   avatar?: string;
 }
 
@@ -24,6 +27,7 @@ export default function ProfileScreen() {
   const router = useRouter();
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
+  const notificationsEnabled = profile?.notificationsEnabled ?? true;
 
   const [editNameModal, setEditNameModal] = useState(false);
   const [editWhyModal, setEditWhyModal] = useState(false);
@@ -34,6 +38,21 @@ export default function ProfileScreen() {
   const [editingWhy, setEditingWhy] = useState('');
   const [goalsChecked, setGoalsChecked] = useState<boolean[]>([]);
   const [remindersChecked, setRemindersChecked] = useState<boolean[]>([]);
+
+  const updateReminders = async (checked: boolean[]) => {
+    if (!profile) return;
+
+    const newReminders = profile.reminders.filter(
+      (_, index) => checked[index]
+    );
+
+    await saveProfile({ reminders: newReminders });
+
+    await syncReminders(
+      notificationsEnabled,
+      newReminders
+    );
+  };
 
   useEffect(() => {
     loadProfile();
@@ -60,6 +79,7 @@ export default function ProfileScreen() {
         whyUseApp: data.whyUseApp || '',
         goals: data.goals || [],
         reminders: data.reminders || [],
+        notificationsEnabled: data.notificationsEnabled ?? true,
         avatar: data.avatar || '',
       };
 
