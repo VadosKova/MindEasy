@@ -5,6 +5,7 @@ import cors from 'cors';
 import authRoutes from "./routes/auth.js";
 import quoteRoutes from "./routes/quotes.js";
 import journalRoutes from "./routes/journal.js";
+import profileRoutes from "./routes/profile.js";
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/quotes", quoteRoutes);
 app.use("/api/journal", journalRoutes);
+app.use("/api/profile", profileRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)
