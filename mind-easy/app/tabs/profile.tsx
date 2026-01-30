@@ -73,6 +73,32 @@ export default function ProfileScreen() {
     }
   };
 
+  const saveProfile = async (updates: Partial<ProfileData>) => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+
+      await fetch(`${API_URL}/api/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          username: updates.name,
+          whyUseApp: updates.whyUseApp,
+          goals: updates.goals,
+          reminders: updates.reminders,
+        }),
+      });
+
+      setProfile((prev) => prev && { ...prev, ...updates });
+    } catch {
+      Alert.alert('Error', 'Failed to save changes');
+    }
+  };
+
+  if (!profile) return null;
+
   const handleSaveName = () => {
     if (editingName.trim() === '') {
       Alert.alert('Please enter a name');
