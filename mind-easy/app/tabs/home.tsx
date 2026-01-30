@@ -156,18 +156,20 @@ export default function HomeScreen() {
             </View>
           </View>
         </View>
-
-        <View style={[styles.quoteCard, styles.shadowSoft]}>
-          <View style={styles.quoteIconContainer}>
-            <QuoteIcon />
+        
+        {quote && (
+          <View style={[styles.quoteCard, styles.shadowSoft]}>
+            <View style={styles.quoteIconContainer}>
+              <QuoteIcon />
+            </View>
+            <View style={styles.quoteContent}>
+              <Text style={styles.quoteText}>
+                "{quote.text}"
+              </Text>
+              <Text style={styles.quoteAuthor}>– {quote.author}</Text>
+            </View>
           </View>
-          <View style={styles.quoteContent}>
-            <Text style={styles.quoteText}>
-              "Peace comes from within. Do not seek it without."
-            </Text>
-            <Text style={styles.quoteAuthor}>– Buddha</Text>
-          </View>
-        </View>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
