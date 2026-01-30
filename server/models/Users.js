@@ -5,11 +5,19 @@ const userSchema = new mongoose.Schema({
   username: { type: String, default: "", required: true },
   email: { type: String, unique: true, required: true },
   password: { type: String, required: true },
+  whyUseApp: { type: String, default: "" },
+  goals: {
+    type: [String],
+    default: [],
+  },
+  reminders: {
+    type: [String],
+    default: [],
+  },
   streak: { type: Number, default: 0 },
-    totalDays: { type: Number, default: 0 },
-    totalMinutes: { type: Number, default: 0 },
-
-    lastMeditationDate: { type: Date },
+  totalDays: { type: Number, default: 0 },
+  totalMinutes: { type: Number, default: 0 },
+  lastMeditationDate: { type: Date },
   },
   { timestamps: true }
 );
