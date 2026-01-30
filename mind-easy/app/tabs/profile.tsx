@@ -265,10 +265,12 @@ export default function ProfileScreen() {
               <Pressable
                 key={index}
                 style={styles.listItem}
-                onPress={() => {
+                onPress={async () => {
                   const updated = [...remindersChecked];
                   updated[index] = !updated[index];
                   setRemindersChecked(updated);
+
+                  await updateReminders(updated);
                 }}
               >
                 <View style={[styles.checkboxBox, remindersChecked[index] && styles.checkboxBoxChecked]}>
