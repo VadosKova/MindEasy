@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, Alert, Image, ImageBackground, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -6,6 +6,7 @@ import { SettingsIcon } from '@/components/icons/SettingsIcon';
 import { EditIcon } from '@/components/icons/EditIcon';
 import { CameraIcon } from '@/components/icons/CameraIcon';
 import { LinearGradient } from 'expo-linear-gradient';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 interface ProfileData {
   name: string;
@@ -14,6 +15,8 @@ interface ProfileData {
   goals: string[];
   reminders: string[];
 }
+
+const API_URL = 'http://192.168.88.15:5000';
 
 export default function ProfileScreen() {
   const router = useRouter();
@@ -30,10 +33,45 @@ export default function ProfileScreen() {
   const [editPictureModal, setEditPictureModal] = useState(false);
   const [hoverPicture, setHoverPicture] = useState(false);
 
-  const [editingName, setEditingName] = useState(profile.name);
-  const [editingWhy, setEditingWhy] = useState(profile.whyUseApp);
-  const [goalsChecked, setGoalsChecked] = useState<boolean[]>(profile.goals.map(() => false));
-  const [remindersChecked, setRemindersChecked] = useState<boolean[]>(profile.reminders.map(() => false));
+  const [editingName, setEditingName] = useState('');
+  const [editingWhy, setEditingWhy] = useState('');
+  const [goalsChecked, setGoalsChecked] = useState<boolean[]>([]);
+  const [remindersChecked, setRemindersChecked] = useState<boolean[]>([]);
+
+  useEffect(() => {
+    loadProfile();
+  }, []);
+
+  const loadProfile = async () => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+
+      const res = await fetch(`${API_URL}/api/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      const formattedProfile: ProfileData = {
+        name: data.username,
+        joinDate: new Date(data.createdAt).toLocaleDateString('en-US', {
+          month: 'long',
+          year: 'numeric',
+        }),
+        whyUseApp: data.whyUseApp || '',
+        goals: data.goals || [],
+        reminders: data.reminders || [],
+      };
+
+      setProfile(formattedProfile);
+      setGoalsChecked(formattedProfile.goals.map(() => false));
+      setRemindersChecked(formattedProfile.reminders.map(() => false));
+    } catch (error) {
+      Alert.alert('Error', 'Failed to load profile');
+    }
+  };
 
   const handleSaveName = () => {
     if (editingName.trim() === '') {
