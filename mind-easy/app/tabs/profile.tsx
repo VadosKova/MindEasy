@@ -134,6 +134,29 @@ export default function ProfileScreen() {
     }
   };
 
+  const saveAvatar = async (avatar: string) => {
+    try {
+      const token = await AsyncStorage.getItem('token');
+
+      const res = await fetch(`${API_URL}/api/profile`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ avatar }),
+      });
+
+      const data = await res.json();
+
+      setProfile((prev) => prev && { ...prev, avatar: data.avatar });
+      setEditPictureModal(false);
+    } catch {
+      Alert.alert('Error', 'Failed to upload avatar');
+    }
+  };
+
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -151,7 +174,9 @@ export default function ProfileScreen() {
           onPressOut={() => setHoverPicture(false)}
         >
           <ImageBackground
-            source={require('@/assets/images/Ellipse 23.png')}
+            source={profile.avatar
+              ? { uri: profile.avatar }
+              : require('@/assets/images/Ellipse 23.png')}
             style={styles.profilePicture}
             imageStyle={styles.profilePictureImage}
           >
@@ -328,7 +353,7 @@ export default function ProfileScreen() {
 
             <Text style={styles.modalTitle}>{profile.name}</Text>
 
-            <TouchableOpacity style={styles.saveButton} onPress={handleSavePicture}>
+            <TouchableOpacity style={styles.saveButton} onPress={pickAvatar}>
               <Text style={styles.saveButtonText}>Save</Text>
             </TouchableOpacity>
           </View>
