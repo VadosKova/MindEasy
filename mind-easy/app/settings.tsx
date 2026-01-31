@@ -9,6 +9,7 @@ import { LanguageIcon } from '@/components/icons/LanguageIcon';
 import { DownArrowIcon } from '@/components/icons/DownArrowIcon';
 import { requestNotificationPermission } from '@/utils/notifications';
 import { syncReminders } from '@/utils/notifications';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 export default function SettingsScreen() {
@@ -38,7 +39,21 @@ export default function SettingsScreen() {
 
 
   const handleSignOut = () => {
-    console.log('Sign out');
+    Alert.alert(
+    'Sign out',
+    'Are you sure you want to sign out?',
+    [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Sign out',
+        style: 'destructive',
+        onPress: async () => {
+          await AsyncStorage.clear();
+          router.replace('/login');
+        },
+      },
+    ]
+  );
   };
 
   const themes = ['Light', 'Dark'];
