@@ -10,6 +10,7 @@ import { DownArrowIcon } from '@/components/icons/DownArrowIcon';
 import { requestNotificationPermission } from '@/utils/notifications';
 import { syncReminders } from '@/utils/notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { cancelAllNotifications } from '@/utils/notifications';
 
 
 export default function SettingsScreen() {
@@ -48,6 +49,7 @@ export default function SettingsScreen() {
         text: 'Sign out',
         style: 'destructive',
         onPress: async () => {
+          await cancelAllNotifications();
           await AsyncStorage.clear();
           router.replace('/login');
         },

@@ -66,3 +66,7 @@ export async function syncReminders(
     );
   }
 }
+
+export async function cancelAllNotifications() {
+  await Notifications.cancelAllScheduledNotificationsAsync();
+}
