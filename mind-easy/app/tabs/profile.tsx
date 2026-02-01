@@ -277,7 +277,7 @@ export default function ProfileScreen() {
                 <View style={[styles.checkboxBox, remindersChecked[index] && styles.checkboxBoxChecked]}>
                   {remindersChecked[index] && <Text style={styles.checkboxCheck}>✓</Text>}
                 </View>
-                <Text style={[styles.listText, remindersChecked[index] && styles.listTextChecked]}>{reminder}</Text>
+                <Text style={[styles.listText, remindersChecked[index] && styles.listTextChecked]}>{reminder.title}</Text>
               </Pressable>
             ))}
           </View>
