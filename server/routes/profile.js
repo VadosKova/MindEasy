@@ -11,7 +11,7 @@ router.get("/", authMiddleware, async (req, res) => {
 });
 
 router.put("/", authMiddleware, async (req, res) => {
-  const { username, whyUseApp, goals, reminders, avatar } = req.body;
+  const { username, whyUseApp, goals, reminders, avatar, notificationsEnabled } = req.body;
 
   const user = await User.findByIdAndUpdate(
     req.userId,
@@ -21,6 +21,7 @@ router.put("/", authMiddleware, async (req, res) => {
       goals,
       reminders,
       avatar,
+      notificationsEnabled,
     },
     { new: true }
   ).select("-password");
