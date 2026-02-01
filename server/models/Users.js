@@ -1,5 +1,16 @@
 import mongoose from "mongoose";
 
+const reminderSchema = new mongoose.Schema(
+  {
+    id: { type: String, required: true },
+    title: { type: String, required: true },
+    hour: { type: Number, required: true },
+    minute: { type: Number, required: true },
+    enabled: { type: Boolean, default: true },
+  },
+  { _id: false }
+);
+
 const userSchema = new mongoose.Schema({
   avatar: { type: String, default: "" },
   username: { type: String, default: "", required: true },
@@ -14,11 +25,27 @@ const userSchema = new mongoose.Schema({
       "Handle anxiety",
     ],
   },
+  notificationsEnabled: {
+    type: Boolean,
+    default: true,
+  },
   reminders: {
-    type: [String],
+    type: [reminderSchema],
     default: [
-      "Daily check-in",
-      "Meditation reminder",
+      {
+        id: "daily-checkin",
+        title: "Daily check-in",
+        hour: 9,
+        minute: 0,
+        enabled: true,
+      },
+      {
+        id: "meditation",
+        title: "Meditation reminder",
+        hour: 20,
+        minute: 0,
+        enabled: true,
+      },
     ],
   },
   streak: { type: Number, default: 0 },
