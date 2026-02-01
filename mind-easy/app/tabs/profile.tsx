@@ -8,7 +8,7 @@ import { CameraIcon } from '@/components/icons/CameraIcon';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from 'expo-image-picker';
-import { syncReminders } from '@/utils/notifications';
+import { syncReminders, Reminder } from '@/utils/notifications';
 
 
 interface ProfileData {
@@ -16,7 +16,7 @@ interface ProfileData {
   joinDate: string;
   whyUseApp: string;
   goals: string[];
-  reminders: string[];
+  reminders: Reminder[];
   notificationsEnabled?: boolean;
   avatar?: string;
 }
@@ -42,15 +42,16 @@ export default function ProfileScreen() {
   const updateReminders = async (checked: boolean[]) => {
     if (!profile) return;
 
-    const newReminders = profile.reminders.filter(
-      (_, index) => checked[index]
-    );
+    const updatedReminders = profile.reminders.map((r, i) => ({
+      ...r,
+      enabled: checked[i],
+    }));
 
-    await saveProfile({ reminders: newReminders });
+    await saveProfile({ reminders: updatedReminders });
 
     await syncReminders(
       notificationsEnabled,
-      newReminders
+      updatedReminders
     );
   };
 
