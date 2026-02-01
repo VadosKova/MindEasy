@@ -25,4 +25,15 @@ router.post("/", authMiddleware, async (req, res) => {
   }
 });
 
+router.get("/today", authMiddleware, async (req, res) => {
+  const date = new Date().toISOString().slice(0, 10);
+
+  const mood = await Mood.findOne({
+    userId: req.userId,
+    date,
+  });
+
+  res.json(mood);
+});
+
 export default router;
