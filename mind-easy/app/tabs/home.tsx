@@ -12,16 +12,19 @@ import { IntroMeditateIcon } from '@/components/icons/IntroMeditateIcon';
 import { IntroJournalIcon } from '@/components/icons/IntroJournalIcon';
 import { QuoteIcon } from '@/components/icons/QuoteIcon';
 import { HandIcon } from '@/components/icons/HandIcon';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const introImage = require('@/assets/images/home-intro.png');
 const PROGRESS_VALUE = 0.6;
 
-const MOOD_OPTIONS = [
-  { label: 'Bad', Icon: MoodBadIcon },
-  { label: 'Low', Icon: MoodLowIcon },
-  { label: 'Okay', Icon: MoodOkayIcon },
-  { label: 'Good', Icon: MoodGoodIcon },
-  { label: 'Great', Icon: MoodGreatIcon },
+type Mood = 'bad' | 'low' | 'okay' | 'good' | 'great';
+
+const MOOD_OPTIONS: { label: Mood; Icon: any }[] = [
+  { label: 'bad', Icon: MoodBadIcon },
+  { label: 'low', Icon: MoodLowIcon },
+  { label: 'okay', Icon: MoodOkayIcon },
+  { label: 'good', Icon: MoodGoodIcon },
+  { label: 'great', Icon: MoodGreatIcon },
 ];
 
 interface Quote {
@@ -98,6 +101,46 @@ function ProgressRing() {
 }
 
 export default function HomeScreen() {
+  const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
+
+  useEffect(() => {
+    const loadMood = async () => {
+      try {
+        const token = await AsyncStorage.getItem("token");
+        if (!token) return;
+
+        const res = await fetch('http://192.168.88.15:5000/api/mood/today', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        if (data?.mood) setSelectedMood(data.mood);
+      } catch (e) {
+        console.log('Failed to load mood');
+      }
+    };
+
+    loadMood();
+  }, []);
+
+  const handleMoodPress = async (mood: Mood) => {
+    setSelectedMood(mood);
+
+    try {
+      await fetch('http://192.168.88.15:5000/api/mood', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer YOUR_TOKEN_HERE`,
+        },
+        body: JSON.stringify({ mood }),
+      });
+    } catch (e) {
+      console.log('Failed to save mood');
+    }
+  };
+  
   return (
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
@@ -109,12 +152,23 @@ export default function HomeScreen() {
         <View style={[styles.card, styles.shadowSoft]}>
           <Text style={styles.sectionTitle}>Track your mood</Text>
           <View style={styles.moodRow}>
-            {MOOD_OPTIONS.map(({ label, Icon }) => (
-              <View key={label} style={styles.moodItem}>
-                <Icon size={40} />
-                <Text style={styles.moodLabel}>{label}</Text>
-              </View>
-            ))}
+            {MOOD_OPTIONS.map(({ label, Icon }) => {
+              const active = selectedMood === label;
+
+              return (
+                <TouchableOpacity
+                  key={label}
+                  onPress={() => handleMoodPress(label)}
+                  style={[
+                    styles.moodItem,
+                    active && styles.moodActive,
+                  ]}
+                >
+                  <Icon size={40} />
+                  <Text style={styles.moodLabel}>{label}</Text>
+                </TouchableOpacity>
+              );
+            })}
           </View>
         </View>
 
@@ -232,6 +286,10 @@ const styles = StyleSheet.create({
     fontFamily: 'IstokWeb_400Regular',
     fontSize: 12,
     color: '#37474F',
+  },
+  moodActive: {
+    transform: [{ scale: 1.15 }],
+    opacity: 1,
   },
   quickRow: {
     flexDirection: 'row',
