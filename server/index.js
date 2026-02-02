@@ -7,10 +7,13 @@ import moodRoutes from "./routes/mood.js";
 import quoteRoutes from "./routes/quotes.js";
 import journalRoutes from "./routes/journal.js";
 import profileRoutes from "./routes/profile.js";
+import { createAdminIfNotExists } from "./utils/createAdmin.js";
 
 dotenv.config();
 
 const app = express();
+
+createAdminIfNotExists();
 
 app.use(cors());
 app.use(express.json());
