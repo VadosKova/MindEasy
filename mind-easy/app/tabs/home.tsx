@@ -101,7 +101,32 @@ function ProgressRing() {
 }
 
 export default function HomeScreen() {
+  const [username, setUsername] = useState<string>('');
   const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
+
+  useEffect(() => {
+    const loadProfile = async () => {
+      try {
+        const token = await AsyncStorage.getItem("token");
+        if (!token) return;
+
+        const res = await fetch('http://192.168.88.15:5000/api/profile', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+        if (data?.username) {
+          setUsername(data.username);
+        }
+      } catch (e) {
+        console.log('Failed to load profile');
+      }
+    };
+
+    loadProfile();
+  }, []);
 
   useEffect(() => {
     const loadMood = async () => {
@@ -128,11 +153,14 @@ export default function HomeScreen() {
     setSelectedMood(mood);
 
     try {
+      const token = await AsyncStorage.getItem("token");
+      if (!token) return;
+
       await fetch('http://192.168.88.15:5000/api/mood', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          Authorization: `Bearer YOUR_TOKEN_HERE`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ mood }),
       });
@@ -145,7 +173,7 @@ export default function HomeScreen() {
     <SafeAreaView style={styles.safeArea}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <ImageBackground source={introImage} style={styles.heroCard} imageStyle={styles.heroImage}>
-          <Text style={styles.heroGreeting}>Hello User! <HandIcon/></Text>
+          <Text style={styles.heroGreeting} numberOfLines={1} ellipsizeMode="tail">Hello {username || 'User'}! <HandIcon/></Text>
           <Text style={styles.heroSubtitle}>How are you feeling today?</Text>
         </ImageBackground>
 
@@ -257,6 +285,8 @@ const styles = StyleSheet.create({
     fontSize: 32,
     color: '#FFFFFF',
     marginBottom: 6,
+    flexShrink: 1,
+    maxWidth: '100%',
   },
   heroSubtitle: {
     fontFamily: 'IstokWeb_400Regular',
