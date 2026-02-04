@@ -1,3 +1,4 @@
+import 'react-native-reanimated';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
@@ -7,7 +8,6 @@ import { Jua_400Regular } from '@expo-google-fonts/jua';
 import { IstokWeb_400Regular, IstokWeb_700Bold } from '@expo-google-fonts/istok-web';
 import * as SplashScreen from 'expo-splash-screen';
 import { View, ActivityIndicator } from 'react-native';
-import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
