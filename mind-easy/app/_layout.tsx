@@ -7,21 +7,9 @@ import { useFonts } from 'expo-font';
 import { Jua_400Regular } from '@expo-google-fonts/jua';
 import { IstokWeb_400Regular, IstokWeb_700Bold } from '@expo-google-fonts/istok-web';
 import * as SplashScreen from 'expo-splash-screen';
-import { View, ActivityIndicator } from 'react-native';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 
-//import * as Notifications from 'expo-notifications';
-
-
-// Notifications.setNotificationHandler({
-//   handleNotification: async () => ({
-//     shouldShowBanner: true,
-//     shouldShowList: true,
-//     shouldPlaySound: true,
-//     shouldSetBadge: false,
-//   }),
-// });
 
 SplashScreen.preventAutoHideAsync();
 
@@ -39,14 +27,6 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded, fontError]);
-
-  if (!fontsLoaded && !fontError) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#F5F5DC' }}>
-        <ActivityIndicator size="large" color="#0a7ea4" />
-      </View>
-    );
-  }
 
   if (fontError) {
     console.error('Font loading error:', fontError);
