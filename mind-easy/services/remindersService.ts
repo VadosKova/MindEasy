@@ -1,5 +1,24 @@
-import * as Notifications from 'expo-notifications';
 import { scheduleDailyNotification } from '@/utils/notifications';
+import Constants from 'expo-constants';
+
+type ExpoNotificationsModule = typeof import('expo-notifications');
+
+function isExpoGo() {
+  return Constants.appOwnership === 'expo';
+}
+
+async function getNotificationsModule() {
+  if (isExpoGo()) {
+    if (__DEV__) {
+      console.warn(
+        'expo-notifications is disabled in Expo Go. Use a development build to test notifications.'
+      );
+    }
+    return null;
+  }
+
+  return (await import('expo-notifications')) as ExpoNotificationsModule;
+}
 
 interface ReminderConfig {
   key: string;
@@ -30,6 +49,9 @@ export async function syncReminders(
   notificationsEnabled: boolean,
   reminders: string[]
 ) {
+  const Notifications = await getNotificationsModule();
+  if (!Notifications) return;
+
   if (!notificationsEnabled) {
     await Notifications.cancelAllScheduledNotificationsAsync();
     return;
