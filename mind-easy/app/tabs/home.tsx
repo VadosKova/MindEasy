@@ -33,26 +33,6 @@ interface Quote {
   author: string;
 }
 
-const [quote, setQuote] = useState<Quote | null>(null);
-const [loading, setLoading] = useState(true);
-
-useEffect(() => {
-  const fetchQuote = async () => {
-    try {
-      const res = await fetch("http://192.168.88.15:5000/api/quotes/random");
-      const data = await res.json();
-      setQuote(data);
-    } catch (error) {
-      console.log("Failed to load quote", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  fetchQuote();
-}, []);
-
-
 const shadowPurpleWeb: any =
   Platform.OS === 'web'
     ? { boxShadow: '0px 0px 4px 4px rgba(121, 116, 208, 0.5)' }
@@ -103,6 +83,25 @@ function ProgressRing() {
 export default function HomeScreen() {
   const [username, setUsername] = useState<string>('');
   const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
+
+  const [quote, setQuote] = useState<Quote | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchQuote = async () => {
+      try {
+        const res = await fetch("http://192.168.88.15:5000/api/quotes/random");
+        const data = await res.json();
+        setQuote(data);
+      } catch (error) {
+        console.log("Failed to load quote", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuote();
+  }, []);
 
   useEffect(() => {
     const loadProfile = async () => {

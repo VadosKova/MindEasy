@@ -34,10 +34,6 @@ export default function JournalScreen() {
   const [journalText, setJournalText] = useState('');
   const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    loadEntries();
-  }, []);
-
   const loadEntries = async () => {
     try {
       const token = await AsyncStorage.getItem("token");
@@ -55,6 +51,10 @@ export default function JournalScreen() {
       console.error("Load journal error:", error);
     }
   };
+
+  useEffect(() => {
+    loadEntries();
+  }, []);
 
   const handleSaveEntry = async () => {
     if (!selectedMood) {
@@ -87,7 +87,7 @@ export default function JournalScreen() {
 
       const savedEntry = await response.json();
 
-      setEntries([savedEntry, ...entries]);
+      setEntries(prev => [savedEntry, ...prev]);
       setJournalText("");
       setSelectedMood(null);
     } catch (error) {
