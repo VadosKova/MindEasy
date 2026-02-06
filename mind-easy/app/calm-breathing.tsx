@@ -65,6 +65,31 @@ export default function CalmBreathing() {
   useEffect(() => {
     if (!running) return;
 
+    const createRipple = (anim: Animated.Value, delay: number) => {
+      Animated.loop(
+        Animated.sequence([
+          Animated.delay(delay),
+          Animated.timing(anim, {
+            toValue: 1,
+            duration: 4000,
+            useNativeDriver: true,
+          }),
+          Animated.timing(anim, {
+            toValue: 0,
+            duration: 0,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    };
+
+    createRipple(ripple1, 0);
+    createRipple(ripple2, 2000);
+  }, [running]);
+
+  useEffect(() => {
+    if (!running) return;
+
     intervalRef.current = setInterval(() => {
       setSecondsLeft(prev => {
         if (prev <= 1) {
