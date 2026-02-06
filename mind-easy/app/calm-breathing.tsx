@@ -20,7 +20,6 @@ export default function CalmBreathing() {
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const phaseRef = useRef(0);
-
   const soundRef = useRef<Audio.Sound | null>(null);
 
   const scale = useRef(new Animated.Value(1)).current;
@@ -117,13 +116,21 @@ export default function CalmBreathing() {
     return `${m}:${sec}`;
   };
 
-  const handleStart = async () => {
-    setRunning(true);
-    await startSound();
+  const handleStartPause = async () => {
+    if (running) {
+      setRunning(false);
+      await stopSound();
+    } else {
+      setRunning(true);
+      await startSound();
+    }
   };
 
-  const handleStop = async () => {
+  const handleRestart = async () => {
     setRunning(false);
+    setSecondsLeft(TOTAL_TIME);
+    setPhase('Inhale');
+    phaseRef.current = 0;
     await stopSound();
   };
 
@@ -195,12 +202,12 @@ export default function CalmBreathing() {
       </Text>
 
       <View style={styles.buttons}>
-        <TouchableOpacity style={styles.start} onPress={handleStart}>
-          <Text style={styles.startText}>Start</Text>
+        <TouchableOpacity style={styles.start} onPress={handleStartPause}>
+          <Text style={styles.startText}>{running ? 'Pause' : 'Start'}</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.stop} onPress={handleStop}>
-          <Text style={styles.stopText}>Stop</Text>
+        <TouchableOpacity style={styles.stop} onPress={handleRestart}>
+          <Text style={styles.stopText}>Restart</Text>
         </TouchableOpacity>
       </View>
 
