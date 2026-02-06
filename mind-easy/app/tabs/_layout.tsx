@@ -54,6 +54,12 @@ export default function TabsLayout() {
           tabBarIcon: ({ focused }) => <TabProfileIcon size={36} active={focused} />,
         }}
       />
+      <Tabs.Screen
+        name="calm-breathing"
+        options={{
+          href: null,
+        }}
+      />
     </Tabs>
   );
 }

@@ -4,10 +4,13 @@ import { BreathingExercisesIcon } from '@/components/icons/BreathingExercisesIco
 import { StressReliefIcon } from '@/components/icons/StressReliefIcon';
 import { SleepRelaxationIcon } from '@/components/icons/SleepRelaxationIcon';
 import { FocusClarityIcon } from '@/components/icons/FocusClarityIcon';
+import { useRouter } from 'expo-router';
 
 const heroImage = require('@/assets/images/medit.png');
 
 export default function MeditationsScreen() {
+  const router = useRouter();
+
 	return (
 		<SafeAreaView style={styles.safeArea}>
 			<ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
