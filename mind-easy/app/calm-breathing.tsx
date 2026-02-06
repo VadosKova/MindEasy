@@ -195,11 +195,11 @@ export default function CalmBreathing() {
       </Text>
 
       <View style={styles.buttons}>
-        <TouchableOpacity style={styles.start} onPress={() => setRunning(true)}>
+        <TouchableOpacity style={styles.start} onPress={handleStart}>
           <Text style={styles.startText}>Start</Text>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.stop} onPress={() => setRunning(false)}>
+        <TouchableOpacity style={styles.stop} onPress={handleStop}>
           <Text style={styles.stopText}>Stop</Text>
         </TouchableOpacity>
       </View>
@@ -240,6 +240,20 @@ const styles = StyleSheet.create({
     marginTop: 6,
     color: '#78909C',
     fontSize: 18,
+  },
+
+  rippleContainer: {
+    marginTop: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  ripple: {
+    position: 'absolute',
+    width: 220,
+    height: 220,
+    borderRadius: 999,
+    backgroundColor: '#E2A7FF55',
   },
 
   circle: {
