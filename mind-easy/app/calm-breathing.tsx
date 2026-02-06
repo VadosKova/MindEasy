@@ -117,6 +117,16 @@ export default function CalmBreathing() {
     return `${m}:${sec}`;
   };
 
+  const handleStart = async () => {
+    setRunning(true);
+    await startSound();
+  };
+
+  const handleStop = async () => {
+    setRunning(false);
+    await stopSound();
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
