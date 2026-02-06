@@ -139,11 +139,56 @@ export default function CalmBreathing() {
       <Text style={styles.title}>Calm breathing</Text>
       <Text style={styles.subtitle}>Breathe slowly and relax</Text>
 
-      <Animated.View style={{ transform: [{ scale }], marginTop: 40 }}>
-        <ImageBackground source={circleImg} style={styles.circle} imageStyle={styles.circleImg}>
-          <Text style={styles.phase}>{phase}</Text>
-        </ImageBackground>
-      </Animated.View>
+      <View style={styles.rippleContainer}>
+        <Animated.View
+          style={[
+            styles.ripple,
+            {
+              opacity: ripple1.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.35, 0],
+              }),
+              transform: [
+                {
+                  scale: ripple1.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [1, 2.5],
+                  }),
+                },
+              ],
+            },
+          ]}
+        />
+
+        <Animated.View
+          style={[
+            styles.ripple,
+            {
+              opacity: ripple2.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.35, 0],
+              }),
+              transform: [
+                {
+                  scale: ripple2.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [1, 2.5],
+                  }),
+                },
+              ],
+            },
+          ]}
+        />
+
+        <Animated.View style={{ transform: [{ scale }] }}>
+          <ImageBackground
+            source={circleImg}
+            style={styles.circle}
+            imageStyle={styles.circleImg}>
+            <Text style={styles.phase}>{phase}</Text>
+          </ImageBackground>
+        </Animated.View>
+      </View>
 
       <Text style={styles.timer}>
         {format(TOTAL_TIME - secondsLeft)} / 05:00
