@@ -2,12 +2,14 @@ import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, ImageBackground, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import { Audio } from 'expo-av';
 import { BackIcon } from '@/components/icons/BackIcon';
 
 const TOTAL_TIME = 300;
 const PHASE_TIME = 4;
 
 const circleImg = require('@/assets/images/Ellipse 23.png');
+const soundFile = require('@/assets/sounds/relax.mp3');
 
 export default function CalmBreathing() {
   const router = useRouter();
@@ -19,7 +21,36 @@ export default function CalmBreathing() {
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const phaseRef = useRef(0);
 
+  const soundRef = useRef<Audio.Sound | null>(null);
+
   const scale = useRef(new Animated.Value(1)).current;
+  const ripple1 = useRef(new Animated.Value(0)).current;
+  const ripple2 = useRef(new Animated.Value(0)).current;
+
+  const startSound = async () => {
+    if (soundRef.current) return;
+
+    const { sound } = await Audio.Sound.createAsync(soundFile, {
+      isLooping: true,
+      volume: 0.35,
+    });
+
+    soundRef.current = sound;
+    await sound.playAsync();
+  };
+
+  const stopSound = async () => {
+    if (!soundRef.current) return;
+    await soundRef.current.stopAsync();
+    await soundRef.current.unloadAsync();
+    soundRef.current = null;
+  };
+
+  useEffect(() => {
+    return () => {
+      stopSound();
+    };
+  }, []);
 
   useEffect(() => {
     if (!running) return;
