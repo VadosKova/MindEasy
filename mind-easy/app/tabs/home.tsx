@@ -1,4 +1,4 @@
-import { ImageBackground, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ImageBackground, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
 import { useState, useEffect } from 'react';
@@ -83,6 +83,7 @@ function ProgressRing() {
 export default function HomeScreen() {
   const [username, setUsername] = useState<string>('');
   const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
+  const [pressedMood, setPressedMood] = useState<Mood | null>(null);
 
   const [quote, setQuote] = useState<Quote | null>(null);
   const [loading, setLoading] = useState(true);
@@ -149,7 +150,10 @@ export default function HomeScreen() {
   }, []);
 
   const handleMoodPress = async (mood: Mood) => {
+    setPressedMood(mood);
     setSelectedMood(mood);
+
+    setTimeout(() => setPressedMood(null), 150);
 
     try {
       const token = await AsyncStorage.getItem("token");
@@ -180,7 +184,8 @@ export default function HomeScreen() {
           <Text style={styles.sectionTitle}>Track your mood</Text>
           <View style={styles.moodRow}>
             {MOOD_OPTIONS.map(({ label, Icon }) => {
-              const active = selectedMood === label;
+              const selected = selectedMood === label;
+              const pressed = pressedMood === label;
 
               return (
                 <TouchableOpacity
@@ -188,7 +193,8 @@ export default function HomeScreen() {
                   onPress={() => handleMoodPress(label)}
                   style={[
                     styles.moodItem,
-                    active && styles.moodActive,
+                    pressed && styles.moodPressed,
+                    selected && styles.moodSelected,
                   ]}
                 >
                   <Icon size={40} />
@@ -318,6 +324,12 @@ const styles = StyleSheet.create({
   },
   moodActive: {
     transform: [{ scale: 1.15 }],
+    opacity: 1,
+  },
+  moodPressed: {
+    transform: [{ scale: 1.25 }],
+  },
+  moodSelected: {
     opacity: 1,
   },
   quickRow: {

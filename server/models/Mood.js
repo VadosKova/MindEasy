@@ -22,4 +22,21 @@ const moodSchema = new mongoose.Schema(
 
 moodSchema.index({ userId: 1, date: 1 }, { unique: true });
 
+const moodScoreMap = {
+  bad: 1,
+  low: 2,
+  okay: 3,
+  good: 4,
+  great: 5,
+};
+
+moodSchema.add({
+  score: Number,
+});
+
+moodSchema.pre("save", function (next) {
+  this.score = moodScoreMap[this.mood] || 0;
+  next();
+});
+
 export default mongoose.model("Mood", moodSchema);

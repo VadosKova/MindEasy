@@ -35,4 +35,8 @@ journalEntrySchema.pre("save", function () {
   }
 });
 
+journalEntrySchema.add({
+  points: { type: Number, default: 5 }
+});
+
 export default mongoose.model("JournalEntry", journalEntrySchema);
