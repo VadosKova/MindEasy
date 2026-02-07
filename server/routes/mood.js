@@ -15,7 +15,7 @@ router.post("/", authMiddleware, async (req, res) => {
 
     const entry = await Mood.findOneAndUpdate(
       { userId: req.userId, date },
-      { mood },
+      { mood, score: moodScoreMap[mood] || 0, date },
       { upsert: true, new: true }
     );
 

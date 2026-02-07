@@ -1,7 +1,8 @@
 import { ImageBackground, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
 
 import { MoodBadIcon } from '@/components/icons/MoodBadIcon';
 import { MoodLowIcon } from '@/components/icons/MoodLowIcon';
@@ -91,6 +92,7 @@ export default function HomeScreen() {
 
   const [quote, setQuote] = useState<Quote | null>(null);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
 
   const loadProgress = async () => {
     try {
@@ -105,14 +107,40 @@ export default function HomeScreen() {
 
       const data = await res.json();
 
-      setProgress(data.progress ?? 0);
+      setProgress((data.progress ?? 0) / 100);
       setStreak(data.streak ?? 0);
       setTotalDays(data.totalDays ?? 0);
-      setMinutes(data.meditatedMinutes ?? 0);
+      setMinutes(data.totalMeditationMinutes ?? 0);
     } catch (e) {
       console.log('Failed to load progress');
     }
   };
+
+  const loadProfile = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      if (!token) return;
+
+      const res = await fetch('http://192.168.88.15:5000/api/profile', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      if (data?.username) {
+        setUsername(data.username);
+      }
+    } catch (e) {
+      console.log('Failed to load profile');
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      loadProfile();
+    }, [])
+  );
 
   useEffect(() => {
     const fetchQuote = async () => {
@@ -128,30 +156,6 @@ export default function HomeScreen() {
     };
 
     fetchQuote();
-  }, []);
-
-  useEffect(() => {
-    const loadProfile = async () => {
-      try {
-        const token = await AsyncStorage.getItem("token");
-        if (!token) return;
-
-        const res = await fetch('http://192.168.88.15:5000/api/profile', {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        const data = await res.json();
-        if (data?.username) {
-          setUsername(data.username);
-        }
-      } catch (e) {
-        console.log('Failed to load profile');
-      }
-    };
-
-    loadProfile();
   }, []);
 
   useEffect(() => {
@@ -230,14 +234,14 @@ export default function HomeScreen() {
 
         <View style={styles.quickRow}>
           <TouchableOpacity
-            style={[styles.quickCard, styles.meditationCard, styles.shadowPurple, shadowPurpleWeb]}>
+            style={[styles.quickCard, styles.meditationCard, styles.shadowPurple, shadowPurpleWeb]} onPress={() => router.push('/calm-breathing')}>
             <IntroMeditateIcon size={41} />
             <Text style={styles.quickTitle}>Start Meditation</Text>
             <Text style={styles.quickSubtitle}>5 min • Guided</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            style={[styles.quickCard, styles.journalCard, styles.shadowGreen, shadowGreenWeb]}>
+            style={[styles.quickCard, styles.journalCard, styles.shadowGreen, shadowGreenWeb]} onPress={() => router.push('/tabs/journal')}>
             <IntroJournalIcon size={41} />
             <Text style={styles.quickTitle}>Daily Reflection</Text>
             <Text style={styles.quickSubtitle}>Write your thoughts</Text>
@@ -297,7 +301,7 @@ const styles = StyleSheet.create({
     gap: 18,
   },
   heroCard: {
-    width: '100%',
+    width: '105%',
     minHeight: 150,
     borderRadius: 18,
     overflow: 'hidden',
