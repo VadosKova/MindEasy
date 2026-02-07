@@ -1,8 +1,8 @@
-import { ImageBackground, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View, Animated } from 'react-native';
+import { ImageBackground, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
 import { useState, useEffect } from 'react';
-import { HomeIcon } from '@/components/icons/HomeIcon';
+
 import { MoodBadIcon } from '@/components/icons/MoodBadIcon';
 import { MoodLowIcon } from '@/components/icons/MoodLowIcon';
 import { MoodOkayIcon } from '@/components/icons/MoodOkayIcon';
@@ -15,7 +15,6 @@ import { HandIcon } from '@/components/icons/HandIcon';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const introImage = require('@/assets/images/home-intro.png');
-const PROGRESS_VALUE = 0.6;
 
 type Mood = 'bad' | 'low' | 'okay' | 'good' | 'great';
 
@@ -43,12 +42,12 @@ const shadowGreenWeb: any =
     ? { boxShadow: '0px 0px 4px 4px rgba(84, 181, 110, 0.5)' }
     : {};
 
-function ProgressRing() {
+function ProgressRing({ value }: { value: number }) {
   const size = 80;
   const strokeWidth = 8;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-  const strokeDashoffset = circumference * (1 - PROGRESS_VALUE);
+  const strokeDashoffset = circumference * (1 - value);
 
   return (
     <View style={styles.progressRingContainer}>
@@ -74,7 +73,7 @@ function ProgressRing() {
         />
       </Svg>
       <View style={styles.progressRingLabel}>
-        <Text style={styles.progressPercentText}>{Math.round(PROGRESS_VALUE * 100)}%</Text>
+        <Text style={styles.progressPercentText}>{Math.round(value * 100)}%</Text>
       </View>
     </View>
   );
@@ -85,8 +84,35 @@ export default function HomeScreen() {
   const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
   const [pressedMood, setPressedMood] = useState<Mood | null>(null);
 
+  const [progress, setProgress] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [totalDays, setTotalDays] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+
   const [quote, setQuote] = useState<Quote | null>(null);
   const [loading, setLoading] = useState(true);
+
+  const loadProgress = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      if (!token) return;
+
+      const res = await fetch('http://192.168.88.15:5000/api/progress', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      setProgress(data.progress ?? 0);
+      setStreak(data.streak ?? 0);
+      setTotalDays(data.totalDays ?? 0);
+      setMinutes(data.meditatedMinutes ?? 0);
+    } catch (e) {
+      console.log('Failed to load progress');
+    }
+  };
 
   useEffect(() => {
     const fetchQuote = async () => {
@@ -149,6 +175,10 @@ export default function HomeScreen() {
     loadMood();
   }, []);
 
+  useEffect(() => {
+    loadProgress();
+  }, []);
+
   const handleMoodPress = async (mood: Mood) => {
     setPressedMood(mood);
     setSelectedMood(mood);
@@ -167,6 +197,8 @@ export default function HomeScreen() {
         },
         body: JSON.stringify({ mood }),
       });
+
+      await loadProgress();
     } catch (e) {
       console.log('Failed to save mood');
     }
@@ -183,25 +215,16 @@ export default function HomeScreen() {
         <View style={[styles.card, styles.shadowSoft]}>
           <Text style={styles.sectionTitle}>Track your mood</Text>
           <View style={styles.moodRow}>
-            {MOOD_OPTIONS.map(({ label, Icon }) => {
-              const selected = selectedMood === label;
-              const pressed = pressedMood === label;
-
-              return (
-                <TouchableOpacity
-                  key={label}
-                  onPress={() => handleMoodPress(label)}
-                  style={[
-                    styles.moodItem,
-                    pressed && styles.moodPressed,
-                    selected && styles.moodSelected,
-                  ]}
-                >
-                  <Icon size={40} />
-                  <Text style={styles.moodLabel}>{label}</Text>
-                </TouchableOpacity>
-              );
-            })}
+            {MOOD_OPTIONS.map(({ label, Icon }) => (
+              <TouchableOpacity
+                key={label}
+                onPress={() => handleMoodPress(label)}
+                style={[styles.moodItem, pressedMood === label && styles.moodPressed]}
+              >
+                <Icon size={40} />
+                <Text style={styles.moodLabel}>{label}</Text>
+              </TouchableOpacity>
+            ))}
           </View>
         </View>
 
@@ -224,21 +247,21 @@ export default function HomeScreen() {
         <View style={[styles.card, styles.shadowSoft]}>
           <Text style={styles.sectionTitle}>Your progress</Text>
           <View style={styles.progressRow}>
-            <ProgressRing />
+            <ProgressRing value={progress} />
             <View style={styles.progressStats}>
               <View style={styles.progressStatsRow}>
                 <View style={styles.statBadge}>
                   <Text style={styles.statLabel}>Streak</Text>
-                  <Text style={styles.statValue}>4 Days</Text>
+                  <Text style={styles.statValue}>{streak} Days</Text>
                 </View>
                 <View style={styles.statBadge}>
                   <Text style={styles.statLabel}>Total Days</Text>
-                  <Text style={styles.statValue}>25 Days</Text>
+                  <Text style={styles.statValue}>{totalDays} Days</Text>
                 </View>
               </View>
               <View style={[styles.statBadge, styles.progressStatBottom]}>
                 <Text style={styles.statLabel}>Meditated</Text>
-                <Text style={styles.statValue}>142 Min</Text>
+                <Text style={styles.statValue}>{minutes} Min</Text>
               </View>
             </View>
           </View>
