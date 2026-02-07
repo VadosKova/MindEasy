@@ -1,3 +1,4 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useState } from 'react';
 import {
   Alert,
@@ -66,8 +67,9 @@ export default function LoginScreen() {
         return;
       }
 
-      console.log("TOKEN:", data.token);
-      console.log("USER:", data.user);
+      await AsyncStorage.setItem("token", data.token);
+
+      console.log("TOKEN SAVED:", data.token);
 
       Alert.alert("Success", "Login successful!");
       router.replace("/tabs/home");
