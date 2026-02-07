@@ -147,7 +147,7 @@ export default function ProfileScreen() {
       }
 
       const result = await ImagePicker.launchImageLibraryAsync({
-        mediaTypes: [ImagePicker.MediaType.image],
+        mediaTypes: ['images'],
         base64: true,
         quality: 0.5,
       });
