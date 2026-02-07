@@ -26,7 +26,7 @@ export default function MeditationsScreen() {
 								<Text style={styles.meditTitle}>Calm Breathing</Text>
 								<Text style={styles.meditSub}>5 min</Text>
 							</View>
-							<TouchableOpacity style={styles.startButton}>
+							<TouchableOpacity style={styles.startButton} onPress={() => router.push('/calm-breathing')}>
 								<Text style={styles.startText}>Start</Text>
 							</TouchableOpacity>
 						</View>
