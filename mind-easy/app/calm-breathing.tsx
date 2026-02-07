@@ -140,7 +140,6 @@ export default function CalmBreathing() {
         <TouchableOpacity onPress={() => router.back()}>
           <BackIcon />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Meditation</Text>
       </View>
 
       <Text style={styles.title}>Calm breathing</Text>
@@ -231,12 +230,6 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 
-  headerTitle: {
-    fontSize: 18,
-    marginLeft: 12,
-    color: '#37474F',
-  },
-
   title: {
     fontFamily: 'Jua_400Regular',
     fontSize: 32,
@@ -275,14 +268,14 @@ const styles = StyleSheet.create({
   },
 
   phase: {
-    fontSize: 28,
+    fontSize: 32,
     fontFamily: 'Jua_400Regular',
     color: '#263238',
   },
 
   timer: {
     marginTop: 40,
-    fontSize: 20,
+    fontSize: 25,
     color: '#607D8B',
   },
 
@@ -308,13 +301,13 @@ const styles = StyleSheet.create({
 
   startText: {
     fontFamily: 'Jua_400Regular',
-    fontSize: 18,
+    fontSize: 28,
     color: '#1D3D30',
   },
 
   stopText: {
     fontFamily: 'Jua_400Regular',
-    fontSize: 18,
+    fontSize: 28,
     color: '#263238',
   },
 });
