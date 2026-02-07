@@ -40,9 +40,7 @@ export default function JournalScreen() {
       if (!token) return;
 
       const response = await fetch(API_URL, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { Authorization: `Bearer ${token}` },
       });
 
       const data = await response.json();
@@ -85,14 +83,13 @@ export default function JournalScreen() {
         }),
       });
 
-      const savedEntry = await response.json();
+      if (!response.ok) {
+        const err = await response.json();
+        Alert.alert(err.message || "Save failed");
+        return;
+      }
 
-      const savedEntryWithDate = {
-        ...savedEntry,
-        createdAt: savedEntry.createdAt || new Date().toISOString(),
-      };
-
-      setEntries(prev => [savedEntryWithDate, ...prev]);
+      await loadEntries();
       setJournalText("");
       setSelectedMood(null);
     } catch (error) {
@@ -121,13 +118,13 @@ export default function JournalScreen() {
       {!!item.text && <Text style={styles.entryText}>{item.text}</Text>}
     </View>
   );
-  
+
   return (
     <SafeAreaView style={styles.safeArea}>
       <FlatList
         data={entries}
         renderItem={renderEntry}
-        keyExtractor={(item, index) => item._id || index.toString()}
+        keyExtractor={(item) => String(item._id)}
         ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
         contentContainerStyle={styles.content}
         ListHeaderComponent={

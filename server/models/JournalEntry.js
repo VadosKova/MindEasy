@@ -29,11 +29,10 @@ const journalEntrySchema = new mongoose.Schema(
   }
 );
 
-journalEntrySchema.pre("save", function (next) {
+journalEntrySchema.pre("save", function () {
   if (!this.text && !this.audioUrl) {
-    return next(new Error("Journal entry must contain text or audio"));
+    throw new Error("Journal entry must contain text or audio");
   }
-  next();
 });
 
 export default mongoose.model("JournalEntry", journalEntrySchema);
