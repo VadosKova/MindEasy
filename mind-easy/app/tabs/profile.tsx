@@ -137,22 +137,26 @@ export default function ProfileScreen() {
   };
 
   const pickAvatar = async () => {
-    const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
-    if (!permission.granted) {
-      Alert.alert('Permission required');
-      return;
-    }
+    setEditPictureModal(false);
 
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      base64: true,
-      quality: 0.5,
-    });
+    setTimeout(async () => {
+      const permission = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert('Permission required');
+        return;
+      }
 
-    if (!result.canceled) {
-      const base64Image = `data:image/jpeg;base64,${result.assets[0].base64}`;
-      saveAvatar(base64Image);
-    }
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: [ImagePicker.MediaType.image],
+        base64: true,
+        quality: 0.5,
+      });
+
+      if (!result.canceled) {
+        const base64Image = `data:image/jpeg;base64,${result.assets[0].base64}`;
+        saveAvatar(base64Image);
+      }
+    }, 300);
   };
 
   const saveAvatar = async (avatar: string) => {
@@ -377,7 +381,7 @@ export default function ProfileScreen() {
             <Text style={styles.modalTitle}>{profile.name}</Text>
 
             <TouchableOpacity style={styles.saveButton} onPress={pickAvatar}>
-              <Text style={styles.saveButtonText}>Save</Text>
+              <Text style={styles.saveButtonText}>Choose photo</Text>
             </TouchableOpacity>
           </View>
         </View>
