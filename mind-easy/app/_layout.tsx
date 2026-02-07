@@ -23,13 +23,13 @@ export default function RootLayout() {
   });
 
   useEffect(() => {
-    if (fontsLoaded || fontError) {
+    if (fontsLoaded) {
       SplashScreen.hideAsync();
     }
-  }, [fontsLoaded, fontError]);
+  }, [fontsLoaded]);
 
-  if (fontError) {
-    console.error('Font loading error:', fontError);
+  if (!fontsLoaded) {
+    return null;
   }
 
   return (
