@@ -16,7 +16,7 @@ router.post("/", authMiddleware, async (req, res) => {
     });
 
     await entry.save();
-    res.status(201).json(entry);
+    res.status(201).json(entry.toJSON());
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

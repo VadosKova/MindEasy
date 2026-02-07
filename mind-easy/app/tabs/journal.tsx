@@ -87,7 +87,12 @@ export default function JournalScreen() {
 
       const savedEntry = await response.json();
 
-      setEntries(prev => [savedEntry, ...prev]);
+      const savedEntryWithDate = {
+        ...savedEntry,
+        createdAt: savedEntry.createdAt || new Date().toISOString(),
+      };
+
+      setEntries(prev => [savedEntryWithDate, ...prev]);
       setJournalText("");
       setSelectedMood(null);
     } catch (error) {
@@ -99,6 +104,7 @@ export default function JournalScreen() {
 
   const formatTime = (isoDate: string) => {
     const date = new Date(isoDate);
+    if (isNaN(date.getTime())) return '';
     const hours = String(date.getHours()).padStart(2, '0');
     const minutes = String(date.getMinutes()).padStart(2, '0');
     const monthDay = date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -118,97 +124,73 @@ export default function JournalScreen() {
   
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ScrollView
+      <FlatList
+        data={entries}
+        renderItem={renderEntry}
+        keyExtractor={(item, index) => item._id || index.toString()}
+        ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
         contentContainerStyle={styles.content}
-        showsVerticalScrollIndicator={false}
-        scrollEnabled={entries.length > 0}
-      >
-        <View style={styles.headerContainer}>
-          <Text style={styles.header}>Journal</Text>
-          <TouchableOpacity style={styles.searchButton}>
-            <SearchIcon />
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.moodSection}>
-          <Text style={styles.moodQuestion}>How do you feel today?</Text>
-          <View style={styles.moodButtons}>
-            <TouchableOpacity
-              style={[
-                styles.moodButton,
-                selectedMood === 'great' && styles.moodButtonSelected,
-              ]}
-              onPress={() => setSelectedMood('great')}
-            >
-              <Text style={styles.moodButtonText}>😊 Great</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.moodButton,
-                selectedMood === 'okay' && styles.moodButtonSelected,
-              ]}
-              onPress={() => setSelectedMood('okay')}
-            >
-              <Text style={styles.moodButtonText}>😐 Okay</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.moodButton,
-                selectedMood === 'low' && styles.moodButtonSelected,
-              ]}
-              onPress={() => setSelectedMood('low')}
-            >
-              <Text style={styles.moodButtonText}>😔 Low</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-
-        <TextInput
-          style={styles.textInput}
-          placeholder="Write your thoughts here..."
-          placeholderTextColor="#37474F"
-          multiline
-          numberOfLines={5}
-          value={journalText}
-          onChangeText={setJournalText}
-          textAlignVertical="top"
-        />
-
-        <View style={styles.actionButtons}>
-          <TouchableOpacity style={styles.voiceButton}>
-            <View style={styles.voiceButtonContent}>
-              <MicIcon />
-              <Text style={styles.voiceButtonText}>Voice Note</Text>
+        ListHeaderComponent={
+          <>
+            <View style={styles.headerContainer}>
+              <Text style={styles.header}>Journal</Text>
+              <TouchableOpacity style={styles.searchButton}><SearchIcon /></TouchableOpacity>
             </View>
-          </TouchableOpacity>
 
-          <TouchableOpacity style={styles.saveButton} onPress={handleSaveEntry} activeOpacity={0.8}>
-            <LinearGradient
-              colors={['#8CCAED', '#80CBC5']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 0 }}
-              style={styles.gradientButton}
-            >
-              <Text style={styles.saveButtonText}>Save Entry</Text>
-            </LinearGradient>
-          </TouchableOpacity>
-        </View>
+            <View style={styles.moodSection}>
+              <Text style={styles.moodQuestion}>How do you feel today?</Text>
+              <View style={styles.moodButtons}>
+                {['great','okay','low'].map(mood => (
+                  <TouchableOpacity
+                    key={mood}
+                    style={[styles.moodButton, selectedMood === mood && styles.moodButtonSelected]}
+                    onPress={() => setSelectedMood(mood as 'great' | 'okay' | 'low')}
+                  >
+                    <Text style={styles.moodButtonText}>
+                      {moodEmojis[mood as keyof typeof moodEmojis]} {moodLabels[mood as keyof typeof moodLabels]}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
 
-        {entries.length > 0 && (
-          <View style={styles.entriesContainer}>
-            <Text style={styles.entryTitle}>Previous entries</Text>
-            <FlatList
-              data={entries}
-              renderItem={renderEntry}
-              keyExtractor={(item) => item._id}
-              scrollEnabled={false}
-              ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+            <TextInput
+              style={styles.textInput}
+              placeholder="Write your thoughts here..."
+              placeholderTextColor="#37474F"
+              multiline
+              numberOfLines={5}
+              value={journalText}
+              onChangeText={setJournalText}
+              textAlignVertical="top"
             />
-          </View>
-        )}
-      </ScrollView>
+
+            <View style={styles.actionButtons}>
+              <TouchableOpacity style={styles.voiceButton}>
+                <View style={styles.voiceButtonContent}>
+                  <MicIcon />
+                  <Text style={styles.voiceButtonText}>Voice Note</Text>
+                </View>
+              </TouchableOpacity>
+
+              <TouchableOpacity style={styles.saveButton} onPress={handleSaveEntry} activeOpacity={0.8}>
+                <LinearGradient
+                  colors={['#8CCAED', '#80CBC5']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 0 }}
+                  style={styles.gradientButton}
+                >
+                  <Text style={styles.saveButtonText}>Save Entry</Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </View>
+
+            {entries.length > 0 && (
+              <Text style={styles.entryTitle}>Previous entries</Text>
+            )}
+          </>
+        }
+      />
     </SafeAreaView>
   );
 }
