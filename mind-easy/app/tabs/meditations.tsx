@@ -1,74 +1,116 @@
-import { ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRef } from 'react';
 import { BreathingExercisesIcon } from '@/components/icons/BreathingExercisesIcon';
 import { StressReliefIcon } from '@/components/icons/StressReliefIcon';
 import { SleepRelaxationIcon } from '@/components/icons/SleepRelaxationIcon';
 import { FocusClarityIcon } from '@/components/icons/FocusClarityIcon';
 import { useRouter } from 'expo-router';
+import * as Haptics from "expo-haptics";
+
+import { useAppSettings } from "@/context/AppSettingsContext";
+import { Colors } from "@/constants/theme";
+import { translations } from "@/constants/i18n";
 
 const heroImage = require('@/assets/images/medit.png');
 
 export default function MeditationsScreen() {
   const router = useRouter();
 
+  const { theme, language } = useAppSettings();
+  const colors = Colors[theme];
+  const t = translations[language];
+
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hapticIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const handlePressIn = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    let step = 0;
+    hapticIntervalRef.current = setInterval(() => {
+      step++;
+      if (step < 5) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      else if (step < 10) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      else Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    }, 200);
+
+    timerRef.current = setTimeout(() => {
+      cleanupSOS();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      router.replace("/sos");
+    }, 3000);
+  };
+
+  const cleanupSOS = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (hapticIntervalRef.current) clearInterval(hapticIntervalRef.current);
+  };
+
 	return (
-		<SafeAreaView style={styles.safeArea}>
-			<ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-				<Text style={styles.header}>Find your peace</Text>
+		<SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+      <Pressable 
+        style={{ flex: 1 }} 
+        onLongPress={handlePressIn}
+        delayLongPress={400}
+        onPressOut={cleanupSOS}
+      >
+        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+          <Text style={[styles.header, { color: colors.text }]}>{t.findPeace}</Text>
 
-				<View style={styles.heroCard}>
-					<ImageBackground source={heroImage} style={styles.heroImage} imageStyle={styles.heroImageStyle}>
-						<Text style={styles.recommended}>Recommended{"\n"}Meditation</Text>
-					</ImageBackground>
-					<View style={styles.heroInner}>
-						<View style={styles.recommendRow}>
-							<View>
-								<Text style={styles.meditTitle}>Calm Breathing</Text>
-								<Text style={styles.meditSub}>5 min</Text>
-							</View>
-							<TouchableOpacity style={styles.startButton} onPress={() => router.push('/calm-breathing')}>
-								<Text style={styles.startText}>Start</Text>
-							</TouchableOpacity>
-						</View>
-					</View>
-				</View>
+          <View style={styles.heroCard}>
+            <ImageBackground source={heroImage} style={styles.heroImage} imageStyle={styles.heroImageStyle}>
+              <Text style={styles.recommended}>{t.recommended}{"\n"}{t.meditation}</Text>
+            </ImageBackground>
+            <View style={[styles.heroInner, { backgroundColor: colors.card }]}>
+              <View style={styles.recommendRow}>
+                <View>
+                  <Text style={[styles.meditTitle, { color: colors.text }]}>{t.calmBreathing}</Text>
+                  <Text style={styles.meditSub}>{t.min5}</Text>
+                </View>
+                <TouchableOpacity style={styles.startButton} onPress={() => router.push('/calm-breathing')}>
+                  <Text style={styles.startText}>{t.start}</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
 
-				<View style={styles.gridRow}>
-					<TouchableOpacity style={[styles.tile, styles.tilePurple]}>
-						<View style={styles.tileIconCol}>
-							<BreathingExercisesIcon />
-							<Text style={styles.tileTimeUnder}>3–10 min</Text>
-						</View>
-						<Text style={styles.tileTitle}>Breathing{"\n"}exercises</Text>
-					</TouchableOpacity>
+          <View style={styles.gridRow}>
+            <TouchableOpacity style={[styles.tile, styles.tilePurple]}>
+              <View style={styles.tileIconCol}>
+                <BreathingExercisesIcon />
+                <Text style={styles.tileTimeUnder}>3–10 {t.min}</Text>
+              </View>
+              <Text style={styles.tileTitle}>{t.breathingEx}</Text>
+            </TouchableOpacity>
 
-					<TouchableOpacity style={[styles.tile, styles.tileGreen]}>
-						<View style={styles.tileIconCol}>
-							<StressReliefIcon />
-							<Text style={styles.tileTimeUnder}>5–12 min</Text>
-						</View>
-						<Text style={styles.tileTitle}>Stress{"\n"}relief</Text>
-					</TouchableOpacity>
-				</View>
+            <TouchableOpacity style={[styles.tile, styles.tileGreen]}>
+              <View style={styles.tileIconCol}>
+                <StressReliefIcon />
+                <Text style={styles.tileTimeUnder}>5–12 {t.min}</Text>
+              </View>
+              <Text style={styles.tileTitle}>{t.stressRelief}</Text>
+            </TouchableOpacity>
+          </View>
 
-				<View style={styles.gridRow}>
-					<TouchableOpacity style={[styles.tile, styles.tileLilac]}>
-						<View style={styles.tileIconCol}>
-							<SleepRelaxationIcon />
-							<Text style={styles.tileTimeUnder}>10–20 min</Text>
-						</View>
-						<Text style={styles.tileTitle}>Sleep &{"\n"}Relaxation</Text>
-					</TouchableOpacity>
+          <View style={styles.gridRow}>
+            <TouchableOpacity style={[styles.tile, styles.tileLilac]}>
+              <View style={styles.tileIconCol}>
+                <SleepRelaxationIcon />
+                <Text style={styles.tileTimeUnder}>10–20 {t.min}</Text>
+              </View>
+              <Text style={styles.tileTitle}>{t.sleepRelax}</Text>
+            </TouchableOpacity>
 
-					<TouchableOpacity style={[styles.tile, styles.tileOrange]}>
-						<View style={styles.tileIconCol}>
-							<FocusClarityIcon />
-							<Text style={styles.tileTimeUnder}>5–15 min</Text>
-						</View>
-						<Text style={styles.tileTitle}>Focus &{"\n"}Clarity</Text>
-					</TouchableOpacity>
-				</View>
-			</ScrollView>
+            <TouchableOpacity style={[styles.tile, styles.tileOrange]}>
+              <View style={styles.tileIconCol}>
+                <FocusClarityIcon />
+                <Text style={styles.tileTimeUnder}>5–15 {t.min}</Text>
+              </View>
+              <Text style={styles.tileTitle}>{t.focusClarity}</Text>
+            </TouchableOpacity>
+          </View>
+        </ScrollView>
+      </Pressable>
 		</SafeAreaView>
 	);
 }
