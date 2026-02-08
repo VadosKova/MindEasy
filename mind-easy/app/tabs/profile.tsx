@@ -9,6 +9,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from 'expo-image-picker';
 import { syncReminders, Reminder } from '@/utils/notifications';
+import * as Haptics from "expo-haptics";
 
 import { useAppSettings } from "@/context/AppSettingsContext";
 import { Colors } from "@/constants/theme";
@@ -29,8 +30,9 @@ const API_URL = 'http://192.168.88.15:5000';
 
 export default function ProfileScreen() {
   const router = useRouter();
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hapticIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [loading, setLoading] = useState(true);
   const notificationsEnabled = profile?.notificationsEnabled ?? true;
 
   const [editNameModal, setEditNameModal] = useState(false);
@@ -48,6 +50,37 @@ export default function ProfileScreen() {
   const t = translations[language];
 
   const pulse = useRef(new Animated.Value(0)).current;
+
+  const handlePressIn = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    let step = 0;
+    hapticIntervalRef.current = setInterval(() => {
+      step++;
+      if (step < 5) {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      } else if (step < 10) {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      } else {
+        Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      }
+    }, 200);
+
+    timerRef.current = setTimeout(() => {
+      cleanupSOS();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      router.replace("/sos");
+    }, 3000);
+  };
+
+  const cancelPress = () => {
+    cleanupSOS();
+  };
+
+  const cleanupSOS = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (hapticIntervalRef.current) clearInterval(hapticIntervalRef.current);
+  };
 
   useEffect(() => {
     Animated.loop(
@@ -213,209 +246,216 @@ export default function ProfileScreen() {
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <View style={styles.headerContainer}>
-          <Text style={[styles.header, { color: colors.text }]}>{t.profile}</Text>
-          <TouchableOpacity style={styles.settingsButton} onPress={() => router.push('/settings')}>
-            <SettingsIcon size={28} color="#37474F" />
-          </TouchableOpacity>
-        </View>
+      <Pressable 
+        style={{ flex: 1 }} 
+        onLongPress={handlePressIn}
+        delayLongPress={300}
+        onPressOut={cancelPress}
+      >
+        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+          <View style={styles.headerContainer}>
+            <Text style={[styles.header, { color: colors.text }]}>{t.profile}</Text>
+            <TouchableOpacity style={styles.settingsButton} onPress={() => router.push('/settings')}>
+              <SettingsIcon size={28} color="#37474F" />
+            </TouchableOpacity>
+          </View>
 
-        <TouchableOpacity
-          style={styles.profilePictureContainer}
-          onPress={() => setEditPictureModal(true)}
-          onPressIn={() => setHoverPicture(true)}
-          onPressOut={() => setHoverPicture(false)}
-        >
-          <ImageBackground
-            source={profile.avatar
-              ? { uri: profile.avatar }
-              : require('@/assets/images/Ellipse 23.png')}
-            style={styles.profilePicture}
-            imageStyle={styles.profilePictureImage}
+          <TouchableOpacity
+            style={styles.profilePictureContainer}
+            onPress={() => setEditPictureModal(true)}
+            onPressIn={() => setHoverPicture(true)}
+            onPressOut={() => setHoverPicture(false)}
           >
-            {hoverPicture && (
-              <View style={styles.cameraOverlay}>
-                <CameraIcon size={40} color="#FFFFFF" />
-              </View>
-            )}
-          </ImageBackground>
-        </TouchableOpacity>
-
-        <View style={styles.nameSection}>
-          <View style={styles.nameRow}>
-            <Text style={[styles.name, { color: colors.text }]}>{profile.name}</Text>
-            <TouchableOpacity
-              onPress={() => {
-                setEditingName(profile.name);
-                setEditNameModal(true);
-              }}
+            <ImageBackground
+              source={profile.avatar
+                ? { uri: profile.avatar }
+                : require('@/assets/images/Ellipse 23.png')}
+              style={styles.profilePicture}
+              imageStyle={styles.profilePictureImage}
             >
-              <EditIcon size={20} color="#37474F" />
-            </TouchableOpacity>
-          </View>
-          <Text style={[styles.joinDate, { color: colors.text }]}>{t.mindfulSince} {profile.joinDate}</Text>
-        </View>
+              {hoverPicture && (
+                <View style={styles.cameraOverlay}>
+                  <CameraIcon size={40} color="#FFFFFF" />
+                </View>
+              )}
+            </ImageBackground>
+          </TouchableOpacity>
 
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
-            <Text style={[styles.cardTitle, { color: colors.text }]}>{t.whyUse}</Text>
-            <TouchableOpacity
-              onPress={() => {
-                setEditingWhy(profile.whyUseApp);
-                setEditWhyModal(true);
-              }}
-            >
-              <EditIcon size={18} color="#37474F" />
-            </TouchableOpacity>
-          </View>
-          <Text style={[styles.cardText, { color: colors.text }]}>"{profile.whyUseApp}"</Text>
-        </View>
-
-        <View style={styles.twoColumnContainer}>
-          <View style={[styles.card, styles.halfCard, { backgroundColor: colors.card }]}>
-            <Text style={[styles.cardTitle, { color: colors.text }]}>{t.myGoals}</Text>
-            {profile.goals.map((goal, index) => (
-              <Pressable
-                key={index}
-                style={styles.listItem}
+          <View style={styles.nameSection}>
+            <View style={styles.nameRow}>
+              <Text style={[styles.name, { color: colors.text }]}>{profile.name}</Text>
+              <TouchableOpacity
                 onPress={() => {
-                  const updated = [...goalsChecked];
-                  updated[index] = !updated[index];
-                  setGoalsChecked(updated);
+                  setEditingName(profile.name);
+                  setEditNameModal(true);
                 }}
               >
-                <View style={[styles.checkboxBox, goalsChecked[index] && styles.checkboxBoxChecked]}>
-                  {goalsChecked[index] && <Text style={styles.checkboxCheck}>✓</Text>}
-                </View>
-                <Text style={[styles.listText, goalsChecked[index] && styles.listTextChecked]}>{goal}</Text>
-              </Pressable>
-            ))}
+                <EditIcon size={20} color="#37474F" />
+              </TouchableOpacity>
+            </View>
+            <Text style={[styles.joinDate, { color: colors.text }]}>{t.mindfulSince} {profile.joinDate}</Text>
           </View>
 
-          <View style={[styles.card, styles.halfCard, { backgroundColor: colors.card }]}>
-            <Text style={[styles.cardTitle, { color: colors.text }]}>{t.reminders}</Text>
-            {profile.reminders.map((reminder, index) => (
-              <Pressable
-                key={index}
-                style={styles.listItem}
-                onPress={async () => {
-                  const updated = [...remindersChecked];
-                  updated[index] = !updated[index];
-                  setRemindersChecked(updated);
-
-                  await updateReminders(updated);
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Text style={[styles.cardTitle, { color: colors.text }]}>{t.whyUse}</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setEditingWhy(profile.whyUseApp);
+                  setEditWhyModal(true);
                 }}
               >
-                <View style={[styles.checkboxBox, remindersChecked[index] && styles.checkboxBoxChecked]}>
-                  {remindersChecked[index] && <Text style={styles.checkboxCheck}>✓</Text>}
-                </View>
-                <Text style={[styles.listText, remindersChecked[index] && styles.listTextChecked]}>{reminder.title}</Text>
-              </Pressable>
-            ))}
+                <EditIcon size={18} color="#37474F" />
+              </TouchableOpacity>
+            </View>
+            <Text style={[styles.cardText, { color: colors.text }]}>"{profile.whyUseApp}"</Text>
           </View>
-        </View>
 
-        <Modal
-        visible={editNameModal}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setEditNameModal(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setEditNameModal(false)}
-            >
-              <Text style={styles.closeText}>✕</Text>
-            </TouchableOpacity>
+          <View style={styles.twoColumnContainer}>
+            <View style={[styles.card, styles.halfCard, { backgroundColor: colors.card }]}>
+              <Text style={[styles.cardTitle, { color: colors.text }]}>{t.myGoals}</Text>
+              {profile.goals.map((goal, index) => (
+                <Pressable
+                  key={index}
+                  style={styles.listItem}
+                  onPress={() => {
+                    const updated = [...goalsChecked];
+                    updated[index] = !updated[index];
+                    setGoalsChecked(updated);
+                  }}
+                >
+                  <View style={[styles.checkboxBox, goalsChecked[index] && styles.checkboxBoxChecked]}>
+                    {goalsChecked[index] && <Text style={styles.checkboxCheck}>✓</Text>}
+                  </View>
+                  <Text style={[styles.listText, goalsChecked[index] && styles.listTextChecked]}>{goal}</Text>
+                </Pressable>
+              ))}
+            </View>
 
-            <Text style={styles.modalTitle}>Edit name</Text>
+            <View style={[styles.card, styles.halfCard, { backgroundColor: colors.card }]}>
+              <Text style={[styles.cardTitle, { color: colors.text }]}>{t.reminders}</Text>
+              {profile.reminders.map((reminder, index) => (
+                <Pressable
+                  key={index}
+                  style={styles.listItem}
+                  onPress={async () => {
+                    const updated = [...remindersChecked];
+                    updated[index] = !updated[index];
+                    setRemindersChecked(updated);
 
-            <TextInput
-              style={styles.modalInput}
-              value={editingName}
-              onChangeText={setEditingName}
-              placeholder="Enter your name"
-              placeholderTextColor="#999"
-            />
-
-            <TouchableOpacity style={styles.saveButton} onPress={handleSaveName}>
-              <Text style={styles.saveButtonText}>Save</Text>
-            </TouchableOpacity>
+                    await updateReminders(updated);
+                  }}
+                >
+                  <View style={[styles.checkboxBox, remindersChecked[index] && styles.checkboxBoxChecked]}>
+                    {remindersChecked[index] && <Text style={styles.checkboxCheck}>✓</Text>}
+                  </View>
+                  <Text style={[styles.listText, remindersChecked[index] && styles.listTextChecked]}>{reminder.title}</Text>
+                </Pressable>
+              ))}
+            </View>
           </View>
-        </View>
-      </Modal>
 
-      <Modal
-        visible={editWhyModal}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setEditWhyModal(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setEditWhyModal(false)}
-            >
-              <Text style={styles.closeText}>✕</Text>
-            </TouchableOpacity>
+          <Modal
+            visible={editNameModal}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setEditNameModal(false)}
+          >
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setEditNameModal(false)}
+                >
+                  <Text style={styles.closeText}>✕</Text>
+                </TouchableOpacity>
 
-            <Text style={styles.modalTitle}>Why I use this app</Text>
+                <Text style={styles.modalTitle}>Edit name</Text>
 
-            <TextInput
-              style={[styles.modalInput, styles.modalTextArea]}
-              value={editingWhy}
-              onChangeText={setEditingWhy}
-              placeholder="Tell us why you use this app"
-              placeholderTextColor="#999"
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
-            />
+                <TextInput
+                  style={styles.modalInput}
+                  value={editingName}
+                  onChangeText={setEditingName}
+                  placeholder="Enter your name"
+                  placeholderTextColor="#999"
+                />
 
-            <TouchableOpacity style={styles.saveButton} onPress={handleSaveWhy}>
-              <Text style={styles.saveButtonText}>Save</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
+                <TouchableOpacity style={styles.saveButton} onPress={handleSaveName}>
+                  <Text style={styles.saveButtonText}>Save</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
 
-      <Modal
-        visible={editPictureModal}
-        transparent
-        animationType="fade"
-        onRequestClose={() => setEditPictureModal(false)}
-      >
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContent}>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setEditPictureModal(false)}
-            >
-              <Text style={styles.closeText}>✕</Text>
-            </TouchableOpacity>
+          <Modal
+            visible={editWhyModal}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setEditWhyModal(false)}
+          >
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setEditWhyModal(false)}
+                >
+                  <Text style={styles.closeText}>✕</Text>
+                </TouchableOpacity>
 
-            <LinearGradient
-              colors={['#FFB6E1', '#DDA0DD', '#9370DB']}
-              start={{ x: 0, y: 0 }}
-              end={{ x: 1, y: 1 }}
-              style={styles.largeProfilePicture}
-            >
-              <CameraIcon size={50} color="#FFFFFF" />
-            </LinearGradient>
+                <Text style={styles.modalTitle}>Why I use this app</Text>
 
-            <Text style={styles.modalTitle}>{profile.name}</Text>
+                <TextInput
+                  style={[styles.modalInput, styles.modalTextArea]}
+                  value={editingWhy}
+                  onChangeText={setEditingWhy}
+                  placeholder="Tell us why you use this app"
+                  placeholderTextColor="#999"
+                  multiline
+                  numberOfLines={4}
+                  textAlignVertical="top"
+                />
 
-            <TouchableOpacity style={styles.saveButton} onPress={pickAvatar}>
-              <Text style={styles.saveButtonText}>Choose photo</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-      </ScrollView>
+                <TouchableOpacity style={styles.saveButton} onPress={handleSaveWhy}>
+                  <Text style={styles.saveButtonText}>Save</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+
+          <Modal
+            visible={editPictureModal}
+            transparent
+            animationType="fade"
+            onRequestClose={() => setEditPictureModal(false)}
+          >
+            <View style={styles.modalOverlay}>
+              <View style={styles.modalContent}>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setEditPictureModal(false)}
+                >
+                  <Text style={styles.closeText}>✕</Text>
+                </TouchableOpacity>
+
+                <LinearGradient
+                  colors={['#FFB6E1', '#DDA0DD', '#9370DB']}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={styles.largeProfilePicture}
+                >
+                  <CameraIcon size={50} color="#FFFFFF" />
+                </LinearGradient>
+
+                <Text style={styles.modalTitle}>{profile.name}</Text>
+
+                <TouchableOpacity style={styles.saveButton} onPress={pickAvatar}>
+                  <Text style={styles.saveButtonText}>Choose photo</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        </ScrollView>
+      </Pressable>
       <Animated.View
         style={[
           styles.sosWrapper,
