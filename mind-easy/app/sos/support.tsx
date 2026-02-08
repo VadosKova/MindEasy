@@ -1,27 +1,32 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
+import { useAppSettings } from "@/context/AppSettingsContext";
+import { translations } from "@/constants/i18n";
 
 export default function SupportScreen() {
+  const router = useRouter();
+  const { language } = useAppSettings();
+  const t = translations[language];
+
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>You are not alone 🤍</Text>
+      <Text style={styles.title}>{t.notAlone}</Text>
 
       <Text style={styles.text}>
-        What you are feeling right now is difficult, but it will pass.
-        Take a moment to breathe and remind yourself:
+        {t.supportText}
       </Text>
 
       <View style={styles.card}>
-        <Text style={styles.cardText}>• You are safe</Text>
-        <Text style={styles.cardText}>• This feeling is temporary</Text>
-        <Text style={styles.cardText}>• You are doing your best</Text>
+        <Text style={styles.cardText}>{t.safe}</Text>
+        <Text style={styles.cardText}>{t.temporary}</Text>
+        <Text style={styles.cardText}>{t.doingBest}</Text>
       </View>
 
       <TouchableOpacity
         style={styles.button}
         onPress={() => router.replace("/sos/finish")}
       >
-        <Text style={styles.buttonText}>Continue</Text>
+        <Text style={styles.buttonText}>{t.continue}</Text>
       </TouchableOpacity>
     </View>
   );

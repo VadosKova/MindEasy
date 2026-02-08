@@ -1,6 +1,8 @@
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "expo-router";
+import { useAppSettings } from "@/context/AppSettingsContext";
+import { translations } from "@/constants/i18n";
 
 type Task = {
   question: string;
@@ -16,6 +18,9 @@ const TASKS: Task[] = [
 
 export default function SOSFocus() {
   const router = useRouter();
+  const { language } = useAppSettings();
+  const t = translations[language];
+
   const [index, setIndex] = useState(0);
   const [locked, setLocked] = useState(false);
 
@@ -33,12 +38,12 @@ export default function SOSFocus() {
         setIndex(prev => prev + 1);
         setLocked(false);
       }
-    }, 900);
+    }, 600);
   };
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Focus here</Text>
+      <Text style={styles.title}>{t.focusHere}</Text>
 
       <Text style={styles.question}>{task.question} = ?</Text>
 
@@ -56,7 +61,7 @@ export default function SOSFocus() {
       </View>
 
       <Text style={styles.helper}>
-        Just choose — no pressure
+        {t.noPressure}
       </Text>
     </View>
   );

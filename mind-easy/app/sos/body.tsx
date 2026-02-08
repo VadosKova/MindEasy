@@ -1,21 +1,19 @@
 import { View, Text, StyleSheet } from "react-native";
 import { useEffect, useState } from "react";
 import { useRouter } from "expo-router";
+import { useAppSettings } from "@/context/AppSettingsContext";
+import { translations } from "@/constants/i18n";
 
-const STEPS = [
-  "Feel your feet touching the ground",
-  "Slowly press your palms together",
-  "Touch your face gently",
-  "Look around you",
-  "Name one thing you can hear"
-];
 
 export default function SOSBody() {
   const router = useRouter();
   const [step, setStep] = useState(0);
+  const { language } = useAppSettings();
+  const t = translations[language];
+  const steps = t.sosSteps;
 
   useEffect(() => {
-    if (step >= STEPS.length) {
+    if (step >= steps.length) {
       setTimeout(() => router.replace("/sos/focus"), 800);
       return;
     }
@@ -31,12 +29,12 @@ export default function SOSBody() {
     <View style={styles.container}>
       <View style={styles.content}>
         <Text style={styles.text}>
-          {STEPS[Math.min(step, STEPS.length - 1)]}
+          {steps[Math.min(step, steps.length - 1)]}
         </Text>
       </View>
 
       <View style={styles.progress}>
-        {STEPS.map((_, i) => (
+        {steps.map((_, i) => (
           <View
             key={i}
             style={[

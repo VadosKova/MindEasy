@@ -1,30 +1,35 @@
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
+import { useAppSettings } from "@/context/AppSettingsContext";
+import { translations } from "@/constants/i18n";
 
 export default function FinishScreen() {
+  const router = useRouter();
+  const { language } = useAppSettings();
+  const t = translations[language];
+
   return (
     <View style={styles.container}>
       <Text style={styles.emoji}>🌿</Text>
 
-      <Text style={styles.title}>You did great</Text>
+      <Text style={styles.title}>{t.youDidGreat}</Text>
 
       <Text style={styles.text}>
-        You took time to care about yourself.
-        This is an important step.
+        {t.tookTimeCare}
       </Text>
 
       <TouchableOpacity
         style={styles.primaryButton}
         onPress={() => router.replace("/tabs")}
       >
-        <Text style={styles.primaryText}>Back to Home</Text>
+        <Text style={styles.primaryText}>{t.backToHome}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
         style={styles.secondaryButton}
         onPress={() => router.replace("/calm-breathing")}
       >
-        <Text style={styles.secondaryText}>Repeat breathing</Text>
+        <Text style={styles.secondaryText}>{t.repeatBreathing}</Text>
       </TouchableOpacity>
     </View>
   );

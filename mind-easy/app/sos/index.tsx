@@ -1,22 +1,26 @@
 import { View, Text, Pressable, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
+import { useAppSettings } from "@/context/AppSettingsContext";
+import { translations } from "@/constants/i18n";
 
 export default function SOSStart() {
   const router = useRouter();
+  const { language } = useAppSettings();
+  const t = translations[language];
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>SOS Mode</Text>
+      <Text style={styles.header}>{t.sosMode}</Text>
 
       <View style={styles.center}>
         <Text style={styles.main}>
-          Everything is okay.
+          {t.everythingOkay}
         </Text>
         <Text style={styles.sub}>
-          Stay with me for a moment.
+          {t.stayWithMe}
         </Text>
         <Text style={styles.sub2}>
-          We will go step by step.
+          {t.stepByStep}
         </Text>
       </View>
 
@@ -24,11 +28,11 @@ export default function SOSStart() {
         style={styles.button}
         onPress={() => router.replace("/sos/body")}
       >
-        <Text style={styles.buttonText}>Start grounding</Text>
+        <Text style={styles.buttonText}>{t.startGrounding}</Text>
       </Pressable>
 
       <Text style={styles.footer}>
-        You can stop anytime
+        {t.stopAnytime}
       </Text>
     </View>
   );
