@@ -4,6 +4,8 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { useAudioPlayer } from 'expo-audio';
 import { BackIcon } from '@/components/icons/BackIcon';
+import { useAppSettings } from "@/context/AppSettingsContext";
+import { translations } from "@/constants/i18n";
 
 const TOTAL_TIME = 300;
 const PHASE_TIME = 4;
@@ -13,10 +15,12 @@ const soundFile = require('@/assets/sounds/relax.mp3');
 
 export default function CalmBreathing() {
   const router = useRouter();
+  const { language } = useAppSettings();
+  const t = translations[language];
 
   const [running, setRunning] = useState(false);
   const [secondsLeft, setSecondsLeft] = useState(TOTAL_TIME);
-  const [phase, setPhase] = useState<'Inhale' | 'Exhale'>('Inhale');
+  const [phase, setPhase] = useState<'inhale' | 'exhale'>('inhale');
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const phaseRef = useRef(0);
@@ -35,7 +39,7 @@ export default function CalmBreathing() {
     if (!running) return;
 
     Animated.timing(scale, {
-      toValue: phase === 'Inhale' ? 1.15 : 0.9,
+      toValue: phase === 'inhale' ? 1.15 : 0.9,
       duration: PHASE_TIME * 1000,
       useNativeDriver: true,
     }).start();
@@ -83,7 +87,7 @@ export default function CalmBreathing() {
       phaseRef.current += 1;
       if (phaseRef.current >= PHASE_TIME) {
         phaseRef.current = 0;
-        setPhase(p => (p === 'Inhale' ? 'Exhale' : 'Inhale'));
+        setPhase(p => (p === 'inhale' ? 'exhale' : 'inhale'));
       }
 
     }, 1000);
@@ -110,7 +114,7 @@ export default function CalmBreathing() {
   const handleRestart = async () => {
     setRunning(false);
     setSecondsLeft(TOTAL_TIME);
-    setPhase('Inhale');
+    setPhase('inhale');
     phaseRef.current = 0;
     player.pause();
     player.seekTo(0);
@@ -124,8 +128,8 @@ export default function CalmBreathing() {
         </TouchableOpacity>
       </View>
 
-      <Text style={styles.title}>Calm breathing</Text>
-      <Text style={styles.subtitle}>Breathe slowly and relax</Text>
+      <Text style={styles.title}>{t.calmBreathing}</Text>
+      <Text style={styles.subtitle}>{t.breatheAndRelax}</Text>
 
       <View style={styles.rippleContainer}>
         <Animated.View
@@ -173,7 +177,7 @@ export default function CalmBreathing() {
             source={circleImg}
             style={styles.circle}
             imageStyle={styles.circleImg}>
-            <Text style={styles.phase}>{phase}</Text>
+            <Text style={styles.phase}>{t[phase]}</Text>
           </ImageBackground>
         </Animated.View>
       </View>
@@ -184,11 +188,11 @@ export default function CalmBreathing() {
 
       <View style={styles.buttons}>
         <TouchableOpacity style={styles.start} onPress={handleStartPause}>
-          <Text style={styles.startText}>{running ? 'Pause' : 'Start'}</Text>
+          <Text style={styles.startText}>{running ? t.pause : t.start}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity style={styles.stop} onPress={handleRestart}>
-          <Text style={styles.stopText}>Restart</Text>
+          <Text style={styles.stopText}>{t.restart}</Text>
         </TouchableOpacity>
       </View>
 

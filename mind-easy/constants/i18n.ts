@@ -82,6 +82,11 @@ export const translations = {
     tookTimeCare: "You took time to care about yourself.\nThis is an important step.",
     backToHome: "Back to Home",
     repeatBreathing: "Repeat breathing",
+    breatheAndRelax: "Breathe slowly and relax",
+    inhale: "Inhale",
+    exhale: "Exhale",
+    pause: "Pause",
+    restart: "Restart",
   },
 
   Ukrainian: {
@@ -167,5 +172,10 @@ export const translations = {
     tookTimeCare: "Ти приділив час турботі про себе.\nЦе дуже важливий крок.",
     backToHome: "На головну",
     repeatBreathing: "Повторити дихання",
+    breatheAndRelax: "Дихай повільно та розслабся",
+    inhale: "Вдох",
+    exhale: "Видих",
+    pause: "Пауза",
+    restart: "Перезапустити",
   }
 };

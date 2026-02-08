@@ -80,7 +80,7 @@ export default function SettingsScreen() {
             <NotificationsIcon size={30} color="#FFC01E" />
             <Text style={[styles.settingLabel, { color: colors.text }]}>{t.notifications}</Text>
           </View>
-          <Switch value={notificationsEnabled} onValueChange={toggleNotifications} />
+          <Switch value={notificationsEnabled} onValueChange={toggleNotifications} trackColor={{ false: '#363935', true: '#2DB200' }} thumbColor={'#FFFFFF'} style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }} />
         </View>
 
         <View style={[styles.settingCard, { backgroundColor: colors.card }]}>
@@ -89,7 +89,7 @@ export default function SettingsScreen() {
             <Text style={[styles.settingLabel, { color: colors.text }]}>{t.theme}</Text>
           </View>
           <TouchableOpacity style={styles.settingValue} onPress={() => setShowThemeMenu(!showThemeMenu)}>
-            <Text style={[styles.settingValueText, { color: colors.text }]}>{theme}</Text>
+            <Text style={styles.settingValueText}>{theme}</Text>
             <DownArrowIcon size={18} color={colors.text} />
           </TouchableOpacity>
         </View>
@@ -110,7 +110,7 @@ export default function SettingsScreen() {
             <Text style={[styles.settingLabel, { color: colors.text }]}>{t.language}</Text>
           </View>
           <TouchableOpacity style={styles.settingValue} onPress={() => setShowLanguageMenu(!showLanguageMenu)}>
-            <Text style={[styles.settingValueText, { color: colors.text }]}>{language}</Text>
+            <Text style={styles.settingValueText}>{language}</Text>
             <DownArrowIcon size={18} color={colors.text} />
           </TouchableOpacity>
         </View>
@@ -190,13 +190,15 @@ const styles = StyleSheet.create({
   },
   settingValueText: {
     fontFamily: 'IstokWeb_400Regular',
-    fontSize: 14,
+    fontSize: 15,
     color: '#37474F',
   },
   dropdownMenu: {
+    width: "50%",
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
     marginBottom: 12,
+    alignSelf: 'flex-end',
     marginLeft: 0,
     marginRight: 0,
     overflow: 'hidden',
@@ -211,10 +213,11 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     borderBottomWidth: 1,
     borderBottomColor: '#E0E0E0',
+    alignSelf: 'center',
   },
   menuItemText: {
     fontFamily: 'Jua_400Regular',
-    fontSize: 14,
+    fontSize: 15,
     color: '#37474F',
   },
   menuItemTextActive: {
