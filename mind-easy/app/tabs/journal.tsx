@@ -1,10 +1,16 @@
-import { useState, useEffect } from 'react';
-import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert, FlatList } from 'react-native';
+import { useState, useEffect, useRef } from 'react';
+import { ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View, Alert, FlatList, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import * as Haptics from "expo-haptics";
 import { SearchIcon } from '@/components/icons/SearchIcon';
 import { MicIcon } from '@/components/icons/MicIcon';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import { useAppSettings } from "@/context/AppSettingsContext";
+import { Colors } from "@/constants/theme";
+import { translations } from "@/constants/i18n";
 
 interface JournalEntry {
   _id: string;
@@ -16,23 +22,54 @@ interface JournalEntry {
 
 const API_URL = "http://192.168.88.15:5000/api/journal";
 
-const moodEmojis = {
-  great: '😊',
-  okay: '😐',
-  low: '😔',
-};
-
-const moodLabels = {
-  great: 'Great',
-  okay: 'Okay',
-  low: 'Low',
-};
 
 export default function JournalScreen() {
+  const router = useRouter();
+  const { theme, language } = useAppSettings();
+  const colors = Colors[theme];
+  const t = translations[language];
+
   const [entries, setEntries] = useState<JournalEntry[]>([]);
   const [selectedMood, setSelectedMood] = useState<'great' | 'okay' | 'low' | null>(null);
   const [journalText, setJournalText] = useState('');
   const [loading, setLoading] = useState(false);
+
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hapticIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const handlePressIn = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    let step = 0;
+    hapticIntervalRef.current = setInterval(() => {
+      step++;
+      if (step < 5) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      else if (step < 10) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      else Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    }, 200);
+
+    timerRef.current = setTimeout(() => {
+      cleanupSOS();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      router.replace("/sos");
+    }, 3000);
+  };
+
+  const cleanupSOS = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (hapticIntervalRef.current) clearInterval(hapticIntervalRef.current);
+  };
+
+  const moodEmojis = {
+    great: '😊',
+    okay: '😐',
+    low: '😔',
+  };
+
+  const moodLabels = {
+    great: t.greatMood,
+    okay: t.okayMood,
+    low: t.lowMood,
+  };
 
   const loadEntries = async () => {
     try {
@@ -109,85 +146,92 @@ export default function JournalScreen() {
   };
 
   const renderEntry = ({ item }: { item: JournalEntry }) => (
-    <View style={styles.entryCard}>
-      <Text style={styles.entryTime}>{formatTime(item.createdAt)}</Text>
+    <View style={[styles.entryCard, { backgroundColor: colors.card }]}>
+      <Text style={[styles.entryTime, { color: colors.text }]}>{formatTime(item.createdAt)}</Text>
       <View style={styles.entryHeader}>
         <Text style={styles.entryMood}>{moodEmojis[item.mood]}</Text>
-        <Text style={styles.entryMoodLabel}>Feeling {moodLabels[item.mood]}</Text>
+        <Text style={[styles.entryMoodLabel, { color: colors.text }]}>{t.feeling} {moodLabels[item.mood]}</Text>
       </View>
-      {!!item.text && <Text style={styles.entryText}>{item.text}</Text>}
+      {!!item.text && <Text style={[styles.entryText, { color: colors.text }]}>{item.text}</Text>}
     </View>
   );
 
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <FlatList
-        data={entries}
-        renderItem={renderEntry}
-        keyExtractor={(item) => String(item._id)}
-        ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
-        contentContainerStyle={styles.content}
-        ListHeaderComponent={
-          <>
-            <View style={styles.headerContainer}>
-              <Text style={styles.header}>Journal</Text>
-              <TouchableOpacity style={styles.searchButton}><SearchIcon /></TouchableOpacity>
-            </View>
-
-            <View style={styles.moodSection}>
-              <Text style={styles.moodQuestion}>How do you feel today?</Text>
-              <View style={styles.moodButtons}>
-                {['great','okay','low'].map(mood => (
-                  <TouchableOpacity
-                    key={mood}
-                    style={[styles.moodButton, selectedMood === mood && styles.moodButtonSelected]}
-                    onPress={() => setSelectedMood(mood as 'great' | 'okay' | 'low')}
-                  >
-                    <Text style={styles.moodButtonText}>
-                      {moodEmojis[mood as keyof typeof moodEmojis]} {moodLabels[mood as keyof typeof moodLabels]}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+      <Pressable 
+        style={{ flex: 1 }} 
+        onLongPress={handlePressIn}
+        delayLongPress={500}
+        onPressOut={cleanupSOS}
+      >
+        <FlatList
+          data={entries}
+          renderItem={renderEntry}
+          keyExtractor={(item) => String(item._id)}
+          ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
+          contentContainerStyle={styles.content}
+          ListHeaderComponent={
+            <>
+              <View style={styles.headerContainer}>
+                <Text style={[styles.header, { color: colors.text }]}>{t.journal}</Text>
+                <TouchableOpacity style={styles.searchButton}><SearchIcon /></TouchableOpacity>
               </View>
-            </View>
 
-            <TextInput
-              style={styles.textInput}
-              placeholder="Write your thoughts here..."
-              placeholderTextColor="#37474F"
-              multiline
-              numberOfLines={5}
-              value={journalText}
-              onChangeText={setJournalText}
-              textAlignVertical="top"
-            />
-
-            <View style={styles.actionButtons}>
-              <TouchableOpacity style={styles.voiceButton}>
-                <View style={styles.voiceButtonContent}>
-                  <MicIcon />
-                  <Text style={styles.voiceButtonText}>Voice Note</Text>
+              <View style={styles.moodSection}>
+                <Text style={[styles.moodQuestion, { color: colors.text }]}>{t.howFeelToday}</Text>
+                <View style={styles.moodButtons}>
+                  {['great','okay','low'].map(mood => (
+                    <TouchableOpacity
+                      key={mood}
+                      style={[styles.moodButton, { borderColor: colors.text }, selectedMood === mood && styles.moodButtonSelected]}
+                      onPress={() => setSelectedMood(mood as 'great' | 'okay' | 'low')}
+                    >
+                      <Text style={[styles.moodButtonText, { color: colors.text }]}>
+                        {moodEmojis[mood as keyof typeof moodEmojis]} {moodLabels[mood as keyof typeof moodLabels]}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
                 </View>
-              </TouchableOpacity>
+              </View>
 
-              <TouchableOpacity style={styles.saveButton} onPress={handleSaveEntry} activeOpacity={0.8}>
-                <LinearGradient
-                  colors={['#8CCAED', '#80CBC5']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={styles.gradientButton}
-                >
-                  <Text style={styles.saveButtonText}>Save Entry</Text>
-                </LinearGradient>
-              </TouchableOpacity>
-            </View>
+              <TextInput
+                style={[styles.textInput, { backgroundColor: colors.card, color: colors.text }]}
+                placeholder={t.writeThoughts}
+                placeholderTextColor="#37474F"
+                multiline
+                numberOfLines={5}
+                value={journalText}
+                onChangeText={setJournalText}
+                textAlignVertical="top"
+              />
 
-            {entries.length > 0 && (
-              <Text style={styles.entryTitle}>Previous entries</Text>
-            )}
-          </>
-        }
-      />
+              <View style={styles.actionButtons}>
+                <TouchableOpacity style={styles.voiceButton}>
+                  <View style={styles.voiceButtonContent}>
+                    <MicIcon />
+                    <Text style={styles.voiceButtonText}>{t.voiceNote}</Text>
+                  </View>
+                </TouchableOpacity>
+
+                <TouchableOpacity style={styles.saveButton} onPress={handleSaveEntry} activeOpacity={0.8}>
+                  <LinearGradient
+                    colors={['#8CCAED', '#80CBC5']}
+                    start={{ x: 0, y: 0 }}
+                    end={{ x: 1, y: 0 }}
+                    style={styles.gradientButton}
+                  >
+                    <Text style={styles.saveButtonText}>{t.saveEntry}</Text>
+                  </LinearGradient>
+                </TouchableOpacity>
+              </View>
+
+              {entries.length > 0 && (
+                <Text style={[styles.entryTitle, { color: colors.text }]}>{t.prevEntries}</Text>
+              )}
+            </>
+          }
+        />
+      </Pressable>
     </SafeAreaView>
   );
 }
