@@ -13,6 +13,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { cancelAllNotifications } from '@/utils/notifications';
 import { useAppSettings, Theme, Language } from "@/context/AppSettingsContext";
 import { Colors } from '@/constants/theme';
+import { translations } from "@/constants/i18n";
 
 
 export default function SettingsScreen() {
@@ -20,6 +21,7 @@ export default function SettingsScreen() {
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
   const { theme, language, setTheme, setLanguage } = useAppSettings();
   const colors = Colors[theme];
+  const t = translations[language];
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
 
@@ -43,12 +45,12 @@ export default function SettingsScreen() {
 
   const handleSignOut = () => {
     Alert.alert(
-    'Sign out',
+    t.signOut,
     'Are you sure you want to sign out?',
     [
-      { text: 'Cancel', style: 'cancel' },
+      { text: t.cancel, style: 'cancel' },
       {
-        text: 'Sign out',
+        text: t.signOut,
         style: 'destructive',
         onPress: async () => {
           await cancelAllNotifications();
@@ -67,7 +69,7 @@ export default function SettingsScreen() {
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Text style={[styles.headerTitle, { color: colors.text }]}>Settings</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>{t.settings}</Text>
           <TouchableOpacity onPress={() => router.back()}>
             <BackIcon size={28} color={colors.text} />
           </TouchableOpacity>
@@ -76,7 +78,7 @@ export default function SettingsScreen() {
         <View style={[styles.settingCard, { backgroundColor: colors.card }]}>
           <View style={styles.settingContent}>
             <NotificationsIcon size={30} color="#FFC01E" />
-            <Text style={[styles.settingLabel, { color: colors.text }]}>Notifications</Text>
+            <Text style={[styles.settingLabel, { color: colors.text }]}>{t.notifications}</Text>
           </View>
           <Switch value={notificationsEnabled} onValueChange={toggleNotifications} />
         </View>
@@ -84,7 +86,7 @@ export default function SettingsScreen() {
         <View style={[styles.settingCard, { backgroundColor: colors.card }]}>
           <View style={styles.settingContent}>
             <ThemeIcon size={30} color={colors.text} />
-            <Text style={[styles.settingLabel, { color: colors.text }]}>Theme</Text>
+            <Text style={[styles.settingLabel, { color: colors.text }]}>{t.theme}</Text>
           </View>
           <TouchableOpacity style={styles.settingValue} onPress={() => setShowThemeMenu(!showThemeMenu)}>
             <Text style={[styles.settingValueText, { color: colors.text }]}>{theme}</Text>
@@ -105,7 +107,7 @@ export default function SettingsScreen() {
         <View style={[styles.settingCard, { backgroundColor: colors.card }]}>
           <View style={styles.settingContent}>
             <LanguageIcon size={30} color="#80CBC5" />
-            <Text style={[styles.settingLabel, { color: colors.text }]}>Language</Text>
+            <Text style={[styles.settingLabel, { color: colors.text }]}>{t.language}</Text>
           </View>
           <TouchableOpacity style={styles.settingValue} onPress={() => setShowLanguageMenu(!showLanguageMenu)}>
             <Text style={[styles.settingValueText, { color: colors.text }]}>{language}</Text>
@@ -124,7 +126,7 @@ export default function SettingsScreen() {
         )}
 
         <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
-          <Text style={styles.signOutButtonText}>Sign out</Text>
+          <Text style={styles.signOutButtonText}>{t.signOut}</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

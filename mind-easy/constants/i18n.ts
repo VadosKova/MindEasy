@@ -13,7 +13,14 @@ export const translations = {
     errorSave: "Failed to save changes",
     permissionRequired: "Permission required",
     pleaseEnterName: "Please enter a name",
-    pleaseEnterReason: "Please enter your reason"
+    pleaseEnterReason: "Please enter your reason",
+    settings: "Settings",
+    notifications: "Notifications",
+    theme: "Theme",
+    language: "Language",
+    enableNotifications: "Enable notifications",
+    signOut: "Sign out",
+    cancel: "Cancel",
   },
 
   Ukrainian: {
@@ -30,6 +37,13 @@ export const translations = {
     errorSave: "Не вдалося зберегти зміни",
     permissionRequired: "Потрібен дозвіл",
     pleaseEnterName: "Введіть ім'я",
-    pleaseEnterReason: "Введіть причину"
+    pleaseEnterReason: "Введіть причину",
+    settings: "Налаштування",
+    notifications: "Сповіщення",
+    theme: "Тема",
+    language: "Мова",
+    enableNotifications: "Включити сповіщення",
+    signOut: "Вийти",
+    cancel: "Відмінити",
   }
 };
