@@ -1,8 +1,8 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-type Theme = "Light" | "Dark";
-type Language = "English" | "Ukrainian";
+export type Theme = "Light" | "Dark";
+export type Language = "English" | "Ukrainian";
 
 interface AppSettingsContextType {
   theme: Theme;

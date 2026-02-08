@@ -11,13 +11,15 @@ import { requestNotificationPermission } from '@/utils/notifications';
 import { syncReminders } from '@/utils/notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { cancelAllNotifications } from '@/utils/notifications';
+import { useAppSettings, Theme, Language } from "@/context/AppSettingsContext";
+import { Colors } from '@/constants/theme';
 
 
 export default function SettingsScreen() {
   const router = useRouter();
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [theme, setTheme] = useState('Light');
-  const [language, setLanguage] = useState('English');
+  const { theme, language, setTheme, setLanguage } = useAppSettings();
+  const colors = Colors[theme];
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
 
@@ -58,93 +60,64 @@ export default function SettingsScreen() {
   );
   };
 
-  const themes = ['Light', 'Dark'];
-  const languages = ['English', 'Ukrainian'];
+  const themes: Theme[] = ['Light', 'Dark'];
+  const languages: Language[] = ['English', 'Ukrainian'];
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
-          <Text style={styles.headerTitle}>Settings</Text>
+          <Text style={[styles.headerTitle, { color: colors.text }]}>Settings</Text>
           <TouchableOpacity onPress={() => router.back()}>
-            <BackIcon size={28} color="#37474F" />
+            <BackIcon size={28} color={colors.text} />
           </TouchableOpacity>
         </View>
 
-        <View style={styles.settingCard}>
+        <View style={[styles.settingCard, { backgroundColor: colors.card }]}>
           <View style={styles.settingContent}>
             <NotificationsIcon size={30} color="#FFC01E" />
-            <Text style={styles.settingLabel}>Notifications</Text>
+            <Text style={[styles.settingLabel, { color: colors.text }]}>Notifications</Text>
           </View>
-          <Switch
-            value={notificationsEnabled}
-            onValueChange={toggleNotifications}
-            trackColor={{ false: '#E0E0E0', true: '#54B56E' }}
-            thumbColor={notificationsEnabled ? '#FFFFFF' : '#FFFFFF'}
-          />
+          <Switch value={notificationsEnabled} onValueChange={toggleNotifications} />
         </View>
 
-        <View style={styles.settingCard}>
+        <View style={[styles.settingCard, { backgroundColor: colors.card }]}>
           <View style={styles.settingContent}>
-            <ThemeIcon size={30} color="#37474F" />
-            <Text style={styles.settingLabel}>Theme</Text>
+            <ThemeIcon size={30} color={colors.text} />
+            <Text style={[styles.settingLabel, { color: colors.text }]}>Theme</Text>
           </View>
-          <TouchableOpacity
-            style={styles.settingValue}
-            onPress={() => setShowThemeMenu(!showThemeMenu)}
-          >
-            <Text style={styles.settingValueText}>{theme}</Text>
-            <DownArrowIcon size={18} color="#37474F" />
+          <TouchableOpacity style={styles.settingValue} onPress={() => setShowThemeMenu(!showThemeMenu)}>
+            <Text style={[styles.settingValueText, { color: colors.text }]}>{theme}</Text>
+            <DownArrowIcon size={18} color={colors.text} />
           </TouchableOpacity>
         </View>
 
         {showThemeMenu && (
-          <View style={styles.dropdownMenu}>
+          <View style={[styles.dropdownMenu, { backgroundColor: colors.card }]}>
             {themes.map((t) => (
-              <TouchableOpacity
-                key={t}
-                style={styles.menuItem}
-                onPress={() => {
-                  setTheme(t);
-                  setShowThemeMenu(false);
-                }}
-              >
-                <Text style={[styles.menuItemText, theme === t && styles.menuItemTextActive]}>
-                  {t}
-                </Text>
+              <TouchableOpacity key={t} style={styles.menuItem} onPress={() => { setTheme(t); setShowThemeMenu(false); }}>
+                <Text style={[styles.menuItemText, { color: colors.text }, theme === t && styles.menuItemTextActive]}>{t}</Text>
               </TouchableOpacity>
             ))}
           </View>
         )}
 
-        <View style={styles.settingCard}>
+        <View style={[styles.settingCard, { backgroundColor: colors.card }]}>
           <View style={styles.settingContent}>
             <LanguageIcon size={30} color="#80CBC5" />
-            <Text style={styles.settingLabel}>Language</Text>
+            <Text style={[styles.settingLabel, { color: colors.text }]}>Language</Text>
           </View>
-          <TouchableOpacity
-            style={styles.settingValue}
-            onPress={() => setShowLanguageMenu(!showLanguageMenu)}
-          >
-            <Text style={styles.settingValueText}>{language}</Text>
-            <DownArrowIcon size={18} color="#37474F" />
+          <TouchableOpacity style={styles.settingValue} onPress={() => setShowLanguageMenu(!showLanguageMenu)}>
+            <Text style={[styles.settingValueText, { color: colors.text }]}>{language}</Text>
+            <DownArrowIcon size={18} color={colors.text} />
           </TouchableOpacity>
         </View>
 
         {showLanguageMenu && (
-          <View style={styles.dropdownMenu}>
+          <View style={[styles.dropdownMenu, { backgroundColor: colors.card }]}>
             {languages.map((lang) => (
-              <TouchableOpacity
-                key={lang}
-                style={styles.menuItem}
-                onPress={() => {
-                  setLanguage(lang);
-                  setShowLanguageMenu(false);
-                }}
-              >
-                <Text style={[styles.menuItemText, language === lang && styles.menuItemTextActive]}>
-                  {lang}
-                </Text>
+              <TouchableOpacity key={lang} style={styles.menuItem} onPress={() => { setLanguage(lang); setShowLanguageMenu(false); }}>
+                <Text style={[styles.menuItemText, { color: colors.text }, language === lang && styles.menuItemTextActive]}>{lang}</Text>
               </TouchableOpacity>
             ))}
           </View>

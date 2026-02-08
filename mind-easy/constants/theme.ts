@@ -1,6 +1,3 @@
-const tintColorLight = '#0a7ea4';
-const tintColorDark = '#fff';
-
 export const Colors = {
   Light: {
     background: "#F5F5DC",
@@ -13,3 +10,5 @@ export const Colors = {
     text: "#ECECEC",
   },
 };
+
+export type ThemeType = keyof typeof Colors;
