@@ -84,20 +84,12 @@ export default function ProfileScreen() {
 
   useEffect(() => {
     Animated.loop(
-      Animated.sequence([
-        Animated.timing(pulse, {
-          toValue: 1,
-          duration: 1200,
-          easing: Easing.out(Easing.ease),
-          useNativeDriver: false,
-        }),
-        Animated.timing(pulse, {
-          toValue: 0,
-          duration: 1200,
-          easing: Easing.in(Easing.ease),
-          useNativeDriver: false,
-        }),
-      ])
+      Animated.timing(pulse, {
+        toValue: 1,
+        duration: 2000,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      })
     ).start();
   }, []);
 
@@ -456,38 +448,38 @@ export default function ProfileScreen() {
           </Modal>
         </ScrollView>
       </Pressable>
-      <Animated.View
-        style={[
-          styles.sosWrapper,
-          {
-            shadowColor: "#FF2D2D",
-            shadowOpacity: pulse.interpolate({
-              inputRange: [0, 1],
-              outputRange: [0.3, 0.8],
-            }),
-            shadowRadius: pulse.interpolate({
-              inputRange: [0, 1],
-              outputRange: [8, 20],
-            }),
-            transform: [
-              {
-                scale: pulse.interpolate({
-                  inputRange: [0, 1],
-                  outputRange: [1, 1.15],
-                }),
-              },
-            ],
-          },
-        ]}
-      >
+      <View style={styles.sosWrapper}>
+        <Animated.View
+          style={[
+            styles.sosWave,
+            {
+              opacity: pulse.interpolate({
+                inputRange: [0, 0.5, 1],
+                outputRange: [0, 0.4, 0],
+              }),
+              transform: [
+                {
+                  scale: pulse.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [1, 1.8],
+                  }),
+                },
+              ],
+            },
+          ]}
+        />
         <TouchableOpacity
           style={styles.sosButton}
-          activeOpacity={0.8}
-          onPress={() => router.replace("/sos")}
+          activeOpacity={0.9}
+          onPressIn={handlePressIn}
+          onPressOut={cancelPress}
+          onPress={() => {
+              router.replace("/sos");
+          }}
         >
           <Text style={styles.sosText}>SOS</Text>
         </TouchableOpacity>
-      </Animated.View>
+      </View>
     </SafeAreaView>
   );
 }
@@ -700,16 +692,20 @@ const styles = StyleSheet.create({
   },
   sosWrapper: {
     position: "absolute",
-    bottom: 70,
+    bottom: 40,
     alignSelf: "center",
-  },
-
-  sosShadow: {
-    width: 150,
-    height: 150,
-    borderRadius: 45,
     justifyContent: "center",
     alignItems: "center",
+    width: 120,
+    height: 120,
+  },
+
+  sosWave: {
+    position: "absolute",
+    width: 100,
+    height: 100,
+    borderRadius: 100,
+    backgroundColor: "#F1B8A5",
   },
 
   sosButton: {
@@ -719,6 +715,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#E50000",
     justifyContent: "center",
     alignItems: "center",
+    zIndex: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 1.2,
+    shadowRadius: 5,
+    elevation: 8,
   },
 
   sosText: {

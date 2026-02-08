@@ -146,7 +146,7 @@ export default function JournalScreen() {
   };
 
   const renderEntry = ({ item }: { item: JournalEntry }) => (
-    <View style={[styles.entryCard, { backgroundColor: colors.card }]}>
+    <View style={styles.entryCard}>
       <Text style={[styles.entryTime, { color: colors.text }]}>{formatTime(item.createdAt)}</Text>
       <View style={styles.entryHeader}>
         <Text style={styles.entryMood}>{moodEmojis[item.mood]}</Text>
