@@ -7,7 +7,7 @@ import { SearchIcon } from '@/components/icons/SearchIcon';
 import { MicIcon } from '@/components/icons/MicIcon';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useAudioRecorder, AudioModule } from "expo-audio";
+import { AudioModule, useAudioRecorder } from "expo-audio";
 import { File } from "expo-file-system/next";
 import AudioPlayer from "@/components/AudioPlayer";
 
@@ -40,26 +40,26 @@ export default function JournalScreen() {
   const [audioUri, setAudioUri] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
 
-  const recorder = useAudioRecorder({
-    extension: ".m4a",
-    sampleRate: 44100,
-    numberOfChannels: 1,
-    bitRate: 128000,
+  // const recorder = useAudioRecorder({
+  //   extension: ".m4a",
+  //   sampleRate: 44100,
+  //   numberOfChannels: 1,
+  //   bitRate: 128000,
 
-    android: {
-      outputFormat: AudioModule.AndroidOutputFormat.MPEG_4,
-      audioEncoder: AudioModule.AndroidAudioEncoder.AAC,
-    },
+  //   android: {
+  //     outputFormat: AudioModule.AndroidOutputFormat.MPEG_4,
+  //     audioEncoder: AudioModule.AndroidAudioEncoder.AAC,
+  //   },
 
-    ios: {
-      outputFormat: AudioModule.IOSOutputFormat.MPEG4AAC,
-      audioQuality: AudioModule.IOSAudioQuality.HIGH,
-    },
+  //   ios: {
+  //     outputFormat: AudioModule.IOSOutputFormat.MPEG4AAC,
+  //     audioQuality: AudioModule.IOSAudioQuality.HIGH,
+  //   },
 
-    web: {
-      mimeType: "audio/webm",
-    },
-  });
+  //   web: {
+  //     mimeType: "audio/webm",
+  //   },
+  // });
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hapticIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -118,50 +118,50 @@ export default function JournalScreen() {
     loadEntries();
   }, []);
 
-  const startRecording = async () => {
-    const permission = await AudioModule.requestRecordingPermissionsAsync();
-    if (!permission.granted) {
-      Alert.alert("Microphone permission required");
-      return;
-    }
+  // const startRecording = async () => {
+  //   const permission = await AudioModule.requestRecordingPermissionsAsync();
+  //   if (!permission.granted) {
+  //     Alert.alert("Microphone permission required");
+  //     return;
+  //   }
 
-    try {
-      await recorder.record();
-      setIsRecording(true);
-      setAudioUri(null);
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-    } catch (e) {
-      console.log("record start error", e);
-    }
-  };
+  //   try {
+  //     await recorder.record();
+  //     setIsRecording(true);
+  //     setAudioUri(null);
+  //     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+  //   } catch (e) {
+  //     console.log("record start error", e);
+  //   }
+  // };
 
-  const stopRecording = async () => {
-    try {
-      await recorder.stop();
+  // const stopRecording = async () => {
+  //   try {
+  //     await recorder.stop();
 
-      setIsRecording(false);
+  //     setIsRecording(false);
 
-      if (recorder.uri) {
-        setAudioUri(recorder.uri);
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-      }
+  //     if (recorder.uri) {
+  //       setAudioUri(recorder.uri);
+  //       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+  //     }
 
-    } catch (e) {
-      console.log("record stop error", e);
-    }
-  };
+  //   } catch (e) {
+  //     console.log("record stop error", e);
+  //   }
+  // };
 
-  const getAudioBase64 = async () => {
-    if (!audioUri) return null;
+  // const getAudioBase64 = async () => {
+  //   if (!audioUri) return null;
 
-    const file = new File(audioUri);
-    const base64 = await file.base64();
+  //   const file = new File(audioUri);
+  //   const base64 = await file.base64();
 
-    return `data:audio/m4a;base64,${base64}`;
-  };
+  //   return `data:audio/m4a;base64,${base64}`;
+  // };
 
   const handleSaveEntry = async () => {
-    const audioBase64 = await getAudioBase64();
+    //const audioBase64 = await getAudioBase64();
 
     if (!selectedMood) {
       Alert.alert('Please select your mood');
@@ -188,7 +188,7 @@ export default function JournalScreen() {
         body: JSON.stringify({
           mood: selectedMood,
           text: journalText,
-          audio: audioBase64,
+          //audio: audioBase64,
         }),
       });
 
@@ -279,7 +279,7 @@ export default function JournalScreen() {
               />
 
               <View style={styles.actionButtons}>
-                <TouchableOpacity style={[styles.voiceButton, isRecording && { backgroundColor: "#FF6B6B" }]} onPressIn={startRecording} onPressOut={stopRecording} activeOpacity={0.7}>
+                <TouchableOpacity style={[styles.voiceButton, isRecording && { backgroundColor: "#FF6B6B" }]} activeOpacity={0.7}>
                   <View style={styles.voiceButtonContent}>
                     <MicIcon />
                     <Text style={styles.voiceButtonText}>{isRecording ? "Recording..." : t.voiceNote}</Text>
