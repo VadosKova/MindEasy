@@ -16,7 +16,7 @@ export default function SOSBody() {
 
   useEffect(() => {
     if (step >= STEPS.length) {
-      setTimeout(() => router.replace("focus" as any), 800);
+      setTimeout(() => router.replace("/sos/focus"), 800);
       return;
     }
 

@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, Alert, Image, ImageBackground, Pressable } from 'react-native';
+import { useState, useEffect, useRef } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Modal, TextInput, Alert, Image, ImageBackground, Pressable, Animated, Easing } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { SettingsIcon } from '@/components/icons/SettingsIcon';
@@ -47,6 +47,26 @@ export default function ProfileScreen() {
   const colors = Colors[theme];
   const t = translations[language];
 
+  const pulse = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(pulse, {
+          toValue: 1,
+          duration: 1200,
+          easing: Easing.out(Easing.ease),
+          useNativeDriver: false,
+        }),
+        Animated.timing(pulse, {
+          toValue: 0,
+          duration: 1200,
+          easing: Easing.in(Easing.ease),
+          useNativeDriver: false,
+        }),
+      ])
+    ).start();
+  }, []);
 
   const updateReminders = async (checked: boolean[]) => {
     if (!profile) return;
@@ -396,6 +416,38 @@ export default function ProfileScreen() {
         </View>
       </Modal>
       </ScrollView>
+      <Animated.View
+        style={[
+          styles.sosWrapper,
+          {
+            shadowColor: "#FF2D2D",
+            shadowOpacity: pulse.interpolate({
+              inputRange: [0, 1],
+              outputRange: [0.3, 0.8],
+            }),
+            shadowRadius: pulse.interpolate({
+              inputRange: [0, 1],
+              outputRange: [8, 20],
+            }),
+            transform: [
+              {
+                scale: pulse.interpolate({
+                  inputRange: [0, 1],
+                  outputRange: [1, 1.15],
+                }),
+              },
+            ],
+          },
+        ]}
+      >
+        <TouchableOpacity
+          style={styles.sosButton}
+          activeOpacity={0.8}
+          onPress={() => router.replace("/sos")}
+        >
+          <Text style={styles.sosText}>SOS</Text>
+        </TouchableOpacity>
+      </Animated.View>
     </SafeAreaView>
   );
 }
@@ -605,5 +657,34 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#000000',
     fontWeight: '600',
+  },
+  sosWrapper: {
+    position: "absolute",
+    bottom: 70,
+    alignSelf: "center",
+  },
+
+  sosShadow: {
+    width: 150,
+    height: 150,
+    borderRadius: 45,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  sosButton: {
+    width: 100,
+    height: 100,
+    borderRadius: 50,
+    backgroundColor: "#E50000",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  sosText: {
+    color: "#FFFFFF",
+    fontSize: 32,
+    fontFamily: 'Jua_400Regular',
+    letterSpacing: 1,
   },
 });

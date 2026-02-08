@@ -22,7 +22,7 @@ export default function SOSStart() {
 
       <Pressable
         style={styles.button}
-        onPress={() => router.replace("body" as any)}
+        onPress={() => router.replace("/sos/body")}
       >
         <Text style={styles.buttonText}>Start grounding</Text>
       </Pressable>

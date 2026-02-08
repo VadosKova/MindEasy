@@ -19,7 +19,7 @@ export default function SupportScreen() {
 
       <TouchableOpacity
         style={styles.button}
-        onPress={() => router.replace("finish" as any)}
+        onPress={() => router.replace("/sos/finish")}
       >
         <Text style={styles.buttonText}>Continue</Text>
       </TouchableOpacity>

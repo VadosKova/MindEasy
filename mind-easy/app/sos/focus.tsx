@@ -28,7 +28,7 @@ export default function SOSFocus() {
 
     setTimeout(() => {
       if (index >= TASKS.length - 1) {
-        router.replace("support" as any);
+        router.replace("/sos/support");
       } else {
         setIndex(prev => prev + 1);
         setLocked(false);
