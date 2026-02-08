@@ -10,6 +10,10 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as ImagePicker from 'expo-image-picker';
 import { syncReminders, Reminder } from '@/utils/notifications';
 
+import { useAppSettings } from "@/context/AppSettingsContext";
+import { Colors } from "@/constants/theme";
+import { translations } from "@/constants/i18n";
+
 
 interface ProfileData {
   name: string;
@@ -38,6 +42,11 @@ export default function ProfileScreen() {
   const [editingWhy, setEditingWhy] = useState('');
   const [goalsChecked, setGoalsChecked] = useState<boolean[]>([]);
   const [remindersChecked, setRemindersChecked] = useState<boolean[]>([]);
+
+  const { theme, language } = useAppSettings();
+  const colors = Colors[theme];
+  const t = translations[language];
+
 
   const updateReminders = async (checked: boolean[]) => {
     if (!profile) return;
@@ -183,10 +192,10 @@ export default function ProfileScreen() {
 
 
   return (
-    <SafeAreaView style={styles.safeArea}>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.headerContainer}>
-          <Text style={styles.header}>Profile</Text>
+          <Text style={[styles.header, { color: colors.text }]}>{t.profile}</Text>
           <TouchableOpacity style={styles.settingsButton} onPress={() => router.push('/settings')}>
             <SettingsIcon size={28} color="#37474F" />
           </TouchableOpacity>
@@ -215,7 +224,7 @@ export default function ProfileScreen() {
 
         <View style={styles.nameSection}>
           <View style={styles.nameRow}>
-            <Text style={styles.name}>{profile.name}</Text>
+            <Text style={[styles.name, { color: colors.text }]}>{profile.name}</Text>
             <TouchableOpacity
               onPress={() => {
                 setEditingName(profile.name);
@@ -225,12 +234,12 @@ export default function ProfileScreen() {
               <EditIcon size={20} color="#37474F" />
             </TouchableOpacity>
           </View>
-          <Text style={styles.joinDate}>Mindful since {profile.joinDate}</Text>
+          <Text style={[styles.joinDate, { color: colors.text }]}>{t.mindfulSince} {profile.joinDate}</Text>
         </View>
 
         <View style={styles.card}>
           <View style={styles.cardHeader}>
-            <Text style={styles.cardTitle}>Why I use this app</Text>
+            <Text style={[styles.cardTitle, { color: colors.text }]}>{t.whyUse}</Text>
             <TouchableOpacity
               onPress={() => {
                 setEditingWhy(profile.whyUseApp);
@@ -240,12 +249,12 @@ export default function ProfileScreen() {
               <EditIcon size={18} color="#37474F" />
             </TouchableOpacity>
           </View>
-          <Text style={styles.cardText}>"{profile.whyUseApp}"</Text>
+          <Text style={[styles.cardText, { color: colors.text }]}>"{profile.whyUseApp}"</Text>
         </View>
 
         <View style={styles.twoColumnContainer}>
-          <View style={[styles.card, styles.halfCard]}>
-            <Text style={styles.cardTitle}>My goals</Text>
+          <View style={[styles.card, styles.halfCard, { backgroundColor: colors.card }]}>
+            <Text style={[styles.cardTitle, { color: colors.text }]}>{t.myGoals}</Text>
             {profile.goals.map((goal, index) => (
               <Pressable
                 key={index}
@@ -264,8 +273,8 @@ export default function ProfileScreen() {
             ))}
           </View>
 
-          <View style={[styles.card, styles.halfCard]}>
-            <Text style={styles.cardTitle}>Reminders</Text>
+          <View style={[styles.card, styles.halfCard, { backgroundColor: colors.card }]}>
+            <Text style={[styles.cardTitle, { color: colors.text }]}>{t.reminders}</Text>
             {profile.reminders.map((reminder, index) => (
               <Pressable
                 key={index}
