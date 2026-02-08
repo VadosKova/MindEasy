@@ -2,14 +2,14 @@ const tintColorLight = '#0a7ea4';
 const tintColorDark = '#fff';
 
 export const Colors = {
-  light: {
-    text: '#11181C',
-    background: '#fff',
-    tint: tintColorLight,
+  Light: {
+    background: "#F5F5DC",
+    card: "#FFFFFF",
+    text: "#37474F",
   },
-  dark: {
-    text: '#ECEDEE',
-    background: '#151718',
-    tint: tintColorDark,
+  Dark: {
+    background: "#121212",
+    card: "#1E1E1E",
+    text: "#ECECEC",
   },
 };
