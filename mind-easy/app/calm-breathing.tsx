@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { StyleSheet, Text, TouchableOpacity, View, ImageBackground, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
-import { Audio } from 'expo-av';
+import { useAudioPlayer } from 'expo-audio';
 import { BackIcon } from '@/components/icons/BackIcon';
 
 const TOTAL_TIME = 300;
@@ -20,36 +20,16 @@ export default function CalmBreathing() {
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const phaseRef = useRef(0);
-  const soundRef = useRef<Audio.Sound | null>(null);
+  const player = useAudioPlayer(soundFile);
 
   const scale = useRef(new Animated.Value(1)).current;
   const ripple1 = useRef(new Animated.Value(0)).current;
   const ripple2 = useRef(new Animated.Value(0)).current;
 
-  const startSound = async () => {
-    if (soundRef.current) return;
-
-    const { sound } = await Audio.Sound.createAsync(soundFile, {
-      isLooping: true,
-      volume: 0.35,
-    });
-
-    soundRef.current = sound;
-    await sound.playAsync();
-  };
-
-  const stopSound = async () => {
-    if (!soundRef.current) return;
-    await soundRef.current.stopAsync();
-    await soundRef.current.unloadAsync();
-    soundRef.current = null;
-  };
-
   useEffect(() => {
-    return () => {
-      stopSound();
-    };
-  }, []);
+    player.loop = true;
+    player.volume = 0.35;
+  }, [player]);
 
   useEffect(() => {
     if (!running) return;
@@ -94,6 +74,7 @@ export default function CalmBreathing() {
         if (prev <= 1) {
           clearInterval(intervalRef.current!);
           setRunning(false);
+          player.pause();
           return TOTAL_TIME;
         }
         return prev - 1;
@@ -119,10 +100,10 @@ export default function CalmBreathing() {
   const handleStartPause = async () => {
     if (running) {
       setRunning(false);
-      await stopSound();
+      player.pause();
     } else {
       setRunning(true);
-      await startSound();
+      player.play();
     }
   };
 
@@ -131,7 +112,8 @@ export default function CalmBreathing() {
     setSecondsLeft(TOTAL_TIME);
     setPhase('Inhale');
     phaseRef.current = 0;
-    await stopSound();
+    player.pause();
+    player.seekTo(0);
   };
 
   return (
