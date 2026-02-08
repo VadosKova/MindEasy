@@ -1,7 +1,7 @@
-import { ImageBackground, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { ImageBackground, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import Svg, { Circle } from 'react-native-svg';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useFocusEffect, useRouter } from 'expo-router';
 
 import { MoodBadIcon } from '@/components/icons/MoodBadIcon';
@@ -14,6 +14,11 @@ import { IntroJournalIcon } from '@/components/icons/IntroJournalIcon';
 import { QuoteIcon } from '@/components/icons/QuoteIcon';
 import { HandIcon } from '@/components/icons/HandIcon';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import * as Haptics from "expo-haptics";
+import { useAppSettings } from "@/context/AppSettingsContext";
+import { Colors } from "@/constants/theme";
+import { translations } from "@/constants/i18n";
 
 const introImage = require('@/assets/images/home-intro.png');
 
@@ -93,6 +98,43 @@ export default function HomeScreen() {
   const [quote, setQuote] = useState<Quote | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  const { theme, language } = useAppSettings();
+  const colors = Colors[theme];
+  const t = translations[language];
+
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hapticIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [isHolding, setIsHolding] = useState(false);
+
+  const handlePressIn = () => {
+    setIsHolding(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    let step = 0;
+    hapticIntervalRef.current = setInterval(() => {
+      step++;
+      if (step < 5) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      else if (step < 10) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      else Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    }, 200);
+
+    timerRef.current = setTimeout(() => {
+      cleanupSOS();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      router.replace("/sos");
+    }, 3000);
+  };
+
+  const cancelPress = () => {
+    setIsHolding(false);
+    cleanupSOS();
+  };
+
+  const cleanupSOS = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (hapticIntervalRef.current) clearInterval(hapticIntervalRef.current);
+  };
 
   const loadProgress = async () => {
     try {
@@ -209,82 +251,95 @@ export default function HomeScreen() {
   };
   
   return (
-    <SafeAreaView style={styles.safeArea}>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
-        <ImageBackground source={introImage} style={styles.heroCard} imageStyle={styles.heroImage}>
-          <Text style={styles.heroGreeting} numberOfLines={1} ellipsizeMode="tail">Hello {username || 'User'}! <HandIcon/></Text>
-          <Text style={styles.heroSubtitle}>How are you feeling today?</Text>
-        </ImageBackground>
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+      {isHolding && (
+        <View style={styles.sosOverlay}>
+          <Text style={styles.sosOverlayText}>{t.holdForSOS}</Text>
+        </View>
+      )}
 
-        <View style={[styles.card, styles.shadowSoft]}>
-          <Text style={styles.sectionTitle}>Track your mood</Text>
-          <View style={styles.moodRow}>
-            {MOOD_OPTIONS.map(({ label, Icon }) => (
-              <TouchableOpacity
-                key={label}
-                onPress={() => handleMoodPress(label)}
-                style={[styles.moodItem, pressedMood === label && styles.moodPressed]}
-              >
-                <Icon size={40} />
-                <Text style={styles.moodLabel}>{label}</Text>
-              </TouchableOpacity>
-            ))}
+      <Pressable 
+        style={{ flex: 1 }} 
+        onLongPress={handlePressIn}
+        delayLongPress={400}
+        onPressOut={cancelPress}
+      >
+        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+          <ImageBackground source={introImage} style={styles.heroCard} imageStyle={styles.heroImage}>
+            <Text style={styles.heroGreeting} numberOfLines={1} ellipsizeMode="tail">{t.hello} {username || 'User'}! <HandIcon/></Text>
+            <Text style={styles.heroSubtitle}>{t.howFeeling}</Text>
+          </ImageBackground>
+
+          <View style={[styles.card, styles.shadowSoft, { backgroundColor: colors.card }]}>
+            <Text style={styles.sectionTitle}>{t.trackMood}</Text>
+            <View style={styles.moodRow}>
+              {MOOD_OPTIONS.map(({ label, Icon }) => (
+                <TouchableOpacity
+                  key={label}
+                  onPress={() => handleMoodPress(label)}
+                  style={[styles.moodItem, pressedMood === label && styles.moodPressed]}
+                >
+                  <Icon size={40} />
+                  <Text style={styles.moodLabel}>{label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
-        </View>
 
-        <View style={styles.quickRow}>
-          <TouchableOpacity
-            style={[styles.quickCard, styles.meditationCard, styles.shadowPurple, shadowPurpleWeb]} onPress={() => router.push('/calm-breathing')}>
-            <IntroMeditateIcon size={41} />
-            <Text style={styles.quickTitle}>Start Meditation</Text>
-            <Text style={styles.quickSubtitle}>5 min • Guided</Text>
-          </TouchableOpacity>
+          <View style={styles.quickRow}>
+            <TouchableOpacity
+              style={[styles.quickCard, styles.meditationCard, styles.shadowPurple, shadowPurpleWeb]} onPress={() => router.push('/calm-breathing')}>
+              <IntroMeditateIcon size={41} />
+              <Text style={styles.quickTitle}>{t.startMeditation}</Text>
+              <Text style={styles.quickSubtitle}>{t.guided5min}</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[styles.quickCard, styles.journalCard, styles.shadowGreen, shadowGreenWeb]} onPress={() => router.push('/tabs/journal')}>
-            <IntroJournalIcon size={41} />
-            <Text style={styles.quickTitle}>Daily Reflection</Text>
-            <Text style={styles.quickSubtitle}>Write your thoughts</Text>
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              style={[styles.quickCard, styles.journalCard, styles.shadowGreen, shadowGreenWeb]} onPress={() => router.push('/tabs/journal')}>
+              <IntroJournalIcon size={41} />
+              <Text style={styles.quickTitle}>{t.dailyReflection}</Text>
+              <Text style={styles.quickSubtitle}>{t.writeThoughts}</Text>
+            </TouchableOpacity>
+          </View>
 
-        <View style={[styles.card, styles.shadowSoft]}>
-          <Text style={styles.sectionTitle}>Your progress</Text>
-          <View style={styles.progressRow}>
-            <ProgressRing value={progress} />
-            <View style={styles.progressStats}>
-              <View style={styles.progressStatsRow}>
-                <View style={styles.statBadge}>
-                  <Text style={styles.statLabel}>Streak</Text>
-                  <Text style={styles.statValue}>{streak} Days</Text>
+          <View style={[styles.card, styles.shadowSoft, { backgroundColor: colors.card }]}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>{t.yourProgress}</Text>
+            <View style={styles.progressRow}>
+              <ProgressRing value={progress} />
+              <View style={styles.progressStats}>
+                <View style={styles.progressStatsRow}>
+                  <View style={styles.statBadge}>
+                    <Text style={styles.statLabel}>{t.streak}</Text>
+                    <Text style={styles.statValue}>{streak} {t.days}</Text>
+                  </View>
+                  <View style={styles.statBadge}>
+                    <Text style={styles.statLabel}>{t.totalDays}</Text>
+                    <Text style={styles.statValue}>{totalDays} {t.days}</Text>
+                  </View>
                 </View>
-                <View style={styles.statBadge}>
-                  <Text style={styles.statLabel}>Total Days</Text>
-                  <Text style={styles.statValue}>{totalDays} Days</Text>
+                <View style={[styles.statBadge, styles.progressStatBottom]}>
+                  <Text style={styles.statLabel}>{t.meditated}</Text>
+                  <Text style={styles.statValue}>{minutes} {t.min}</Text>
                 </View>
               </View>
-              <View style={[styles.statBadge, styles.progressStatBottom]}>
-                <Text style={styles.statLabel}>Meditated</Text>
-                <Text style={styles.statValue}>{minutes} Min</Text>
+            </View>
+          </View>
+          
+          {quote && (
+            <View style={[styles.quoteCard, styles.shadowSoft]}>
+              <View style={styles.quoteIconContainer}>
+                <QuoteIcon />
+              </View>
+              <View style={styles.quoteContent}>
+                <Text style={styles.quoteText}>
+                  "{quote.text}"
+                </Text>
+                <Text style={styles.quoteAuthor}>– {quote.author}</Text>
               </View>
             </View>
-          </View>
-        </View>
-        
-        {quote && (
-          <View style={[styles.quoteCard, styles.shadowSoft]}>
-            <View style={styles.quoteIconContainer}>
-              <QuoteIcon />
-            </View>
-            <View style={styles.quoteContent}>
-              <Text style={styles.quoteText}>
-                "{quote.text}"
-              </Text>
-              <Text style={styles.quoteAuthor}>– {quote.author}</Text>
-            </View>
-          </View>
-        )}
-      </ScrollView>
+          )}
+        </ScrollView>
+      </Pressable>
     </SafeAreaView>
   );
 }
@@ -498,5 +553,23 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 4,
     elevation: 4,
+  },
+  sosOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(229, 0, 0, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+    pointerEvents: 'none',
+  },
+  sosOverlayText: {
+    fontFamily: 'Jua_400Regular',
+    fontSize: 24,
+    color: '#E50000',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    overflow: 'hidden',
   },
 });
