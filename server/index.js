@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import express from "express";
+import path from "path";
 import mongoose from "mongoose";
 import cors from 'cors';
 import authRoutes from "./routes/auth.js";
@@ -26,6 +27,7 @@ app.use("/api/progress", progressRoutes);
 app.use("/api/quotes", quoteRoutes);
 app.use("/api/meditation", meditationRoutes);
 app.use("/api/journal", journalRoutes);
+app.use("/uploads", express.static(path.resolve("uploads")));
 app.use("/api/profile", profileRoutes);
 
 mongoose
