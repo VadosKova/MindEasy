@@ -4,18 +4,40 @@ import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-const getToday = () => {
-  return new Date().toISOString().slice(0, 10);
+const moodScoreMap = {
+  bad: 1,
+  low: 2,
+  okay: 3,
+  good: 4,
+  great: 5,
+};
+
+const getTodayRange = () => {
+  const start = new Date();
+  start.setHours(0, 0, 0, 0);
+
+  const end = new Date();
+  end.setHours(23, 59, 59, 999);
+
+  return { start, end };
 };
 
 router.post("/", authMiddleware, async (req, res) => {
   try {
     const { mood } = req.body;
-    const date = getToday();
+    const { start, end } = getTodayRange();
 
     const entry = await Mood.findOneAndUpdate(
-      { userId: req.userId, date },
-      { mood, score: moodScoreMap[mood] || 0, date },
+      {
+        userId: req.userId,
+        date: { $gte: start, $lte: end },
+      },
+      {
+        userId: req.userId,
+        mood,
+        score: moodScoreMap[mood],
+        date: start,
+      },
       { upsert: true, new: true }
     );
 
@@ -26,11 +48,11 @@ router.post("/", authMiddleware, async (req, res) => {
 });
 
 router.get("/today", authMiddleware, async (req, res) => {
-  const date = new Date().toISOString().slice(0, 10);
+  const { start, end } = getTodayRange();
 
   const mood = await Mood.findOne({
     userId: req.userId,
-    date,
+    date: { $gte: start, $lte: end },
   });
 
   res.json(mood);

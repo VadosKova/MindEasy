@@ -12,9 +12,6 @@ router.get("/", authMiddleware, async (req, res) => {
 
     const today = new Date().toISOString().slice(0, 10);
 
-    const mood = await Mood.findOne({ userId, date: today });
-    const moodScore = mood ? mood.score : 0;
-
     const journals = await JournalEntry.find({
       user: userId,
       createdAt: { $gte: new Date(today) }
@@ -37,14 +34,17 @@ router.get("/", authMiddleware, async (req, res) => {
     const moods = await Mood.find({ userId }).sort({ date: -1 });
 
     let streak = 0;
-    let currentDate = new Date();
+    let currentDate = today;
 
     for (const m of moods) {
-      const d = new Date(m.date);
-      const diff = Math.floor((currentDate - d) / 86400000);
-
-      if (diff === streak) streak++;
-      else break;
+      if (m.date === currentDate) {
+        streak++;
+        const d = new Date(currentDate);
+        d.setDate(d.getDate() - 1);
+        currentDate = d.toISOString().slice(0, 10);
+      } else {
+        break;
+      }
     }
 
     const totalDays = await Mood.countDocuments({ userId });
