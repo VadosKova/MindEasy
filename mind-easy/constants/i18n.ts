@@ -142,7 +142,7 @@ export const translations = {
 
   Ukrainian: {
     hello: "Привіт",
-    howFeeling: "Як ти почуваsessionся сьогодні?",
+    howFeeling: "Як ти почуваєшся сьогодні?",
     trackMood: "Відстежуй свій настрій",
     startMeditation: "Почати медитацію",
     dailyReflection: "Щоденні роздуми",

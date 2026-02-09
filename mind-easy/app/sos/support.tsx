@@ -98,14 +98,14 @@ const styles = StyleSheet.create({
   poemText: {
     fontSize: 17,
     color: "#E5E7EB",
-    textAlign: "center",
+    textAlign: "left",
     lineHeight: 26,
     fontStyle: "italic",
   },
   poemAuthor: {
     fontSize: 14,
     color: "#94A3B8",
-    textAlign: "center",
+    textAlign: "left",
     marginTop: 14,
   },
   card: {
