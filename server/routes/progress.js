@@ -9,18 +9,17 @@ const router = express.Router();
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const userId = req.userId;
-
     const today = new Date().toISOString().slice(0, 10);
 
     const journals = await JournalEntry.find({
       user: userId,
-      createdAt: { $gte: new Date(today) }
+      createdAt: { $gte: new Date(today) },
     });
     const journalScore = journals.length * 5;
 
     const meditationsToday = await Meditation.find({
       user: userId,
-      createdAt: { $gte: new Date(today) }
+      createdAt: { $gte: new Date(today) },
     });
 
     const meditationScore = meditationsToday.reduce(
@@ -28,20 +27,32 @@ router.get("/", authMiddleware, async (req, res) => {
       0
     );
 
+    const moods = await Mood.find({ userId }).sort({ date: -1 });
+
+    const moodScore = moods.some(
+      m => m.date.toISOString().slice(0, 10) === today
+    )
+      ? 5
+      : 0;
+
     const totalScore = moodScore + journalScore + meditationScore;
     const percent = Math.min(Math.round((totalScore / 25) * 100), 100);
 
-    const moods = await Mood.find({ userId }).sort({ date: -1 });
+    const startOfDay = (date) => {
+      const d = new Date(date);
+      d.setHours(0, 0, 0, 0);
+      return d;
+    };
 
     let streak = 0;
-    let currentDate = today;
+    let dayCursor = startOfDay(new Date());
 
     for (const m of moods) {
-      if (m.date === currentDate) {
+      const moodDay = startOfDay(m.date);
+
+      if (moodDay.getTime() === dayCursor.getTime()) {
         streak++;
-        const d = new Date(currentDate);
-        d.setDate(d.getDate() - 1);
-        currentDate = d.toISOString().slice(0, 10);
+        dayCursor.setDate(dayCursor.getDate() - 1);
       } else {
         break;
       }
@@ -61,8 +72,8 @@ router.get("/", authMiddleware, async (req, res) => {
       totalDays,
       totalMeditationMinutes,
     });
-
   } catch (e) {
+    console.error(e);
     res.status(500).json({ message: "Failed to calculate progress" });
   }
 });
