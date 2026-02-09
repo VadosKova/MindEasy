@@ -149,7 +149,7 @@ export default function HomeScreen() {
 
       const data = await res.json();
 
-      setProgress((data.progress ?? 0) / 100);
+      setProgress((data.percent ?? 0) / 100);
       setStreak(data.streak ?? 0);
       setTotalDays(data.totalDays ?? 0);
       setMinutes(data.totalMeditationMinutes ?? 0);
