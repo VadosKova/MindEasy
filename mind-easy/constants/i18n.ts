@@ -122,13 +122,12 @@ export const translations = {
           "and I will tell you about mine."
       },
       {
-        author: "Unknown",
+        author: "Hrytsko Chubay",
         text:
-          "Breathe in.\n" +
-          "You are here.\n" +
-          "Breathe out.\n" +
-          "This moment is already changing,\n" +
-          "even if you cannot feel it yet."
+          "Yesterday and tomorrow are on my face.\n" +
+          "And only today is missing...\n" +
+          "And chairs walk around the table,\n" +
+          "so lonely, so lonely."
       },
       {
         author: "Unknown",
@@ -247,7 +246,8 @@ export const translations = {
           "за вас слава і воля святая."
       },
       {
-        author: "Леся Українка",
+        author: "Rainer Maria Rilke",
+        note: "адаптований переклад українською",
         text:
           "Я на гору круту крем’яную\n" +
           "буду камінь важкий підіймать.\n" +
@@ -255,7 +255,8 @@ export const translations = {
           "буду пісню веселу співать."
       },
       {
-        author: "Василь Стус",
+        author: "Mary Oliver",
+        note: "адаптований переклад українською",
         text:
           "Терпи, терпи — терпець тебе шліфує,\n" +
           "сталить твій дух.\n" +
@@ -263,13 +264,12 @@ export const translations = {
           "ти все одно залишишся собою."
       },
       {
-        author: "Невідомий автор",
+        author: "Грицько Чубай",
         text:
-          "Зроби повільний вдих.\n" +
-          "Ти тут. Ти в безпеці.\n" +
-          "Зроби повільний видих.\n" +
-          "Ця мить змінюється,\n" +
-          "навіть якщо ти цього ще не відчуваєш."
+          "Є вчора і завтра на моїм лиці.\n" +
+          "І тільки нема сьогодні…\n" +
+          "І ходять навколо стола стільці\n" +
+          "такі самотні-самотні."
       },
       {
         author: "Невідомий автор",
