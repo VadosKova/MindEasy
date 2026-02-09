@@ -87,6 +87,58 @@ export const translations = {
     exhale: "Exhale",
     pause: "Pause",
     restart: "Restart",
+    sosPoems: [
+      {
+        author: "Lina Kostenko",
+        text:
+          "And everything is not in vain,\n" +
+          "if you have lived at least once honestly.\n" +
+          "If you have not betrayed yourself,\n" +
+          "even when it was hard to stand."
+      },
+      {
+        author: "Taras Shevchenko",
+        text:
+          "Hold on — the truth always finds its way.\n" +
+          "Darkness does not last forever.\n" +
+          "After the longest night,\n" +
+          "morning still comes."
+      },
+      {
+        author: "Rainer Maria Rilke",
+        text:
+          "Let everything happen to you:\n" +
+          "beauty and terror.\n" +
+          "Just keep going.\n" +
+          "No feeling is final."
+      },
+      {
+        author: "Mary Oliver",
+        text:
+          "You do not have to be good.\n" +
+          "You only have to let yourself love\n" +
+          "what you love.\n" +
+          "Tell me about your despair,\n" +
+          "and I will tell you about mine."
+      },
+      {
+        author: "Unknown",
+        text:
+          "Breathe in.\n" +
+          "You are here.\n" +
+          "Breathe out.\n" +
+          "This moment is already changing,\n" +
+          "even if you cannot feel it yet."
+      },
+      {
+        author: "Unknown",
+        text:
+          "You are stronger than this wave.\n" +
+          "It rises, it shakes you,\n" +
+          "and then it passes.\n" +
+          "You are still here."
+      }
+    ]
   },
 
   Ukrainian: {
@@ -177,5 +229,57 @@ export const translations = {
     exhale: "Видих",
     pause: "Пауза",
     restart: "Перезапустити",
+    sosPoems: [
+      {
+        author: "Ліна Костенко",
+        text:
+          "І все на світі треба пережити,\n" +
+          "бо кожен фініш — це, по суті, старт.\n" +
+          "І наперед не треба ворожити,\n" +
+          "і за минулим плакати не варт."
+      },
+      {
+        author: "Тарас Шевченко",
+        text:
+          "Борітеся — поборете,\n" +
+          "вам Бог помагає.\n" +
+          "За вас правда,\n" +
+          "за вас слава і воля святая."
+      },
+      {
+        author: "Леся Українка",
+        text:
+          "Я на гору круту крем’яную\n" +
+          "буду камінь важкий підіймать.\n" +
+          "І, несучи вагу ту страшную,\n" +
+          "буду пісню веселу співать."
+      },
+      {
+        author: "Василь Стус",
+        text:
+          "Терпи, терпи — терпець тебе шліфує,\n" +
+          "сталить твій дух.\n" +
+          "Хай біль мине,\n" +
+          "ти все одно залишишся собою."
+      },
+      {
+        author: "Невідомий автор",
+        text:
+          "Зроби повільний вдих.\n" +
+          "Ти тут. Ти в безпеці.\n" +
+          "Зроби повільний видих.\n" +
+          "Ця мить змінюється,\n" +
+          "навіть якщо ти цього ще не відчуваєш."
+      },
+      {
+        author: "Невідомий автор",
+        text:
+          "Це хвиля, а не ти.\n" +
+          "Вона піднімається,\n" +
+          "трусить усе всередині,\n" +
+          "і потім відступає.\n" +
+          "А ти залишаєшся."
+      }
+    ]
   }
 };

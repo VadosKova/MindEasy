@@ -1,3 +1,4 @@
+import { useMemo } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useRouter } from "expo-router";
 import { useAppSettings } from "@/context/AppSettingsContext";
@@ -8,6 +9,16 @@ export default function SupportScreen() {
   const { language } = useAppSettings();
   const t = translations[language];
 
+  const poem = useMemo(() => {
+    const poems = t.sosPoems;
+    return poems[Math.floor(Math.random() * poems.length)];
+  }, []);
+
+  const poemIntro =
+    language === "Ukrainian"
+      ? "Прочитай цей вірш повільно.\nНехай слова трохи побудуть з тобою."
+      : "Read this poem slowly.\nLet the words stay with you for a moment.";
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{t.notAlone}</Text>
@@ -15,6 +26,22 @@ export default function SupportScreen() {
       <Text style={styles.text}>
         {t.supportText}
       </Text>
+
+      <View style={styles.poemWrapper}>
+        <Text style={styles.poemIntro}>
+          {poemIntro}
+        </Text>
+
+        <View style={styles.poemBox}>
+          <Text style={styles.poemText}>
+            “{poem.text}”
+          </Text>
+
+          <Text style={styles.poemAuthor}>
+            — {poem.author}
+          </Text>
+        </View>
+      </View>
 
       <View style={styles.card}>
         <Text style={styles.cardText}>{t.safe}</Text>
@@ -52,6 +79,34 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 24,
     lineHeight: 22,
+  },
+  poemWrapper: {
+    marginBottom: 28,
+  },
+  poemIntro: {
+    fontSize: 15,
+    color: "#94A3B8",
+    textAlign: "center",
+    marginBottom: 12,
+    lineHeight: 20,
+  },
+  poemBox: {
+    backgroundColor: "#0B1220",
+    borderRadius: 18,
+    padding: 20,
+  },
+  poemText: {
+    fontSize: 17,
+    color: "#E5E7EB",
+    textAlign: "center",
+    lineHeight: 26,
+    fontStyle: "italic",
+  },
+  poemAuthor: {
+    fontSize: 14,
+    color: "#94A3B8",
+    textAlign: "center",
+    marginTop: 14,
   },
   card: {
     backgroundColor: "#1E293B",
