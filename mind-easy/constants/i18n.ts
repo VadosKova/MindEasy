@@ -1,5 +1,7 @@
 export const translations = {
   English: {
+    home: "Home",
+    meditations: "Meditations",
     hello: "Hello",
     howFeeling: "How are you feeling today?",
     trackMood: "Track your mood",
@@ -141,6 +143,8 @@ export const translations = {
   },
 
   Ukrainian: {
+    home: "Головна",
+    meditations: "Медитація",
     hello: "Привіт",
     howFeeling: "Як ти почуваєшся сьогодні?",
     trackMood: "Відстежуй свій настрій",
