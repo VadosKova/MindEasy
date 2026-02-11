@@ -4,9 +4,13 @@ import { HomeIcon } from '@/components/icons/HomeIcon';
 import { MeditationsIcon } from '@/components/icons/MeditationsIcon';
 import { TabJournalIcon } from '@/components/icons/TabJournalIcon';
 import { TabProfileIcon } from '@/components/icons/TabProfileIcon';
+import { useAppSettings } from "@/context/AppSettingsContext";
+import { translations } from "@/constants/i18n";
 
 export default function TabsLayout() {
   const colorScheme = useColorScheme();
+  const { language } = useAppSettings();
+  const t = translations[language];
 
   return (
     <Tabs
@@ -29,28 +33,28 @@ export default function TabsLayout() {
       <Tabs.Screen
         name="home"
         options={{
-          title: 'Home',
+          title: t.home,
           tabBarIcon: ({ focused }) => <HomeIcon size={38} active={focused} />,
         }}
       />
       <Tabs.Screen
         name="meditations"
         options={{
-          title: 'Meditations',
+          title: t.meditations,
           tabBarIcon: ({ focused }) => <MeditationsIcon size={38} active={focused} />,
         }}
       />
       <Tabs.Screen
         name="journal"
         options={{
-          title: 'Journal',
+          title: t.journal,
           tabBarIcon: ({ focused }) => <TabJournalIcon size={38} active={focused} />,
         }}
       />
       <Tabs.Screen
         name="profile"
         options={{
-          title: 'Profile',
+          title: t.profile,
           tabBarIcon: ({ focused }) => <TabProfileIcon size={36} active={focused} />,
         }}
       />
