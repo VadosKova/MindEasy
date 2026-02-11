@@ -63,9 +63,12 @@ export default function JournalScreen() {
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hapticIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [isHolding, setIsHolding] = useState(false);
 
   const handlePressIn = () => {
+    setIsHolding(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
     let step = 0;
     hapticIntervalRef.current = setInterval(() => {
       step++;
@@ -79,6 +82,11 @@ export default function JournalScreen() {
       Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
       router.replace("/sos");
     }, 3000);
+  };
+
+  const cancelPress = () => {
+    setIsHolding(false);
+    cleanupSOS();
   };
 
   const cleanupSOS = () => {
@@ -231,11 +239,16 @@ export default function JournalScreen() {
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+      {isHolding && (
+        <View style={styles.sosOverlay}>
+          <Text style={styles.sosOverlayText}>{t.holdForSOS}</Text>
+        </View>
+      )}
       <Pressable 
         style={{ flex: 1 }} 
         onLongPress={handlePressIn}
         delayLongPress={500}
-        onPressOut={cleanupSOS}
+        onPressOut={cancelPress}
       >
         <FlatList
           data={entries}
@@ -463,5 +476,23 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#37474F',
     lineHeight: 20,
+  },
+  sosOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(229, 0, 0, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+    pointerEvents: 'none',
+  },
+  sosOverlayText: {
+    fontFamily: 'Jua_400Regular',
+    fontSize: 24,
+    color: '#E50000',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    overflow: 'hidden',
   },
 });

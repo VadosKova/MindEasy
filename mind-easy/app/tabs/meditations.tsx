@@ -1,6 +1,6 @@
 import { ImageBackground, ScrollView, StyleSheet, Text, TouchableOpacity, View, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { BreathingExercisesIcon } from '@/components/icons/BreathingExercisesIcon';
 import { StressReliefIcon } from '@/components/icons/StressReliefIcon';
 import { SleepRelaxationIcon } from '@/components/icons/SleepRelaxationIcon';
@@ -23,9 +23,12 @@ export default function MeditationsScreen() {
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hapticIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [isHolding, setIsHolding] = useState(false);
 
   const handlePressIn = () => {
+    setIsHolding(true);
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
     let step = 0;
     hapticIntervalRef.current = setInterval(() => {
       step++;
@@ -41,6 +44,11 @@ export default function MeditationsScreen() {
     }, 3000);
   };
 
+  const cancelPress = () => {
+    setIsHolding(false);
+    cleanupSOS();
+  };
+
   const cleanupSOS = () => {
     if (timerRef.current) clearTimeout(timerRef.current);
     if (hapticIntervalRef.current) clearInterval(hapticIntervalRef.current);
@@ -48,11 +56,16 @@ export default function MeditationsScreen() {
 
 	return (
 		<SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+      {isHolding && (
+        <View style={styles.sosOverlay}>
+          <Text style={styles.sosOverlayText}>{t.holdForSOS}</Text>
+        </View>
+      )}
       <Pressable 
         style={{ flex: 1 }} 
         onLongPress={handlePressIn}
         delayLongPress={400}
-        onPressOut={cleanupSOS}
+        onPressOut={cancelPress}
       >
         <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
           <Text style={[styles.header, { color: colors.text }]}>{t.findPeace}</Text>
@@ -255,5 +268,22 @@ const styles = StyleSheet.create({
   tileOrange: {
     backgroundColor: '#F2B04D',
   },
+  sosOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(229, 0, 0, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+    pointerEvents: 'none',
+  },
+  sosOverlayText: {
+    fontFamily: 'Jua_400Regular',
+    fontSize: 24,
+    color: '#E50000',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
 });
-
