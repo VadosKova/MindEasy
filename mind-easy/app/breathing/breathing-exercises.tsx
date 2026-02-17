@@ -356,27 +356,27 @@ export default function BreathingExercises() {
             </TouchableOpacity>
           </View>
         </View>
+
+        <TouchableOpacity
+          style={[styles.startButtonWrapper, { marginTop: 8 }]}
+          onPress={handleStartPause}
+        >
+          <LinearGradient
+            colors={['#8CCAED', '#80CBC5']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.startButton}
+          >
+            <Text style={styles.startButtonText}>
+              {running ? t.pause : t.startSession}
+            </Text>
+          </LinearGradient>
+        </TouchableOpacity>
       </View>
 
       {running && (
         <Text style={styles.timer}>{formatTime(secondsLeft)}</Text>
       )}
-
-      <TouchableOpacity
-        style={styles.startButtonWrapper}
-        onPress={handleStartPause}
-      >
-        <LinearGradient
-          colors={['#8CCAED', '#80CBC5']}
-          start={{ x: 0, y: 0 }}
-          end={{ x: 1, y: 0 }}
-          style={styles.startButton}
-        >
-          <Text style={styles.startButtonText}>
-            {running ? t.pause : t.startSession}
-          </Text>
-        </LinearGradient>
-      </TouchableOpacity>
     </SafeAreaView>
   );
 }
@@ -424,7 +424,7 @@ const styles = StyleSheet.create({
   },
   exerciseCard: {
     width: '48%',
-    height: 70,
+    height: 60,
     backgroundColor: '#FBFAF2',
     borderRadius: 16,
     borderWidth: 4,
@@ -526,14 +526,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#8CCAED',
     borderRadius: 15,
     gap: 4,
-    height: 40,
+    height: 30,
   },
   segmentButton: {
     flex: 1,
-    height: '100%',
-    paddingVertical: 10,
-    paddingHorizontal: 8,
-    borderRadius: 10,
+    height: 30,
+    paddingVertical: 6,
+    paddingHorizontal: 6,
+    borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: 'transparent',
@@ -542,9 +542,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#FDE68A',
   },
   segmentButtonText: {
-    fontSize: 14,
+    fontSize: 12,
     color: '#FFFFFF',
     fontFamily: 'IstokWeb_400Regular',
+    flexShrink: 1,
   },
   segmentButtonTextActive: {
     color: '#263238',
@@ -556,7 +557,7 @@ const styles = StyleSheet.create({
     color: '#607D8B',
   },
   startButtonWrapper: {
-    width: '90%',
+    width: '100%',
     marginTop: 20,
   },
   startButton: {
