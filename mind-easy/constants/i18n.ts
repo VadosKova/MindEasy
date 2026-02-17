@@ -90,7 +90,6 @@ export const translations = {
     hold: "Hold",
     pause: "Pause",
     restart: "Restart",
-    // breathing exercises screen
     breathingExercises: "Breathing exercises",
     boxBreathing: "Box breathing",
     fourSevenEight: "4-7-8 Relax",

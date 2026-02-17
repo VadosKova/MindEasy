@@ -88,7 +88,7 @@ export default function MeditationsScreen() {
           </View>
 
           <View style={styles.gridRow}>
-            <TouchableOpacity style={[styles.tile, styles.tilePurple]} onPress={() => router.push('/breathing-exercises' as any)}>
+            <TouchableOpacity style={[styles.tile, styles.tilePurple]} onPress={() => router.push('/breathing/breathing-exercises')}>
               <View style={styles.tileIconCol}>
                 <BreathingExercisesIcon />
                 <Text style={styles.tileTimeUnder}>3–10 {t.min}</Text>
@@ -99,7 +99,7 @@ export default function MeditationsScreen() {
             <TouchableOpacity style={[styles.tile, styles.tileGreen]}>
               <View style={styles.tileIconCol}>
                 <StressReliefIcon />
-                <Text style={styles.tileTimeUnder}>5–12 {t.min}</Text>
+                <Text style={styles.tileTimeUnder}>1–2 {t.min}</Text>
               </View>
               <Text style={styles.tileTitle}>{t.stressRelief}</Text>
             </TouchableOpacity>
@@ -109,7 +109,7 @@ export default function MeditationsScreen() {
             <TouchableOpacity style={[styles.tile, styles.tileLilac]}>
               <View style={styles.tileIconCol}>
                 <SleepRelaxationIcon />
-                <Text style={styles.tileTimeUnder}>10–20 {t.min}</Text>
+                <Text style={styles.tileTimeUnder}>5–20 {t.min}</Text>
               </View>
               <Text style={styles.tileTitle}>{t.sleepRelax}</Text>
             </TouchableOpacity>
