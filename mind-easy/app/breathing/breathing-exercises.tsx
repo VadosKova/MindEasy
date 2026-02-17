@@ -19,7 +19,11 @@ import { useAppSettings } from '@/context/AppSettingsContext';
 import { translations } from '@/constants/i18n';
 
 const circleImg = require('@/assets/images/Ellipse 31.png');
-const soundFile = require('@/assets/sounds/relax.mp3');
+
+const soundFiles: Record<'waves' | 'rain', any> = {
+  waves: require('@/assets/sounds/waves.mp3'),
+  rain: require('@/assets/sounds/rain.mp3'),
+};
 
 export type BreathPhase = { type: 'inhale' | 'hold' | 'exhale'; duration: number };
 
@@ -65,7 +69,9 @@ export default function BreathingExercises() {
   const phaseTimeRef = useRef(0);
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const player = useAudioPlayer(soundFile);
+  const player = useAudioPlayer(
+    sound === 'silence' ? null : soundFiles[sound as 'waves' | 'rain']
+  );
   const scale = useRef(new Animated.Value(1)).current;
 
   const pattern = useMemo(() => {
@@ -90,9 +96,20 @@ export default function BreathingExercises() {
   }, [durationMin, running]);
 
   useEffect(() => {
+    if (!player) return;
     player.loop = true;
     player.volume = 0.35;
   }, [player]);
+
+  // respond to sound setting changes while running
+  useEffect(() => {
+    if (!running || !player) return;
+    if (sound === 'silence') {
+      player.pause();
+    } else {
+      player.play();
+    }
+  }, [sound, running, player]);
 
   useEffect(() => {
     if (!running) return;
@@ -122,7 +139,7 @@ export default function BreathingExercises() {
         if (prev <= 1) {
           clearInterval(intervalRef.current!);
           setRunning(false);
-          player.pause();
+          player?.pause();
           setPhase('ready');
           return durationMin * 60;
         }
@@ -159,10 +176,10 @@ export default function BreathingExercises() {
   const handleStartPause = async () => {
     if (running) {
       setRunning(false);
-      player.pause();
+      player?.pause();
     } else {
       setRunning(true);
-      if (sound !== 'silence') {
+      if (sound !== 'silence' && player) {
         player.play();
       }
     }
@@ -319,10 +336,9 @@ export default function BreathingExercises() {
           </View>
         </View>
 
-        <View style={{ marginBottom: 12 }}>
-          <Text style={styles.controlLabel}>{t.vibration}</Text>
-          <View style={styles.segmentContainer}>
-            <TouchableOpacity
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
+          <Text style={[styles.controlLabel, { marginRight: 8 }]}>{t.vibration}</Text>
+          <View style={[styles.segmentContainer, { width: 110 }]}>            <TouchableOpacity
               style={[
                 styles.segmentButton,
                 vibration && styles.segmentButtonActive,
