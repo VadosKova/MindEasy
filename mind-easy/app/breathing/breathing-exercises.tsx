@@ -69,9 +69,12 @@ export default function BreathingExercises() {
   const phaseTimeRef = useRef(0);
 
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  const player = useAudioPlayer(
-    sound === 'silence' ? null : soundFiles[sound as 'waves' | 'rain']
-  );
+  
+  const wavesPlayer = useAudioPlayer(soundFiles.waves);
+  const rainPlayer = useAudioPlayer(soundFiles.rain);
+  
+  const player = sound === 'waves' ? wavesPlayer : sound === 'rain' ? rainPlayer : null;
+  
   const scale = useRef(new Animated.Value(1)).current;
 
   const pattern = useMemo(() => {
@@ -96,20 +99,23 @@ export default function BreathingExercises() {
   }, [durationMin, running]);
 
   useEffect(() => {
-    if (!player) return;
-    player.loop = true;
-    player.volume = 0.35;
-  }, [player]);
+    wavesPlayer.loop = true;
+    wavesPlayer.volume = 1;
+    wavesPlayer.pause();
+    
+    rainPlayer.loop = true;
+    rainPlayer.volume = 1;
+    rainPlayer.pause();
+  }, [wavesPlayer, rainPlayer]);
 
-  // respond to sound setting changes while running
   useEffect(() => {
-    if (!running || !player) return;
-    if (sound === 'silence') {
-      player.pause();
-    } else {
+    wavesPlayer.pause();
+    rainPlayer.pause();
+    
+    if (running && sound !== 'silence' && player) {
       player.play();
     }
-  }, [sound, running, player]);
+  }, [sound, running, player, wavesPlayer, rainPlayer]);
 
   useEffect(() => {
     if (!running) return;
@@ -139,7 +145,8 @@ export default function BreathingExercises() {
         if (prev <= 1) {
           clearInterval(intervalRef.current!);
           setRunning(false);
-          player?.pause();
+          wavesPlayer.pause();
+          rainPlayer.pause();
           setPhase('ready');
           return durationMin * 60;
         }
@@ -163,7 +170,7 @@ export default function BreathingExercises() {
     }, 1000);
 
     return () => clearInterval(intervalRef.current!);
-  }, [running, pattern, speedMultiplier, durationMin, vibration, player]);
+  }, [running, pattern, speedMultiplier, durationMin, vibration, wavesPlayer, rainPlayer]);
 
   const formatTime = (s: number) => {
     const m = Math.floor(s / 60)
@@ -176,12 +183,10 @@ export default function BreathingExercises() {
   const handleStartPause = async () => {
     if (running) {
       setRunning(false);
-      player?.pause();
+      wavesPlayer.pause();
+      rainPlayer.pause();
     } else {
       setRunning(true);
-      if (sound !== 'silence' && player) {
-        player.play();
-      }
     }
   };
 
@@ -320,7 +325,7 @@ export default function BreathingExercises() {
                     styles.segmentButton,
                     sound === v && styles.segmentButtonActive,
                   ]}
-                  onPress={() => !running && setSound(v)}
+                  onPress={() => setSound(v)}
                 >
                   <Text
                     style={[
@@ -336,9 +341,10 @@ export default function BreathingExercises() {
           </View>
         </View>
 
-        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 12 }}>
-          <Text style={[styles.controlLabel, { marginRight: 8 }]}>{t.vibration}</Text>
-          <View style={[styles.segmentContainer, { width: 110 }]}>            <TouchableOpacity
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 12 }}>
+          <Text style={styles.controlLabel}>{t.vibration}</Text>
+          <View style={[styles.segmentContainer, { width: 110 }]}>
+            <TouchableOpacity
               style={[
                 styles.segmentButton,
                 vibration && styles.segmentButtonActive,
