@@ -16,9 +16,9 @@ const GradientMessage: React.FC<GradientMessageProps> = ({
   return (
     <LinearGradient
       colors={[
-        "#7F00FF",
-        "#E100FF",
-        "#00C6FF",
+        "#8133F9",
+        "#9529D4",
+        "#A520AF",
       ]}
       start={{ x: 0, y: 0 }}
       end={{ x: 1, y: 1 }}
