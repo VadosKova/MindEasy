@@ -7,6 +7,11 @@ import { NotificationsIcon } from '@/components/icons/NotificationsIcon';
 import { ThemeIcon } from '@/components/icons/ThemeIcon';
 import { LanguageIcon } from '@/components/icons/LanguageIcon';
 import { DownArrowIcon } from '@/components/icons/DownArrowIcon';
+import { PdfIcon } from '@/components/icons/PdfIcon';
+import { AiIcon } from '@/components/icons/AiIcon';
+import { ChatbotIcon } from '@/components/icons/ChatbotIcon';
+import { StarIcon } from '@/components/icons/StarIcon';
+import { RightArrowIcon } from '@/components/icons/RightArrowIcon';
 import { requestNotificationPermission } from '@/utils/notifications';
 import { syncReminders } from '@/utils/notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -24,6 +29,7 @@ export default function SettingsScreen() {
   const t = translations[language];
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
+  const [aiAnalysisEnabled, setAiAnalysisEnabled] = useState(false);
 
   const toggleNotifications = async (value: boolean) => {
     if (value) {
@@ -75,6 +81,16 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
 
+        <TouchableOpacity style={[styles.settingCard, { backgroundColor: colors.card }]}>
+          <View style={styles.settingContent}>
+            <StarIcon size={30} color="#BDBDBD" />
+            <Text style={[styles.settingLabel, { color: colors.text }]}>
+              Current Plan: Basic
+            </Text>
+          </View>
+          <RightArrowIcon size={30} color={colors.text} />
+        </TouchableOpacity>
+
         <View style={[styles.settingCard, { backgroundColor: colors.card }]}>
           <View style={styles.settingContent}>
             <NotificationsIcon size={30} color="#FFC01E" />
@@ -124,6 +140,52 @@ export default function SettingsScreen() {
             ))}
           </View>
         )}
+
+        <View style={[styles.settingCard, { backgroundColor: colors.card }]}>
+          <View style={styles.settingContent}>
+            <AiIcon size={30} />
+            <Text style={[styles.settingLabel, { color: colors.text }]}>
+              AI Journal Analysis
+            </Text>
+          </View>
+          <Switch
+            value={aiAnalysisEnabled}
+            onValueChange={setAiAnalysisEnabled}
+            trackColor={{ false: '#363935', true: '#2DB200' }}
+            thumbColor="#FFFFFF"
+            style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
+          />
+        </View>
+
+        <TouchableOpacity
+          style={[styles.settingCard, { backgroundColor: colors.card }]}
+          onPress={() => {
+            // TODO: export PDF
+          }}
+        >
+          <View style={styles.settingContent}>
+            <PdfIcon size={30} />
+            <Text style={[styles.settingLabel, { color: colors.text }]}>
+              Export PDF report
+            </Text>
+          </View>
+          <RightArrowIcon size={30} color="#37474F" />
+        </TouchableOpacity>
+
+        <TouchableOpacity
+          style={[styles.settingCard, { backgroundColor: colors.card }]}
+          onPress={() => {
+            // Chatbot: export PDF
+          }}
+        >
+          <View style={styles.settingContent}>
+            <ChatbotIcon size={30} />
+            <Text style={[styles.settingLabel, { color: colors.text }]}>
+              MindEasy chatbot
+            </Text>
+          </View>
+          <RightArrowIcon size={30} color={colors.text} />
+        </TouchableOpacity>
 
         <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
           <Text style={styles.signOutButtonText}>{t.signOut}</Text>

@@ -9,7 +9,7 @@ interface PdfIconProps {
 export function PdfIcon({ size = 32, style }: PdfIconProps) {
   return (
     <Image
-      source={require('../assets/images/PDF.png')}
+      source={require('../../assets/images/PDF.png')}
       style={[
         {
           width: size,

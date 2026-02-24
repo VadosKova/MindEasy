@@ -9,7 +9,7 @@ interface ChatbotIconProps {
 export function ChatbotIcon({ size = 30, style }: ChatbotIconProps) {
   return (
     <Image
-      source={require('../assets/images/Chatbot.png')}
+      source={require('../../assets/images/Chatbot.png')}
       style={[
         {
           width: size,

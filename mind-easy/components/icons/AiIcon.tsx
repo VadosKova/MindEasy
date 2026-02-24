@@ -9,7 +9,7 @@ interface AiIconProps {
 export function AiIcon({ size = 30, style }: AiIconProps) {
   return (
     <Image
-      source={require('../assets/images/AI.png')}
+      source={require('../../assets/images/AI.png')}
       style={[
         {
           width: size,
