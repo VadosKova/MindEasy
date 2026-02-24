@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Switch, Alert } from 'react-native';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { BackIcon } from '@/components/icons/BackIcon';
+import { CustomSwitch } from '@/components/CustomSwitch';
 import { NotificationsIcon } from '@/components/icons/NotificationsIcon';
 import { ThemeIcon } from '@/components/icons/ThemeIcon';
 import { LanguageIcon } from '@/components/icons/LanguageIcon';
@@ -81,7 +82,10 @@ export default function SettingsScreen() {
           </TouchableOpacity>
         </View>
 
-        <TouchableOpacity style={[styles.settingCard, { backgroundColor: colors.card }]}>
+        <TouchableOpacity
+          style={[styles.settingCard, { backgroundColor: colors.card }]}
+          onPress={() => router.push('/subscription-plan')}
+        >
           <View style={styles.settingContent}>
             <StarIcon size={30} color="#BDBDBD" />
             <Text style={[styles.settingLabel, { color: colors.text }]}>
@@ -96,7 +100,7 @@ export default function SettingsScreen() {
             <NotificationsIcon size={30} color="#FFC01E" />
             <Text style={[styles.settingLabel, { color: colors.text }]}>{t.notifications}</Text>
           </View>
-          <Switch value={notificationsEnabled} onValueChange={toggleNotifications} trackColor={{ false: '#363935', true: '#2DB200' }} thumbColor={'#FFFFFF'} style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }} />
+          <CustomSwitch value={notificationsEnabled} onValueChange={toggleNotifications} trackColor={{ false: '#363935', true: '#2DB200' }} thumbColor="#FFFFFF" />
         </View>
 
         <View style={[styles.settingCard, { backgroundColor: colors.card }]}>
@@ -148,12 +152,11 @@ export default function SettingsScreen() {
               AI Journal Analysis
             </Text>
           </View>
-          <Switch
+          <CustomSwitch
             value={aiAnalysisEnabled}
             onValueChange={setAiAnalysisEnabled}
             trackColor={{ false: '#363935', true: '#2DB200' }}
             thumbColor="#FFFFFF"
-            style={{ transform: [{ scaleX: 0.8 }, { scaleY: 0.8 }] }}
           />
         </View>
 

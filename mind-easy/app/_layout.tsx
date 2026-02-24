@@ -45,6 +45,7 @@ export default function RootLayout() {
           <Stack.Screen name="calm-breathing" options={{ headerShown: false }} />
           <Stack.Screen name="breathing" options={{ headerShown: false }} />
           <Stack.Screen name="sos" options={{ headerShown: false, presentation: "fullScreenModal" }} />
+          <Stack.Screen name="subscription-plan" options={{ headerShown: false }} />
         </Stack>
         <StatusBar style="auto" />
       </ThemeProvider>
