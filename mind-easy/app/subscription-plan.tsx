@@ -136,27 +136,46 @@ const styles = StyleSheet.create({
     marginTop: 6,
     marginBottom: 16,
   },
-  rowCenter: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 2, marginBottom: 16 },
-  planSubtitleWithIcon: { fontFamily: 'IstokWeb_400Regular', fontSize: 15, color: '#9E9E9E' },
+  rowCenter: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    gap: 8, 
+    marginTop: 2, 
+    marginBottom: 16 
+  },
+  planSubtitleWithIcon: { 
+    fontFamily: 'IstokWeb_400Regular', 
+    fontSize: 15, 
+    color: '#9E9E9E' 
+  },
   selectedPill: {
     backgroundColor: '#BBBBBB',
     paddingHorizontal: 18,
     paddingVertical: 10,
     borderRadius: 15,
   },
-  selectedPillText: { color: '#FFF', fontFamily: 'IstokWeb_700Bold' },
+  selectedPillText: { 
+    color: '#FFF', 
+    fontFamily: 'IstokWeb_700Bold' 
+  },
   upgradeBlue: {
     backgroundColor: '#0D3B8C',
     paddingHorizontal: 22,
     paddingVertical: 10,
     borderRadius: 18,
   },
-  upgradeBlueText: { color: '#FFF', fontFamily: 'IstokWeb_700Bold' },
+  upgradeBlueText: { 
+    color: '#FFF', 
+    fontFamily: 'IstokWeb_700Bold' 
+  },
   upgradeYellow: {
     backgroundColor: '#FFC107',
     paddingHorizontal: 22,
     paddingVertical: 10,
     borderRadius: 18,
   },
-  upgradeYellowText: { color: '#FFF', fontFamily: 'IstokWeb_700Bold' },
+  upgradeYellowText: { 
+    color: '#FFF', 
+    fontFamily: 'IstokWeb_700Bold' 
+  },
 });

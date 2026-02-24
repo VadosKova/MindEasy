@@ -13,8 +13,6 @@ router.post("/", async (req, res) => {
       return res.status(500).json({ error: "GEMINI_API_KEY or GEMINI_ENDPOINT not configured" });
     }
 
-    // Proxy request to Gemini endpoint. The expected request/response shape
-    // depends on the provider; adjust headers/body as needed for your setup.
     const response = await fetch(endpoint, {
       method: "POST",
       headers: {

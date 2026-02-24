@@ -8,6 +8,7 @@ import { SendIcon } from '@/components/icons/SendIcon';
 import GradientMessage from '@/components/GradientMessage';
 import { Colors } from '@/constants/theme';
 import { useAppSettings } from '@/context/AppSettingsContext';
+import { API_BASE_URL } from '@/constants/api';
 
 type Message = { id: string; from: 'user' | 'bot'; text: string };
 
@@ -23,7 +24,6 @@ export default function ChatBotScreen() {
   const flatRef = useRef<FlatList>(null);
 
   useEffect(() => {
-    // scroll to end when messages change
     flatRef.current?.scrollToEnd?.({ animated: true });
   }, [messages]);
 
@@ -33,15 +33,14 @@ export default function ChatBotScreen() {
     setMessages(prev => [...prev, newMsg]);
     setText('');
 
-    // Call server proxy to Gemini. Server must set GEMINI_API_KEY and GEMINI_ENDPOINT in .env
     try {
-      const resp = await fetch('http://localhost:5000/api/gemini', {
+      const resp = await fetch(`${API_BASE_URL}/api/gemini`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ prompt: newMsg.text }),
       });
       const data = await resp.json();
-      // Try to extract a sensible reply - adjust according to your Gemini response shape
+
       const reply = data.output?.text || data.reply || (typeof data === 'string' ? data : JSON.stringify(data));
       setMessages(prev => [...prev, { id: (Date.now()+1).toString(), from: 'bot', text: reply }]);
     } catch (err) {
@@ -54,7 +53,7 @@ export default function ChatBotScreen() {
     if (item.from === 'bot') {
       return (
         <View style={styles.botRow}>
-          <ChatbotIcon size={28} />
+          <ChatbotIcon size={43} />
           <View style={[styles.botBubble, { backgroundColor: '#FFFFFF' }]}>
             <Text style={styles.botText}>{item.text}</Text>
           </View>
@@ -115,7 +114,9 @@ export default function ChatBotScreen() {
 }
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
+  safeArea: { 
+    flex: 1 
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -124,14 +125,32 @@ const styles = StyleSheet.create({
     paddingTop: 12,
     paddingBottom: 8,
   },
-  backButton: { width: 36, alignItems: 'flex-start' },
+  backButton: { 
+    width: 36, 
+    alignItems: 'flex-start' 
+  },
   headerTitle: {
     fontFamily: 'Jua_400Regular',
-    fontSize: 28,
+    fontSize: 32,
   },
-  logoWrap: { alignItems: 'center', marginTop: 8, marginBottom: 8 },
-  messagesContainer: { paddingHorizontal: 12, paddingBottom: 12 },
-  botRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginTop: 12 },
+  logoWrap: { 
+    alignItems: 'center', 
+    marginTop: 50, 
+    marginBottom: 8 
+  },
+  messagesContainer: {
+    width: '96%',
+    alignSelf: 'center',
+    paddingHorizontal: 12, 
+    paddingBottom: 12,
+    marginTop: 40, 
+  },
+  botRow: { 
+    flexDirection: 'row', 
+    alignItems: 'flex-start', 
+    gap: 8, 
+    marginTop: 12 
+  },
   botBubble: {
     marginLeft: 6,
     paddingHorizontal: 12,
@@ -146,32 +165,57 @@ const styles = StyleSheet.create({
   },
   botText: {
     fontFamily: 'IstokWeb_400Regular',
-    fontSize: 15,
-    color: '#37474F',
+    fontSize: 19,
+    color: '#000000',
   },
-  userRow: { alignItems: 'flex-end', marginTop: 12 },
-  userBubble: { borderRadius: 20 },
-  userText: { color: '#FFF', fontFamily: 'IstokWeb_400Regular', fontSize: 15 },
+  userRow: { 
+    alignItems: 'flex-end', 
+    marginTop: 12 
+  },
+  userBubble: { 
+    borderRadius: 16 
+  },
+  userText: { 
+    color: '#FFF', 
+    fontFamily: 'IstokWeb_400Regular', 
+    fontSize: 19 
+  },
   inputWrap: {
+    width: 346,
+    height: 50,
+    alignSelf: 'center',
     flexDirection: 'row',
     alignItems: 'center',
+    justifyContent: 'space-between',
     gap: 12,
     paddingHorizontal: 12,
     paddingVertical: 10,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    borderRadius: 19,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
   },
   input: {
-    width: 340,
+    flex: 1,
     height: 46,
     backgroundColor: '#FFFFFF',
     borderRadius: 23,
     paddingHorizontal: 18,
     paddingVertical: 10,
     fontFamily: 'IstokWeb_400Regular',
-    fontSize: 15,
+    fontSize: 19,
     color: '#37474F',
   },
-  sendButtonTouch: { marginLeft: 8 },
-  sendButton: { width: 34, height: 34, borderRadius: 17, justifyContent: 'center', alignItems: 'center' },
+  sendButtonTouch: { 
+    marginLeft: 8 
+  },
+  sendButton: { 
+    width: 34, 
+    height: 34, 
+    borderRadius: 17, 
+    justifyContent: 'center', 
+    alignItems: 'center' 
+   },
 });
