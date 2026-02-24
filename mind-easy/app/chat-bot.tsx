@@ -162,9 +162,10 @@ const styles = StyleSheet.create({
     borderTopRightRadius: 24,
   },
   input: {
-    flex: 1,
+    width: 340,
+    height: 46,
     backgroundColor: '#FFFFFF',
-    borderRadius: 24,
+    borderRadius: 23,
     paddingHorizontal: 18,
     paddingVertical: 10,
     fontFamily: 'IstokWeb_400Regular',
@@ -172,5 +173,5 @@ const styles = StyleSheet.create({
     color: '#37474F',
   },
   sendButtonTouch: { marginLeft: 8 },
-  sendButton: { width: 48, height: 48, borderRadius: 24, justifyContent: 'center', alignItems: 'center' },
+  sendButton: { width: 34, height: 34, borderRadius: 17, justifyContent: 'center', alignItems: 'center' },
 });

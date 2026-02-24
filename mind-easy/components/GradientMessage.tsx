@@ -1,6 +1,6 @@
 import React from "react";
 import { StyleProp, ViewStyle } from "react-native";
-import LinearGradient from "react-native-linear-gradient";
+import { LinearGradient } from "expo-linear-gradient";
 
 interface GradientMessageProps {
   children?: React.ReactNode;
