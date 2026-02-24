@@ -177,9 +177,7 @@ export default function SettingsScreen() {
 
         <TouchableOpacity
           style={[styles.settingCard, { backgroundColor: colors.card }]}
-          onPress={() => {
-            // Chatbot: export PDF
-          }}
+          onPress={() => router.push('/chat-bot')}
         >
           <View style={styles.settingContent}>
             <ChatbotIcon size={30} />
