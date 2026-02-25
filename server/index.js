@@ -1,5 +1,6 @@
 import dotenv from "dotenv";
 import express from "express";
+import chatRoutes from "./routes/chat.js";
 import path from "path";
 import mongoose from "mongoose";
 import cors from 'cors';
@@ -10,7 +11,6 @@ import quoteRoutes from "./routes/quotes.js";
 import meditationRoutes from "./routes/meditation.js";
 import journalRoutes from "./routes/journal.js";
 import profileRoutes from "./routes/profile.js";
-import geminiRoutes from "./routes/gemini.js";
 import { createAdminIfNotExists } from "./utils/createAdmin.js";
 
 dotenv.config();
@@ -30,7 +30,7 @@ app.use("/api/meditation", meditationRoutes);
 app.use("/api/journal", journalRoutes);
 app.use("/uploads", express.static(path.resolve("uploads")));
 app.use("/api/profile", profileRoutes);
-app.use("/api/gemini", geminiRoutes);
+app.use("/api/chat", chatRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)
