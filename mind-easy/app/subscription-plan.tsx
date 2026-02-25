@@ -46,7 +46,7 @@ export default function SubscriptionPlanScreen() {
           </View>
           <Text style={[styles.planTitle, { color: colors.text }]}>Standard</Text>
           <View style={styles.rowCenter}>
-            <UnlockIcon size={18} color="#37474F" />
+            <UnlockIcon size={25} color="#37474F" />
             <Text style={styles.planSubtitleWithIcon}>Export PDF report</Text>
           </View>
           <TouchableOpacity style={styles.upgradeBlue}>
@@ -60,7 +60,7 @@ export default function SubscriptionPlanScreen() {
           </View>
           <Text style={[styles.planTitle, { color: colors.text }]}>Premium</Text>
           <View style={styles.rowCenter}>
-            <UnlockIcon size={18} color="#37474F" />
+            <UnlockIcon size={25} color="#37474F" />
             <Text style={styles.planSubtitleWithIcon}>Unlock everything</Text>
           </View>
           <TouchableOpacity style={styles.upgradeYellow}>
@@ -91,18 +91,18 @@ const styles = StyleSheet.create({
   planCard: {
     backgroundColor: '#FFF',
     width: 328,
-    maxHeight: 220,
-    borderTopLeftRadius: 13,
-    borderBottomLeftRadius: 13, 
-    borderBottomRightRadius: 0,
-    borderTopRightRadius: 0,
+    maxHeight: 205,
+    borderTopLeftRadius: 23,
+    borderBottomLeftRadius: 23, 
+    borderBottomRightRadius: 23,
+    borderTopRightRadius: 23,
     paddingVertical: 22,
     paddingHorizontal: 18,
     alignItems: 'center',
     alignSelf: 'center',
     marginBottom: 40,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 24 },
     shadowOpacity: 0.08,
     shadowRadius: 6,
     elevation: 3,
@@ -110,22 +110,26 @@ const styles = StyleSheet.create({
   },
   topRight: {
     position: 'absolute',
-    top: 16,
+    top: 30,
     right: 0,
   },
   popularBadge: {
+    width: 98,
+    height: 35,
     backgroundColor: '#1465E7',
-    paddingHorizontal: 12,
+    paddingHorizontal: 14,
     paddingVertical: 6,
-    borderRadius: 20,
-    marginRight: 16,
+    borderTopLeftRadius: 20,
+    borderBottomLeftRadius: 20,
+    borderTopRightRadius: 0,
+    borderBottomRightRadius: 0,
   },
   popularText: {
     color: '#FFF',
     fontFamily: 'IstokWeb_700Bold',
     fontSize: 17,
   },
-  starWrap: { marginBottom: 16 },
+  starWrap: { marginBottom: 2 },
   planTitle: {
     fontFamily: 'Jua_400Regular',
     color: '#000',
@@ -134,7 +138,7 @@ const styles = StyleSheet.create({
   },
   planSubtitle: {
     fontFamily: 'IstokWeb_400Regular',
-    fontSize: 16,
+    fontSize: 18,
     color: '#78909C',
     marginTop: 6,
     marginBottom: 16,
@@ -144,11 +148,14 @@ const styles = StyleSheet.create({
     alignItems: 'center', 
     gap: 8, 
     marginTop: 2, 
-    marginBottom: 16 
+    marginBottom: 16,
+    marginRight: 17, 
   },
   planSubtitleWithIcon: { 
     fontFamily: 'IstokWeb_400Regular', 
-    fontSize: 15, 
+    fontSize: 18, 
+    textAlign: 'center',
+    alignSelf: 'center',
     color: '#9E9E9E' 
   },
   selectedPill: {
