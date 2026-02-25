@@ -23,7 +23,7 @@ export default function SubscriptionPlanScreen() {
         <View style={{ width: 36 }} />
       </View>
 
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false} scrollEnabled={false}>
         <View style={[styles.planCard, { backgroundColor: colors.card }]}>
           <View style={styles.topRight}>
             <View style={styles.popularBadge}>
@@ -91,7 +91,7 @@ const styles = StyleSheet.create({
   planCard: {
     backgroundColor: '#FFF',
     width: 328,
-    maxHeight: 205,
+    maxHeight: 200,
     borderTopLeftRadius: 23,
     borderBottomLeftRadius: 23, 
     borderBottomRightRadius: 23,
@@ -103,9 +103,9 @@ const styles = StyleSheet.create({
     marginBottom: 40,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 24 },
-    shadowOpacity: 0.08,
-    shadowRadius: 6,
-    elevation: 3,
+    shadowOpacity: 0.5,
+    shadowRadius: 23,
+    elevation: 8,
     position: 'relative',
   },
   topRight: {
