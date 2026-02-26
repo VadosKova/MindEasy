@@ -8,7 +8,7 @@ import { NotificationsIcon } from '@/components/icons/NotificationsIcon';
 import { ThemeIcon } from '@/components/icons/ThemeIcon';
 import { LanguageIcon } from '@/components/icons/LanguageIcon';
 import { DownArrowIcon } from '@/components/icons/DownArrowIcon';
-import { PdfIcon } from '@/components/icons/PdfIcon';
+import { Image } from 'react-native';
 import { AiIcon } from '@/components/icons/AiIcon';
 import { ChatbotIcon } from '@/components/icons/ChatbotIcon';
 import { StarIcon } from '@/components/icons/StarIcon';
@@ -162,12 +162,13 @@ export default function SettingsScreen() {
 
         <TouchableOpacity
           style={[styles.settingCard, { backgroundColor: colors.card }]}
-          onPress={() => {
-            // TODO: export PDF
-          }}
+          onPress={() => router.push('/export-pdf')}
         >
           <View style={styles.settingContent}>
-            <PdfIcon size={30} />
+            <Image
+              source={require('../assets/images/PDFIcon.png')}
+              style={{ width: 30, height: 30, resizeMode: 'contain' }}
+            />
             <Text style={[styles.settingLabel, { color: colors.text }]}>
               Export PDF report
             </Text>
