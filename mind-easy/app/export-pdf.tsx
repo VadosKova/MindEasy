@@ -60,7 +60,7 @@ export default function ExportPDFScreen() {
         value={email}
         onChangeText={setEmail}
         placeholder="Enter email for sending report..."
-        placeholderTextColor="#999"
+        placeholderTextColor="#78909C"
         style={[styles.input, { backgroundColor: colors.card, color: colors.text }]}
       />
 
@@ -79,11 +79,14 @@ const styles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    marginBottom: 24,
-    marginTop: 20,
+    justifyContent: 'space-between',
+    paddingHorizontal: 18,
+    paddingTop: 40,
+    paddingBottom: 8,
   },
-  backButton: {
-    marginRight: 12,
+  backButton: { 
+    width: 36, 
+    alignItems: 'flex-start' 
   },
   title: {
     fontFamily: 'Jua_400Regular',
@@ -91,15 +94,18 @@ const styles = StyleSheet.create({
   },
   iconWrapper: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 80,
+    marginTop: 70,
   },
   dateCard: {
+    width: 313,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     padding: 16,
     borderRadius: 16,
     marginBottom: 12,
+    alignSelf: 'center',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
@@ -119,24 +125,39 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   input: {
+    width: 313,
     height: 50,
     borderRadius: 25,
     paddingHorizontal: 20,
     fontFamily: 'IstokWeb_400Regular',
     fontSize: 15,
     marginBottom: 24,
+    marginTop: 18,
+    alignSelf: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 15,
+    elevation: 8,
   },
   button: {
+    width: 313,
     height: 50,
     borderRadius: 25,
     backgroundColor: '#E50000',
     alignItems: 'center',
+    alignSelf: 'center',
     justifyContent: 'center',
     marginTop: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.8,
+    shadowRadius: 25,
+    elevation: 8,
   },
   buttonText: {
     color: '#FFF',
     fontFamily: 'Jua_400Regular',
-    fontSize: 16,
+    fontSize: 18,
   },
 });

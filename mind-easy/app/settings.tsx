@@ -173,7 +173,7 @@ export default function SettingsScreen() {
               Export PDF report
             </Text>
           </View>
-          <RightArrowIcon size={30} color="#37474F" />
+          <RightArrowIcon size={30} color={colors.text} />
         </TouchableOpacity>
 
         <TouchableOpacity
