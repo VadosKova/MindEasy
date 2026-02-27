@@ -106,7 +106,7 @@ export default function MeditationsScreen() {
           </View>
 
           <View style={styles.gridRow}>
-            <TouchableOpacity style={[styles.tile, styles.tileLilac]}>
+            <TouchableOpacity style={[styles.tile, styles.tileLilac]} onPress={() => router.push('/sleep&relax/sleep-relax')}>
               <View style={styles.tileIconCol}>
                 <SleepRelaxationIcon />
                 <Text style={styles.tileTimeUnder}>5–20 {t.min}</Text>

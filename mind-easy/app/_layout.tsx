@@ -43,6 +43,7 @@ export default function RootLayout() {
           <Stack.Screen name="tabs" options={{ headerShown: false }} />
           <Stack.Screen name="settings" options={{ headerShown: false }} />
           <Stack.Screen name="calm-breathing" options={{ headerShown: false }} />
+          <Stack.Screen name="sleep&relax" options={{ headerShown: false }} />
           <Stack.Screen name="breathing" options={{ headerShown: false }} />
           <Stack.Screen name="sos" options={{ headerShown: false, presentation: "fullScreenModal" }} />
           <Stack.Screen name="subscription-plan" options={{ headerShown: false }} />
