@@ -6,7 +6,6 @@ import {
   View,
   ImageBackground,
   ScrollView,
-  Image,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -17,76 +16,95 @@ import SleepIcon from '@/components/icons/SleepIcon';
 import MindIcon from '@/components/icons/MindIcon';
 import RelaxIcon from '@/components/icons/RelaxIcon';
 import NightIcon from '@/components/icons/NightIcon';
-import { useAppSettings } from '@/context/AppSettingsContext';
-import { translations } from '@/constants/i18n';
 
 type SceneType = 'rain' | 'ocean' | 'fireplace' | 'night';
+type NeedType = 'sleep' | 'quiet' | 'deep' | 'wake';
 
 const sceneData: Array<{
   key: SceneType;
   title: string;
   image: any;
-  icon: React.ComponentType<any>;
 }> = [
   {
     key: 'rain',
-    title: 'Rain by Window',
+    title: 'Rain by the window',
     image: require('@/assets/images/rain-by-window.png'),
-    icon: SleepIcon,
   },
   {
     key: 'ocean',
-    title: 'Ocean Sounds',
+    title: 'Ocean waves',
     image: require('@/assets/images/ocean.png'),
-    icon: MindIcon,
   },
   {
     key: 'fireplace',
     title: 'Fireplace',
     image: require('@/assets/images/fireplace.png'),
-    icon: RelaxIcon,
   },
   {
     key: 'night',
-    title: 'Night Sky',
+    title: 'Night sky',
     image: require('@/assets/images/night.png'),
-    icon: NightIcon,
   },
 ];
 
 const durations = [5, 10, 15, 20, 25];
+const needOptions: Array<{
+  key: NeedType;
+  title: string;
+  icon: React.ComponentType<any>;
+}> = [
+  { key: 'sleep', title: 'Fall asleep', icon: SleepIcon },
+  { key: 'quiet', title: 'Quit mind', icon: MindIcon },
+  { key: 'deep', title: 'Deep relax', icon: RelaxIcon },
+  { key: 'wake', title: 'Night\nwake-up', icon: NightIcon },
+];
 
 export default function SleepRelax() {
   const router = useRouter();
-  const { language } = useAppSettings();
-  const t = translations[language];
 
+  const [selectedNeed, setSelectedNeed] = useState<NeedType>('sleep');
   const [selectedScene, setSelectedScene] = useState<SceneType>('rain');
-  const [selectedDuration, setSelectedDuration] = useState(10);
+  const [selectedDuration, setSelectedDuration] = useState(5);
 
   const handleStartSession = () => {
-    // TODO: Navigate to meditation player
+    router.push('/calm-breathing');
   };
-
-  const currentScene = sceneData.find(s => s.key === selectedScene);
-  const SceneIcon = currentScene?.icon;
 
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => router.back()}>
+        <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <BackIcon />
         </TouchableOpacity>
-        <Text style={styles.title}>Sleep & Relaxation</Text>
-        <View style={{ width: 24 }} />
       </View>
 
       <ScrollView
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        {/* Scene Selection */}
-        <Text style={styles.sectionTitle}>Choose Your Scene</Text>
+        <Text style={styles.title}>What do you need{'\n'}right now?</Text>
+
+        <View style={styles.needsGrid}>
+          {needOptions.map(option => {
+            const NeedIcon = option.icon;
+
+            return (
+              <TouchableOpacity
+                key={option.key}
+                style={[
+                  styles.needCard,
+                  selectedNeed === option.key && styles.needCardSelected,
+                ]}
+                onPress={() => setSelectedNeed(option.key)}
+              >
+                <NeedIcon width={38} height={38} />
+                <Text style={styles.needText}>{option.title}</Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
+
+        <Text style={styles.sectionTitle}>Relaxing scenes</Text>
         <View style={styles.scenesGrid}>
           {sceneData.map(scene => (
             <TouchableOpacity
@@ -101,59 +119,55 @@ export default function SleepRelax() {
                 source={scene.image}
                 style={styles.sceneImage}
                 imageStyle={{ borderRadius: 12 }}
-              >
-                <View style={styles.sceneOverlay}>
-                  <View style={styles.sceneIconContainer}>
-                    {SceneIcon && <SceneIcon width={40} height={40} />}
-                  </View>
-                  <Text style={styles.sceneTitle}>{scene.title}</Text>
-                </View>
-              </ImageBackground>
+              />
+              <View style={styles.sceneLabelWrap}>
+                <Text style={styles.sceneTitle}>{scene.title}</Text>
+              </View>
             </TouchableOpacity>
           ))}
         </View>
 
-        {/* Duration Selection */}
         <View style={styles.controlsCard}>
-          <Text style={styles.controlLabel}>Duration (minutes)</Text>
-          <View style={styles.segmentContainer}>
-            {durations.map(duration => (
-              <TouchableOpacity
-                key={duration}
-                style={[
-                  styles.durationButton,
-                  selectedDuration === duration && styles.durationButtonActive,
-                ]}
-                onPress={() => setSelectedDuration(duration)}
-              >
-                <Text
+          <View style={styles.durationRow}>
+            <Text style={styles.controlLabel}>Duration</Text>
+            <View style={styles.segmentContainer}>
+              {durations.map(duration => (
+                <TouchableOpacity
+                  key={duration}
                   style={[
-                    styles.durationButtonText,
-                    selectedDuration === duration &&
-                      styles.durationButtonTextActive,
+                    styles.durationButton,
+                    selectedDuration === duration && styles.durationButtonActive,
                   ]}
+                  onPress={() => setSelectedDuration(duration)}
                 >
-                  {duration}
-                </Text>
-              </TouchableOpacity>
-            ))}
+                  <Text
+                    style={[
+                      styles.durationButtonText,
+                      selectedDuration === duration &&
+                        styles.durationButtonTextActive,
+                    ]}
+                  >
+                    {duration}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
           </View>
-        </View>
 
-        {/* Start Button */}
-        <TouchableOpacity
-          style={styles.startButtonWrapper}
-          onPress={handleStartSession}
-        >
-          <LinearGradient
-            colors={['#8CCAED', '#80CBC5']}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 0 }}
-            style={styles.startButton}
+          <TouchableOpacity
+            style={styles.startButtonWrapper}
+            onPress={handleStartSession}
           >
-            <Text style={styles.startButtonText}>Start Session</Text>
-          </LinearGradient>
-        </TouchableOpacity>
+            <LinearGradient
+              colors={['#8CCAED', '#6DC6BE']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.startButton}
+            >
+              <Text style={styles.startButtonText}>Start session</Text>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
@@ -162,29 +176,68 @@ export default function SleepRelax() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F5F5DC',
+    backgroundColor: '#E6E6CF',
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 18,
-    paddingVertical: 12,
-    backgroundColor: '#F5F5DC',
+    paddingHorizontal: 14,
+    paddingTop: 6,
+    paddingBottom: 4,
+    backgroundColor: '#E6E6CF',
+  },
+  backButton: {
+    width: 34,
+    height: 34,
+    justifyContent: 'center',
   },
   title: {
-    fontSize: 20,
+    fontSize: 26,
     fontFamily: 'Jua_400Regular',
     color: '#263238',
     textAlign: 'center',
-    flex: 1,
+    lineHeight: 34,
+    marginTop: 6,
+    marginBottom: 20,
   },
   scrollContent: {
-    paddingHorizontal: 18,
+    paddingHorizontal: 14,
+    paddingBottom: 18,
+  },
+  needsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+    rowGap: 12,
+    marginBottom: 20,
+  },
+  needCard: {
+    width: '48%',
+    borderRadius: 12,
+    backgroundColor: '#F1F0E6',
+    paddingHorizontal: 12,
     paddingVertical: 12,
+    minHeight: 74,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+    shadowColor: '#000',
+    shadowOpacity: 0.14,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  needCardSelected: {
+    borderWidth: 2,
+    borderColor: '#D6D4BF',
+  },
+  needText: {
+    flex: 1,
+    fontSize: 16,
+    lineHeight: 20,
+    color: '#111111',
+    fontFamily: 'Jua_400Regular',
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 34,
     fontFamily: 'Jua_400Regular',
     color: '#263238',
     marginBottom: 12,
@@ -193,101 +246,99 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
-    marginBottom: 20,
-    gap: 10,
+    rowGap: 12,
+    marginBottom: 14,
   },
   sceneCard: {
     width: '48%',
-    aspectRatio: 1,
     borderRadius: 12,
-    overflow: 'hidden',
-    borderWidth: 3,
+    borderWidth: 2,
     borderColor: 'transparent',
+    overflow: 'hidden',
+  },
+  sceneImage: {
+    width: '100%',
+    aspectRatio: 1.25,
+  },
+  sceneLabelWrap: {
+    backgroundColor: '#F1F0E6',
+    paddingVertical: 8,
+    borderBottomLeftRadius: 12,
+    borderBottomRightRadius: 12,
   },
   sceneCardSelected: {
     borderColor: '#80CBC5',
     shadowColor: '#000',
-    shadowOpacity: 0.1,
-    shadowOffset: { width: 0, height: 4 },
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  sceneImage: {
-    flex: 1,
-    justifyContent: 'flex-end',
-  },
-  sceneOverlay: {
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    paddingBottom: 12,
-    paddingTop: 12,
-    alignItems: 'center',
-  },
-  sceneIconContainer: {
-    marginBottom: 8,
+    shadowOpacity: 0.14,
+    shadowOffset: { width: 0, height: 2 },
+    shadowRadius: 4,
+    elevation: 3,
   },
   sceneTitle: {
-    fontSize: 14,
-    fontFamily: 'IstokWeb_400Regular',
-    color: '#FFFFFF',
+    fontSize: 15,
+    fontFamily: 'Jua_400Regular',
+    color: '#111111',
     textAlign: 'center',
   },
   controlsCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 16,
+    backgroundColor: '#F4F3EA',
+    borderRadius: 12,
+    padding: 10,
+    marginTop: 4,
     shadowColor: '#000',
-    shadowOpacity: 0.06,
-    shadowOffset: { width: 0, height: 6 },
-    shadowRadius: 12,
+    shadowOpacity: 0.12,
+    shadowOffset: { width: 0, height: 3 },
+    shadowRadius: 4,
     elevation: 4,
   },
+  durationRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 10,
+    gap: 8,
+  },
   controlLabel: {
-    fontSize: 16,
+    fontSize: 22,
     color: '#000000',
-    marginBottom: 12,
     fontFamily: 'Jua_400Regular',
   },
   segmentContainer: {
     flexDirection: 'row',
-    backgroundColor: '#8CCAED',
-    borderRadius: 12,
-    gap: 2,
+    backgroundColor: '#D7D8D0',
+    borderRadius: 16,
+    gap: 4,
     padding: 3,
+    flex: 1,
   },
   durationButton: {
     flex: 1,
-    height: 36,
-    paddingVertical: 8,
-    paddingHorizontal: 6,
-    borderRadius: 10,
+    height: 34,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'transparent',
   },
   durationButtonActive: {
-    backgroundColor: '#FDE68A',
+    backgroundColor: '#E9E496',
   },
   durationButtonText: {
-    fontSize: 14,
-    color: '#FFFFFF',
-    fontFamily: 'IstokWeb_400Regular',
+    fontSize: 16,
+    color: '#34424B',
+    fontFamily: 'Jua_400Regular',
   },
   durationButtonTextActive: {
-    color: '#263238',
-    fontFamily: 'IstokWeb_700Bold',
+    color: '#314049',
   },
   startButtonWrapper: {
-    marginBottom: 20,
+    marginTop: 2,
   },
   startButton: {
-    paddingVertical: 14,
-    borderRadius: 24,
+    paddingVertical: 12,
+    borderRadius: 20,
     alignItems: 'center',
   },
   startButtonText: {
-    fontSize: 18,
-    color: '#ffffff',
+    fontSize: 16,
+    color: '#F3F7F7',
     fontFamily: 'Jua_400Regular',
   },
 });

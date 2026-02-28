@@ -13,7 +13,6 @@ import { IntroMeditateIcon } from '@/components/icons/IntroMeditateIcon';
 import { IntroJournalIcon } from '@/components/icons/IntroJournalIcon';
 import { QuoteIcon } from '@/components/icons/QuoteIcon';
 import { HandIcon } from '@/components/icons/HandIcon';
-import { SleepRelaxationIcon } from '@/components/icons/SleepRelaxationIcon';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import * as Haptics from "expo-haptics";
@@ -303,19 +302,6 @@ export default function HomeScreen() {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity
-            style={[styles.sleepCard, styles.shadowSoft]}
-            onPress={() => router.push('/sleep&relax/sleep-relax')}
-          >
-            <View style={styles.sleepCardContent}>
-              <SleepRelaxationIcon size={48} color="#FFFFFF" />
-              <View style={styles.sleepCardText}>
-                <Text style={styles.sleepCardTitle}>Sleep & Relaxation</Text>
-                <Text style={styles.sleepCardSubtitle}>Peaceful nights await</Text>
-              </View>
-            </View>
-          </TouchableOpacity>
-
           <View style={[styles.card, styles.shadowSoft, { backgroundColor: colors.card }]}>
             <Text style={[styles.sectionTitle, { color: colors.text }]}>{t.yourProgress}</Text>
             <View style={styles.progressRow}>
@@ -447,32 +433,6 @@ const styles = StyleSheet.create({
   },
   journalCard: {
     backgroundColor: '#54B56E',
-  },
-  sleepCard: {
-    backgroundColor: '#80CBC5',
-    borderRadius: 18,
-    paddingVertical: 18,
-    paddingHorizontal: 16,
-    marginTop: 8,
-  },
-  sleepCardContent: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 16,
-  },
-  sleepCardText: {
-    flex: 1,
-  },
-  sleepCardTitle: {
-    fontFamily: 'Jua_400Regular',
-    fontSize: 16,
-    color: '#FFFFFF',
-  },
-  sleepCardSubtitle: {
-    fontFamily: 'IstokWeb_400Regular',
-    fontSize: 12,
-    color: '#E1F5FE',
-    marginTop: 4,
   },
   quickTitle: {
     fontFamily: 'Jua_400Regular',
