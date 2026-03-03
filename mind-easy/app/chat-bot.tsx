@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, FlatList, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, FlatList, TextInput, KeyboardAvoidingView, Platform, Animated } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { BackIcon } from '@/components/icons/BackIcon';
@@ -21,12 +21,12 @@ export default function ChatBotScreen() {
     { id: '1', from: 'bot', text: 'Hello! I am MindEasy bot. How can I help you today?' },
   ]);
   const [text, setText] = useState('');
-  const [isLoading, setIsLoading] = useState(false); // Додаємо стан завантаження
+  const [isLoading, setIsLoading] = useState(false);
   const flatRef = useRef<FlatList>(null);
 
   useEffect(() => {
-    flatRef.current?.scrollToEnd?.({ animated: true });
-  }, [messages]);
+    flatRef.current?.scrollToEnd({ animated: true });
+  }, [messages, isLoading]);
 
   const sendMessage = async () => {
     if (!text.trim() || isLoading) return;
@@ -34,12 +34,11 @@ export default function ChatBotScreen() {
     const userText = text.trim();
     const newMsg: Message = { id: Date.now().toString(), from: 'user', text: userText };
     
-    setMessages(prev => [...prev, newMsg]);
+    setMessages(prev => [...prev, newMsg, { id: 'loading', from: 'bot', text: '' }]);
     setText('');
     setIsLoading(true);
 
     try {
-      // ВАЖЛИВО: Змінюємо endpoint на /api/chat
       const resp = await fetch(`${API_BASE_URL}/api/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -49,24 +48,26 @@ export default function ChatBotScreen() {
       const data = await resp.json();
 
       if (resp.ok) {
-        const reply = data.reply || 'I couldn\'t process that. Try again.';
-        setMessages(prev => [...prev, { id: (Date.now() + 1).toString(), from: 'bot', text: reply }]);
+        setMessages(prev => [
+          ...prev.filter(m => m.id !== 'loading'), 
+          { id: Date.now().toString(), from: 'bot', text: data.reply }
+        ]);
       } else {
         throw new Error(data.error || 'Server error');
       }
     } catch (err) {
       console.error('Chat bot fetch error:', err);
-      setMessages(prev => [...prev, { 
-        id: (Date.now() + 1).toString(), 
-        from: 'bot', 
-        text: 'Sorry, I am having trouble connecting to the server. Please check your connection.' 
-      }]);
+      setMessages(prev => prev.filter(m => m.id !== 'loading'));
     } finally {
       setIsLoading(false);
     }
   };
 
   const renderItem = ({ item }: { item: Message }) => {
+    if (item.id === 'loading') {
+      return <TypingIndicator />;
+    }
+
     if (item.from === 'bot') {
       return (
         <View style={styles.botRow}>
@@ -134,6 +135,48 @@ export default function ChatBotScreen() {
     </SafeAreaView>
   );
 }
+
+const TypingIndicator = () => {
+  const dots = [useRef(new Animated.Value(0)).current,
+                useRef(new Animated.Value(0)).current,
+                useRef(new Animated.Value(0)).current];
+
+  useEffect(() => {
+    const animate = (dot: Animated.Value, delay: number) =>
+      Animated.loop(
+        Animated.sequence([
+          Animated.delay(delay),
+          Animated.timing(dot, { toValue: 1, duration: 300, useNativeDriver: true }),
+          Animated.timing(dot, { toValue: 0, duration: 300, useNativeDriver: true }),
+        ])
+      ).start();
+
+    dots.forEach((d, i) => animate(d, i * 150));
+  }, []);
+
+  return (
+    <View style={styles.botRow}>
+      <ChatbotIcon size={43} />
+      <View style={styles.botBubble}>
+        <View style={{ flexDirection: 'row', gap: 6 }}>
+          {dots.map((d, i) => (
+            <Animated.View
+              key={i}
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: 4,
+                backgroundColor: '#8133F9',
+                opacity: d,
+                transform: [{ scale: d.interpolate({ inputRange: [0, 1], outputRange: [0.7, 1.2] }) }],
+              }}
+            />
+          ))}
+        </View>
+      </View>
+    </View>
+  );
+};
 
 const styles = StyleSheet.create({
   safeArea: { flex: 1 },
