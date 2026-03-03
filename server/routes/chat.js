@@ -1,38 +1,54 @@
 import express from "express";
-import OpenAI from "openai";
+import fetch from "node-fetch";
 
 const router = express.Router();
 
 router.post("/", async (req, res) => {
   try {
     const { prompt } = req.body;
-    
-    // Берем ключ прямо в момент запроса
-    const apiKey = process.env.OPENAI_API_KEY;
 
-    if (!apiKey) {
-      console.error("Ошибка: OPENAI_API_KEY не найден в .env");
-      return res.status(500).json({ error: "API key is not configured" });
+    if (!prompt) {
+      return res.status(400).json({ error: "Missing prompt" });
     }
 
-    // Создаем клиента внутри функции
-    const openai = new OpenAI({
-      apiKey: apiKey.trim(),
-    });
+    const apiKey = process.env.GEMINI_API_KEY;
 
-    const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini", // Самая стабильная и доступная модель
-      messages: [
-        { role: "system", content: "Ты помощник MindEasy. Твоя задача — поддерживать пользователя." },
-        { role: "user", content: prompt }
-      ],
-    });
+    if (!apiKey) {
+      return res.status(500).json({ error: "GEMINI_API_KEY not configured" });
+    }
 
-    return res.json({ reply: response.choices[0].message.content });
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1/models/gemini-2.5-flash:generateContent?key=${apiKey}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          contents: [
+            {
+              role: "user",
+              parts: [{ text: prompt }],
+            },
+          ],
+        }),
+      }
+    );
 
+    const data = await response.json();
+
+    if (data.error) {
+      console.error("Gemini API error:", data.error);
+      return res.status(500).json({ error: data.error.message });
+    }
+
+    const reply =
+      data.candidates?.[0]?.content?.parts
+        ?.map((p) => p.text)
+        .join("") || "No response from Gemini";
+
+    return res.json({ reply });
   } catch (err) {
-    console.error("OpenAI Error:", err.message);
-    return res.status(500).json({ error: err.message });
+    console.error("Gemini proxy error:", err);
+    return res.status(500).json({ error: "Gemini request failed" });
   }
 });
 
