@@ -97,7 +97,7 @@ export default function SleepRelax() {
                 ]}
                 onPress={() => setSelectedNeed(option.key)}
               >
-                <NeedIcon width={38} height={38} />
+                <NeedIcon width={50} height={50} />
                 <Text style={styles.needText}>{option.title}</Text>
               </TouchableOpacity>
             );
@@ -185,14 +185,14 @@ const styles = StyleSheet.create({
     backgroundColor: '#E6E6CF',
   },
   backButton: {
-    width: 34,
-    height: 34,
+    width: 32,
+    height: 32,
     justifyContent: 'center',
   },
   title: {
-    fontSize: 26,
+    fontSize: 28,
     fontFamily: 'Jua_400Regular',
-    color: '#263238',
+    color: '#37474F',
     textAlign: 'center',
     lineHeight: 34,
     marginTop: 6,
@@ -212,7 +212,7 @@ const styles = StyleSheet.create({
   needCard: {
     width: '48%',
     borderRadius: 12,
-    backgroundColor: '#F1F0E6',
+    backgroundColor: '#F3F2E2',
     paddingHorizontal: 12,
     paddingVertical: 12,
     minHeight: 74,
@@ -237,9 +237,9 @@ const styles = StyleSheet.create({
     fontFamily: 'Jua_400Regular',
   },
   sectionTitle: {
-    fontSize: 34,
+    fontSize: 25,
     fontFamily: 'Jua_400Regular',
-    color: '#263238',
+    color: '#37474F',
     marginBottom: 12,
   },
   scenesGrid: {
@@ -257,14 +257,19 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
   },
   sceneImage: {
-    width: '100%',
-    aspectRatio: 1.25,
+    width: 171,
+    height: 101,
   },
   sceneLabelWrap: {
-    backgroundColor: '#F1F0E6',
+    width: '100%',
+    height: 30,
+    backgroundColor: '#F4F2E6',
     paddingVertical: 8,
-    borderBottomLeftRadius: 12,
-    borderBottomRightRadius: 12,
+    borderRadius: 11,
+    position: 'absolute',
+    alignSelf: 'center',
+    bottom: 0,
+    alignItems: 'center',
   },
   sceneCardSelected: {
     borderColor: '#80CBC5',
@@ -279,11 +284,14 @@ const styles = StyleSheet.create({
     fontFamily: 'Jua_400Regular',
     color: '#111111',
     textAlign: 'center',
+    position: 'absolute',
+    bottom: 6,
+    width: '100%',
   },
   controlsCard: {
     backgroundColor: '#F4F3EA',
     borderRadius: 12,
-    padding: 10,
+    padding: 18,
     marginTop: 4,
     shadowColor: '#000',
     shadowOpacity: 0.12,
@@ -298,7 +306,7 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   controlLabel: {
-    fontSize: 22,
+    fontSize: 18,
     color: '#000000',
     fontFamily: 'Jua_400Regular',
   },
@@ -307,7 +315,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#D7D8D0',
     borderRadius: 16,
     gap: 4,
-    padding: 3,
     flex: 1,
   },
   durationButton: {
@@ -318,15 +325,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   durationButtonActive: {
-    backgroundColor: '#E9E496',
+    backgroundColor: '#F2EFB0',
   },
   durationButtonText: {
     fontSize: 16,
-    color: '#34424B',
+    color: '#37474F',
     fontFamily: 'Jua_400Regular',
   },
   durationButtonTextActive: {
-    color: '#314049',
+    color: '#37474F',
   },
   startButtonWrapper: {
     marginTop: 2,
