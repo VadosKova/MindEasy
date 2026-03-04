@@ -179,7 +179,9 @@ const TypingIndicator = () => {
 };
 
 const styles = StyleSheet.create({
-  safeArea: { flex: 1 },
+  safeArea: { 
+    flex: 1 
+  },
   header: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -187,14 +189,29 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingTop: 12,
   },
-  backButton: { width: 36, alignItems: 'flex-start' },
-  headerTitle: { fontFamily: 'Jua_400Regular', fontSize: 32 },
-  logoWrap: { alignItems: 'center', marginTop: 30, marginBottom: 8 },
+  backButton: { 
+    width: 36, 
+    alignItems: 'flex-start' 
+  },
+  headerTitle: { 
+    fontFamily: 'Jua_400Regular', 
+    fontSize: 32 
+  },
+  logoWrap: { 
+    alignItems: 'center', 
+    marginTop: 30, 
+    marginBottom: 8 
+  },
   messagesContainer: {
     paddingHorizontal: 12, 
     paddingBottom: 20,
   },
-  botRow: { flexDirection: 'row', alignItems: 'flex-start', gap: 8, marginTop: 12 },
+  botRow: { 
+    flexDirection: 'row', 
+    alignItems: 'flex-start', 
+    gap: 8, 
+    marginTop: 12 
+  },
   botBubble: {
     marginLeft: 6,
     paddingHorizontal: 12,
@@ -203,10 +220,25 @@ const styles = StyleSheet.create({
     maxWidth: '75%',
     elevation: 1,
   },
-  botText: { fontFamily: 'IstokWeb_400Regular', fontSize: 18, color: '#000000' },
-  userRow: { alignItems: 'flex-end', marginTop: 12 },
-  userBubble: { borderRadius: 16, paddingHorizontal: 15, paddingVertical: 10 },
-  userText: { color: '#FFF', fontFamily: 'IstokWeb_400Regular', fontSize: 18 },
+  botText: { 
+    fontFamily: 'IstokWeb_400Regular', 
+    fontSize: 18, 
+    color: '#000000' 
+  },
+  userRow: { 
+    alignItems: 'flex-end', 
+    marginTop: 12 
+  },
+  userBubble: { 
+    borderRadius: 16, 
+    paddingHorizontal: 15, 
+    paddingVertical: 10 
+  },
+  userText: { 
+    color: '#FFF', 
+    fontFamily: 'IstokWeb_400Regular', 
+    fontSize: 18 
+  },
   inputWrap: {
     width: '90%',
     height: 60,
@@ -227,6 +259,14 @@ const styles = StyleSheet.create({
     fontSize: 18,
     color: '#37474F',
   },
-  sendButtonTouch: { marginLeft: 8 },
-  sendButton: { width: 40, height: 40, borderRadius: 20, justifyContent: 'center', alignItems: 'center' },
+  sendButtonTouch: { 
+    marginLeft: 8 
+  },
+  sendButton: { 
+    width: 40, 
+    height: 40, 
+    borderRadius: 20, 
+    justifyContent: 'center', 
+    alignItems: 'center' 
+  },
 });
