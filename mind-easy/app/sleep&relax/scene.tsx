@@ -81,10 +81,10 @@ export default function SceneScreen() {
         style={StyleSheet.absoluteFill}
       />
 
-      {scene === 'rain' && <RainScene />}
+      {/* {scene === 'rain' && <RainScene />}
       {scene === 'ocean' && <OceanScene />}
       {scene === 'fireplace' && <FireScene />}
-      {scene === 'night' && <NightScene />}
+      {scene === 'night' && <NightScene />} */}
 
       <View style={styles.overlay}>
         <Text style={styles.text}>Close your eyes{'\n'}and just relax</Text>
