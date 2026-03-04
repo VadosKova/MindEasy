@@ -68,7 +68,14 @@ export default function SleepRelax() {
   const [selectedDuration, setSelectedDuration] = useState(5);
 
   const handleStartSession = () => {
-    router.push('/calm-breathing');
+    router.push({
+      pathname: '/sleep-relax/scene',
+      params: {
+        scene: selectedScene,
+        need: selectedNeed,
+        duration: selectedDuration,
+      },
+    });
   };
 
   return (
