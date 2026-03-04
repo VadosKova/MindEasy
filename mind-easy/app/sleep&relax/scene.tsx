@@ -50,4 +50,20 @@ export default function SceneScreen() {
       sound?.unloadAsync();
     };
   }, []);
+
+  useEffect(() => {
+    if (secondsLeft <= 0) {
+      sound?.stopAsync();
+      return;
+    }
+
+    const t = setInterval(() => {
+      setSecondsLeft(s => s - 1);
+    }, 1000);
+
+    return () => clearInterval(t);
+  }, [secondsLeft]);
+
+  const minutes = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
+  const seconds = String(secondsLeft % 60).padStart(2, '0');
 }
