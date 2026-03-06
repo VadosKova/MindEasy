@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { Audio } from 'expo-av';
-import { TouchableOpacity } from 'react-native';
+import { useAudioPlayer } from 'expo-audio';
 import { BackIcon } from '@/components/icons/BackIcon';
 
 import RainScene from '@/app/sleep&relax/scenes/RainScene';
@@ -27,41 +26,28 @@ export default function SceneScreen() {
   }>();
 
   const [secondsLeft, setSecondsLeft] = useState(Number(duration) * 60);
-  const [sound, setSound] = useState<Audio.Sound | null>(null);
+
+  const player = useAudioPlayer(soundMap[scene ?? 'rain']);
 
   useEffect(() => {
-    let mounted = true;
-
-    const loadSound = async () => {
-      const { sound } = await Audio.Sound.createAsync(
-        soundMap[scene ?? 'rain'],
-        { isLooping: true, volume: 0.8 }
-      );
-      if (mounted) {
-        setSound(sound);
-        await sound.playAsync();
-      }
-    };
-
-    loadSound();
+    player.play();
 
     return () => {
-      mounted = false;
-      sound?.unloadAsync();
+      player.pause();
     };
   }, []);
 
   useEffect(() => {
     if (secondsLeft <= 0) {
-      sound?.stopAsync();
+      player.pause();
       return;
     }
 
-    const t = setInterval(() => {
-      setSecondsLeft(s => s - 1);
+    const timer = setInterval(() => {
+      setSecondsLeft((s) => s - 1);
     }, 1000);
 
-    return () => clearInterval(t);
+    return () => clearInterval(timer);
   }, [secondsLeft]);
 
   const minutes = String(Math.floor(secondsLeft / 60)).padStart(2, '0');

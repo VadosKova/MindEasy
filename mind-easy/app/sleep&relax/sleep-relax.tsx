@@ -69,7 +69,7 @@ export default function SleepRelax() {
 
   const handleStartSession = () => {
     router.push({
-      pathname: '/sleep-relax/scene',
+      pathname: '/sleep&relax/scene',
       params: {
         scene: selectedScene,
         need: selectedNeed,
