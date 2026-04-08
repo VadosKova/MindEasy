@@ -52,7 +52,7 @@ export default function SceneScreen() {
       </View>
 
       <LinearGradient
-        colors={['#0F2027', '#203A43', '#2C5364']}
+        colors={colors}
         style={StyleSheet.absoluteFill}
       />
 
@@ -63,10 +63,16 @@ export default function SceneScreen() {
 
       <View style={styles.overlay}>
         <Text style={styles.text}>Close your eyes{'\n'}and just relax</Text>
-        <View style={styles.timer}>
-          <Text style={styles.timerText}>
-            {minutes}:{seconds}
-          </Text>
+
+        <View style={styles.circle}>
+          <LinearGradient
+            colors={['rgba(255,255,255,0.4)', 'rgba(255,255,255,0.1)']}
+            style={styles.circleInner}
+          >
+            <Text style={styles.timerText}>
+              {minutes}:{seconds}
+            </Text>
+          </LinearGradient>
         </View>
       </View>
     </SafeAreaView>
@@ -121,11 +127,22 @@ const styles = StyleSheet.create({
     opacity: 0.9,
   },
 
-  timer: {
-    backgroundColor: 'rgba(0,0,0,0.35)',
-    paddingHorizontal: 24,
-    paddingVertical: 10,
-    borderRadius: 24,
+  circle: {
+    width: 220,
+    height: 220,
+    borderRadius: 110,
+    borderWidth: 3,
+    borderColor: 'rgba(255,255,255,0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  circleInner: {
+    width: 200,
+    height: 200,
+    borderRadius: 100,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 
   timerText: {
