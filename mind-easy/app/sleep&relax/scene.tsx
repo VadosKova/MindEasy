@@ -3,7 +3,6 @@ import { StyleSheet, Text, View, TouchableOpacity } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useAudioPlayer } from 'expo-audio';
 import { BackIcon } from '@/components/icons/BackIcon';
 
 import RainScene from '@/app/sleep&relax/scenes/RainScene';
@@ -11,12 +10,6 @@ import OceanScene from '@/app/sleep&relax/scenes/OceanScene';
 import FireScene from '@/app/sleep&relax/scenes/FireScene';
 import NightScene from '@/app/sleep&relax/scenes/NightScene';
 
-const soundMap: Record<string, any> = {
-  rain: require('@/assets/sounds/rain.mp3'),
-  ocean: require('@/assets/sounds/ocean.mp3'),
-  fireplace: require('@/assets/sounds/fire.mp3'),
-  night: require('@/assets/sounds/night.mp3'),
-};
 
 export default function SceneScreen() {
   const router = useRouter();
@@ -27,28 +20,12 @@ export default function SceneScreen() {
 
   const [secondsLeft, setSecondsLeft] = useState(Number(duration) * 60);
 
-  const player = useAudioPlayer(soundMap[scene ?? 'rain']);
-
-  useEffect(() => {
-    player.play();
-
-    return () => {
-      player.pause();
-    };
-  }, []);
-
-  useEffect(() => {
-    if (secondsLeft <= 0) {
-      player.pause();
-      return;
-    }
-
-    const timer = setInterval(() => {
-      setSecondsLeft((s) => s - 1);
-    }, 1000);
-
-    return () => clearInterval(timer);
-  }, [secondsLeft]);
+  const sceneColors: Record<string, string[]> = {
+    rain: ['#4B79A1', '#283E51'],
+    ocean: ['#2E8BC0', '#145DA0'],
+    fireplace: ['#FF512F', '#d5ae00'],
+    night: ['#0F2027', '#2C5364'],
+  };
 
   const minutes = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
   const seconds = String(secondsLeft % 60).padStart(2, '0');
