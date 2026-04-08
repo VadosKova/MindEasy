@@ -20,7 +20,7 @@ export default function SceneScreen() {
 
   const [secondsLeft, setSecondsLeft] = useState(Number(duration) * 60);
 
-  const sceneColors: Record<string, string[]> = {
+  const sceneColors: Record<string, [string, string]> = {
     rain: ['#4B79A1', '#283E51'],
     ocean: ['#2E8BC0', '#145DA0'],
     fireplace: ['#FF512F', '#d5ae00'],
