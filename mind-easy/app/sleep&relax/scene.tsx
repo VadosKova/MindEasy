@@ -27,6 +27,18 @@ export default function SceneScreen() {
     night: ['#0F2027', '#2C5364'],
   };
 
+  const colors = sceneColors[scene ?? 'night'];
+
+  useEffect(() => {
+    if (secondsLeft <= 0) return;
+
+    const timer = setInterval(() => {
+      setSecondsLeft((s) => s - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [secondsLeft]);
+
   const minutes = String(Math.floor(secondsLeft / 60)).padStart(2, '0');
   const seconds = String(secondsLeft % 60).padStart(2, '0');
 
