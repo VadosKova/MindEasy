@@ -4,7 +4,7 @@ import { Video, ResizeMode } from 'expo-av';
 export default function FireScene() {
   return (
     <Video
-      source={require('../../../assets/videos/fireplace.mp4')}
+      source={require('../../../assets/videos/fireplace_video.mp4')}
       style={StyleSheet.absoluteFill}
       resizeMode={ResizeMode.COVER}
       shouldPlay

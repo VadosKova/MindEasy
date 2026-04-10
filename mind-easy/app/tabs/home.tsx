@@ -264,7 +264,7 @@ export default function HomeScreen() {
         delayLongPress={400}
         onPressOut={cancelPress}
       >
-        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={true}>
           <ImageBackground source={introImage} style={styles.heroCard} imageStyle={styles.heroImage}>
             <Text style={styles.heroGreeting} numberOfLines={1} ellipsizeMode="tail">{t.hello} {username || 'User'}! <HandIcon/></Text>
             <Text style={styles.heroSubtitle}>{t.howFeeling}</Text>
