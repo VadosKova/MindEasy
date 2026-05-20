@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
+import { ImageBackground, View, Text, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { BackIcon } from '@/components/icons/BackIcon';
@@ -51,8 +51,13 @@ export default function StressReliefScreen() {
 
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
         {exercises.map((item) => (
-          <View key={item.id} style={[styles.card, { backgroundColor: item.color }]}>
-            <View style={styles.cardContent}>
+          <ImageBackground
+            key={item.id}
+            source={item.image}
+            style={styles.card}
+            imageStyle={styles.cardBackground}
+          >
+            <View style={styles.cardOverlay}>
               <View style={styles.textBlock}>
                 <Text style={styles.cardTitle}>{item.title}</Text>
                 <Text style={styles.cardDesc}>{item.description}</Text>
@@ -64,10 +69,8 @@ export default function StressReliefScreen() {
                   <Text style={styles.buttonText}>{item.buttonText}</Text>
                 </TouchableOpacity>
               </View>
-
-              <Image source={item.image} style={styles.cardImage} resizeMode="contain" />
             </View>
-          </View>
+          </ImageBackground>
         ))}
       </ScrollView>
     </SafeAreaView>
@@ -96,17 +99,27 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 24,
     marginBottom: 20,
-    padding: 20,
     minHeight: 180,
+    overflow: 'hidden',
+    justifyContent: 'flex-end',
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.1,
-    shadowRadius: 8,
+    shadowOpacity: 0.12,
+    shadowRadius: 10,
     elevation: 3,
+  },
+  cardBackground: {
+    resizeMode: 'cover',
+  },
+  cardOverlay: {
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    padding: 20,
+    justifyContent: 'space-between',
+    minHeight: 180,
   },
   cardContent: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
     justifyContent: 'space-between',
   },
   textBlock: {
