@@ -96,7 +96,7 @@ export default function MeditationsScreen() {
               <Text style={styles.tileTitle}>{t.breathingEx}</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.tile, styles.tileGreen]}>
+            <TouchableOpacity style={[styles.tile, styles.tileGreen]} onPress={() => router.push('/stress_relief/StressReliefMain')}>
               <View style={styles.tileIconCol}>
                 <StressReliefIcon />
                 <Text style={styles.tileTimeUnder}>1–2 {t.min}</Text>
@@ -114,7 +114,7 @@ export default function MeditationsScreen() {
               <Text style={styles.tileTitle}>{t.sleepRelax}</Text>
             </TouchableOpacity>
 
-            <TouchableOpacity style={[styles.tile, styles.tileOrange]}>
+            <TouchableOpacity style={[styles.tile, styles.tileOrange]} onPress={() => router.push('/focus&clarity/FocusClarity')}>
               <View style={styles.tileIconCol}>
                 <FocusClarityIcon />
                 <Text style={styles.tileTimeUnder}>5–15 {t.min}</Text>
