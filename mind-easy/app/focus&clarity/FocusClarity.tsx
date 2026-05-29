@@ -29,14 +29,14 @@ export default function FocusClarityScreen() {
       </View>
 
       <ScrollView contentContainerStyle={styles.container} showsVerticalScrollIndicator={false}>
-        <View style={[styles.pomodoroCard, { backgroundColor: colors.card }]}> 
+        <View style={[styles.pomodoroCard]}> 
           <View style={styles.pomodoroHeader}>
             <View style={styles.alarmCircle}>
               <AlarmClockIcon />
             </View>
             <View style={styles.pomodoroTextBlock}>
-              <Text style={[styles.pomodoroTitle, { color: colors.text }]}>Pomodoro Timer</Text>
-              <Text style={[styles.pomodoroSubtitle, { color: colors.text }]}>Focus on your work, take a break, repeat.</Text>
+              <Text style={[styles.pomodoroTitle]}>Pomodoro Timer</Text>
+              <Text style={[styles.pomodoroSubtitle]}>Focus on your work, take a break, repeat.</Text>
             </View>
           </View>
 
@@ -71,8 +71,8 @@ export default function FocusClarityScreen() {
         <ImageBackground source={journalImage} style={styles.featureCard} imageStyle={styles.featureImage}>
           <View style={styles.featureContent}>
             <View style={styles.featureHeader}>
-              <View style={[styles.featureIcon, { backgroundColor: '#3C8DAD' }]}>
-                <EditIcon size={20} color="#FFFFFF" />
+              <View style={[styles.featureIcon, { backgroundColor: '#36AFB3' }]}>
+                <EditIcon size={30} color="#FFFFFF" />
               </View>
               <Text style={styles.featureTitle}>Brain Dump</Text>
             </View>
@@ -86,7 +86,7 @@ export default function FocusClarityScreen() {
         <ImageBackground source={beatsImage} style={styles.featureCard} imageStyle={styles.featureImage}>
           <View style={styles.featureContent}>
             <View style={styles.featureHeader}>
-              <View style={[styles.featureIcon, { backgroundColor: '#6174FB' }]}>
+              <View style={[styles.featureIcon, { backgroundColor: '#2B82DD' }]}>
                 <SoundWaveIcon />
               </View>
               <Text style={styles.featureTitle}>Binaural Beats</Text>
@@ -122,6 +122,7 @@ const styles = StyleSheet.create({
     gap: 18,
   },
   pomodoroCard: {
+    backgroundColor: '#06334F',
     borderRadius: 28,
     padding: 20,
     gap: 20,
@@ -150,11 +151,13 @@ const styles = StyleSheet.create({
   pomodoroTitle: {
     fontFamily: 'IstokWeb_700Bold',
     fontSize: 18,
+    color: '#FFFFFF',
     marginBottom: 6,
   },
   pomodoroSubtitle: {
     fontFamily: 'IstokWeb_400Regular',
     fontSize: 14,
+    color: '#FFFFFF',
     lineHeight: 20,
   },
   timerWrapper: {
@@ -164,7 +167,7 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     borderRadius: 100,
-    borderWidth: 3,
+    borderWidth: 5,
     borderColor: 'rgba(60,141,173,0.22)',
     justifyContent: 'center',
     alignItems: 'center',
@@ -178,8 +181,8 @@ const styles = StyleSheet.create({
   },
   timerValue: {
     fontFamily: 'Jua_400Regular',
-    fontSize: 32,
-    color: '#0D1F3C',
+    fontSize: 42,
+    color: '#FFFFFF',
   },
   actionRow: {
     flexDirection: 'row',
@@ -195,16 +198,12 @@ const styles = StyleSheet.create({
     gap: 12,
   },
   focusButton: {
-    backgroundColor: '#2F6BFF',
+    backgroundColor: '#08A0A0',
   },
   breakButton: {
-    backgroundColor: '#2F6BFF',
+    backgroundColor: '#1F4C62',
   },
   actionIconWrap: {
-    width: 36,
-    height: 36,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255,255,255,0.2)',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -216,15 +215,14 @@ const styles = StyleSheet.create({
   featureCard: {
     borderRadius: 28,
     overflow: 'hidden',
-    minHeight: 170,
+    height: 170,
     justifyContent: 'flex-end',
   },
   featureImage: {
-    resizeMode: 'cover',
+    resizeMode: 'contain',
   },
   featureContent: {
     padding: 20,
-    backgroundColor: 'rgba(255,255,255,0.76)',
     borderTopRightRadius: 28,
     borderTopLeftRadius: 28,
   },
@@ -235,39 +233,46 @@ const styles = StyleSheet.create({
     marginBottom: 12,
   },
   featureIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 16,
+    width: 50,
+    height: 50,
+    borderRadius: 40,
     alignItems: 'center',
     justifyContent: 'center',
+    marginTop: 25,
   },
   featureTitle: {
     fontFamily: 'IstokWeb_700Bold',
     fontSize: 18,
     color: '#102A43',
+    marginTop: -15,
   },
   featureDescription: {
+    width: '70%',
     fontFamily: 'IstokWeb_400Regular',
     fontSize: 14,
     lineHeight: 20,
     color: '#33475B',
     marginBottom: 16,
+    marginLeft: 62,
+    marginTop: -30,
   },
   featureButton: {
+    width: 140,
     alignSelf: 'flex-start',
-    borderRadius: 18,
+    borderRadius: 22,
     paddingHorizontal: 18,
     paddingVertical: 12,
   },
   featureButtonPrimary: {
-    backgroundColor: '#2F6BFF',
+    backgroundColor: '#19999B',
   },
   featureButtonSecondary: {
-    backgroundColor: '#1C4B9E',
+    backgroundColor: '#2B82DD',
   },
   featureButtonText: {
-    fontFamily: 'IstokWeb_700Bold',
-    fontSize: 14,
+    fontFamily: 'Jua_400Regular',
+    fontSize: 16,
+    alignSelf: 'center',
     color: '#FFFFFF',
   },
 });

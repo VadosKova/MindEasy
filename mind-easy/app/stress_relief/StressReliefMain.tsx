@@ -112,7 +112,6 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   cardOverlay: {
-    backgroundColor: 'rgba(255,255,255,0.9)',
     padding: 20,
     justifyContent: 'space-between',
     minHeight: 180,
@@ -127,12 +126,13 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
   cardTitle: {
-    fontFamily: 'IstokWeb_700Bold',
+    fontFamily: 'Jua_400Regular',
     fontSize: 22,
     color: '#1A1A1A',
     marginBottom: 6,
   },
   cardDesc: {
+    width: '70%',
     fontFamily: 'IstokWeb_400Regular',
     fontSize: 14,
     color: '#4A4A4A',
@@ -140,15 +140,18 @@ const styles = StyleSheet.create({
     lineHeight: 20,
   },
   button: {
+    width: 150,
+    height: 40,
     alignSelf: 'flex-start',
     paddingHorizontal: 20,
     paddingVertical: 10,
-    borderRadius: 12,
+    borderRadius: 20,
   },
   buttonText: {
     color: '#FFFFFF',
-    fontFamily: 'IstokWeb_700Bold',
-    fontSize: 14,
+    fontFamily: 'Jua_400Regular',
+    alignSelf: 'center',
+    fontSize: 16,
   },
   cardImage: {
     width: 120,
