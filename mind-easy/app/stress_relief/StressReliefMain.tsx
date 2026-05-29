@@ -3,6 +3,8 @@ import { ImageBackground, View, Text, StyleSheet, TouchableOpacity, ScrollView }
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { BackIcon } from '@/components/icons/BackIcon';
+import { LeaveIcon } from '@/components/icons/LeaveIcon';
+import { BodyScanIcon } from '@/components/icons/BodyScanIcon';
 import { Colors } from '@/constants/theme';
 import { useAppSettings } from '@/context/AppSettingsContext';
 
@@ -54,21 +56,39 @@ export default function StressReliefScreen() {
           <ImageBackground
             key={item.id}
             source={item.image}
-            style={styles.card}
+            style={[styles.card, { backgroundColor: item.color }]}
             imageStyle={styles.cardBackground}
+            resizeMode="contain"
           >
-            <View style={styles.cardOverlay}>
-              <View style={styles.textBlock}>
-                <Text style={styles.cardTitle}>{item.title}</Text>
-                <Text style={styles.cardDesc}>{item.description}</Text>
-                
-                <TouchableOpacity 
-                  style={[styles.button, { backgroundColor: item.btnColor }]}
-                  onPress={() => {/*test*/}}
+            <View style={[styles.cardOverlay, item.id === 'shake' && styles.shakeOverlay]}>
+              {(item.id === 'grounding' || item.id === 'bodyscan') && (
+                <View
+                  style={[
+                    styles.iconCircle,
+                    item.id === 'grounding' ? styles.groundIcon : styles.bodyIcon,
+                  ]}
                 >
-                  <Text style={styles.buttonText}>{item.buttonText}</Text>
-                </TouchableOpacity>
+                  {item.id === 'grounding' ? (
+                    <LeaveIcon size={30} color="#FFFFFF" />
+                  ) : (
+                    <BodyScanIcon size={30} color="#FFFFFF" />
+                  )}
+                </View>
+              )}
+              <View style={styles.textBlock}>
+                <Text style={[styles.cardTitle, item.id === 'shake' && styles.shakeTitle]}>{item.title}</Text>
+                <Text style={styles.cardDesc}>{item.description}</Text>
               </View>
+              <TouchableOpacity 
+                style={[
+                  styles.button,
+                  { backgroundColor: item.btnColor },
+                  (item.id === 'grounding' || item.id === 'bodyscan') && styles.buttonLower,
+                ]}
+                onPress={() => {/*test*/}}
+              >
+                <Text style={styles.buttonText}>{item.buttonText}</Text>
+              </TouchableOpacity>
             </View>
           </ImageBackground>
         ))}
@@ -99,37 +119,56 @@ const styles = StyleSheet.create({
   card: {
     borderRadius: 24,
     marginBottom: 20,
-    minHeight: 180,
+    height: 220,
     overflow: 'hidden',
     justifyContent: 'flex-end',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.12,
-    shadowRadius: 10,
-    elevation: 3,
+    backgroundColor: '#FFFFFF',
+    width: '100%',
   },
   cardBackground: {
-    resizeMode: 'cover',
+    resizeMode: 'contain',
+    width: '110%',
+    height: '110%',
+    backgroundColor: '#F5F5DC',
   },
   cardOverlay: {
     padding: 20,
-    justifyContent: 'space-between',
+    justifyContent: 'flex-start',
     minHeight: 180,
+    alignItems: 'flex-start',
   },
-  cardContent: {
-    flexDirection: 'row',
-    alignItems: 'flex-end',
+  shakeOverlay: {
     justifyContent: 'space-between',
+  },
+  iconCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 14,
+    marginTop: -30,
+  },
+  groundIcon: {
+    backgroundColor: '#5D865F',
+  },
+  bodyIcon: {
+    backgroundColor: '#8C75B3',
   },
   textBlock: {
     flex: 1,
     paddingRight: 10,
+    width: '90%',
   },
   cardTitle: {
     fontFamily: 'Jua_400Regular',
     fontSize: 22,
     color: '#1A1A1A',
-    marginBottom: 6,
+    marginBottom: 16,
+    marginTop: -16,
+  },
+  shakeTitle: {
+    marginTop: 12,
   },
   cardDesc: {
     width: '70%',
@@ -137,7 +176,11 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#4A4A4A',
     marginBottom: 16,
+    marginTop: -14,
     lineHeight: 20,
+  },
+  buttonLower: {
+    marginTop: 30,
   },
   button: {
     width: 150,
