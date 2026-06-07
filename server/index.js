@@ -11,6 +11,7 @@ import quoteRoutes from "./routes/quotes.js";
 import meditationRoutes from "./routes/meditation.js";
 import journalRoutes from "./routes/journal.js";
 import profileRoutes from "./routes/profile.js";
+import exportRoutes from "./routes/export.js";
 import { createAdminIfNotExists } from "./utils/createAdmin.js";
 
 dotenv.config();
@@ -31,6 +32,7 @@ app.use("/api/journal", journalRoutes);
 app.use("/uploads", express.static(path.resolve("uploads")));
 app.use("/api/profile", profileRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/export", exportRoutes);
 
 mongoose
   .connect(process.env.MONGO_URI)

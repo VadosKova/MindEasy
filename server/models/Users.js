@@ -52,6 +52,7 @@ const userSchema = new mongoose.Schema({
   totalDays: { type: Number, default: 0 },
   totalMinutes: { type: Number, default: 0 },
   lastMeditationDate: { type: Date },
+  aiAnalysisEnabled: { type: Boolean, default: false },
   },
   { timestamps: true }
 );

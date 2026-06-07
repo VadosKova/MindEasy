@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   SafeAreaView,
   StyleSheet,
@@ -6,6 +6,11 @@ import {
   View,
   TouchableOpacity,
   TextInput,
+  Modal,
+  FlatList,
+  ActivityIndicator,
+  Animated,
+  Easing,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { BackIcon } from '@/components/icons/BackIcon';
@@ -13,6 +18,8 @@ import { DownArrowIcon } from '@/components/icons/DownArrowIcon';
 import { Image } from 'react-native';
 import { useAppSettings } from '@/context/AppSettingsContext';
 import { Colors } from '@/constants/theme';
+import * as Linking from 'expo-linking';
+import { API_BASE_URL } from '@/constants/api';
 
 export default function ExportPDFScreen() {
   const router = useRouter();
@@ -23,6 +30,12 @@ export default function ExportPDFScreen() {
   const [fromDate, setFromDate] = useState('Jan 20, 2025');
   const [toDate, setToDate] = useState('Jan 20, 2026');
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [availableDates, setAvailableDates] = useState<string[]>([]);
+  const [showFromPicker, setShowFromPicker] = useState(false);
+  const [showToPicker, setShowToPicker] = useState(false);
+  const toastAnim = useRef(new Animated.Value(80)).current;
+  const [toastText, setToastText] = useState('');
 
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: bgColor }]}> 
@@ -40,21 +53,41 @@ export default function ExportPDFScreen() {
         />
       </View>
 
-      <View style={[styles.dateCard, { backgroundColor: colors.card }]}> 
+      <TouchableOpacity onPress={async () => {
+        // load available dates for entered email
+        if (!email) return alert('Enter email first to load available dates');
+        try {
+          const res = await fetch(`${API_BASE_URL}/api/export/dates?email=${encodeURIComponent(email)}`);
+          const json = await res.json();
+          if (res.ok && Array.isArray(json.dates)) {
+            setAvailableDates(json.dates);
+            if (json.dates.length > 0) {
+              setFromDate(new Date(json.dates[0]).toDateString());
+              setToDate(new Date(json.dates[json.dates.length-1]).toDateString());
+            }
+            setShowFromPicker(true);
+          } else {
+            alert(json.error || 'No dates available');
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Failed to load dates');
+        }
+      }} style={[styles.dateCard, { backgroundColor: colors.card }]}> 
         <View style={styles.dateTextWrapper}>
           <Text style={[styles.dateLabel, { color: colors.text }]}>From:</Text>
           <Text style={[styles.dateValue, { color: colors.text }]}>{fromDate}</Text>
         </View>
         <DownArrowIcon size={18} color={colors.text} />
-      </View>
+      </TouchableOpacity>
 
-      <View style={[styles.dateCard, { backgroundColor: colors.card }]}> 
+      <TouchableOpacity onPress={() => setShowToPicker(true)} style={[styles.dateCard, { backgroundColor: colors.card }]}> 
         <View style={styles.dateTextWrapper}>
           <Text style={[styles.dateLabel, { color: colors.text }]}>To:</Text>
           <Text style={[styles.dateValue, { color: colors.text }]}>{toDate}</Text>
         </View>
         <DownArrowIcon size={18} color={colors.text} />
-      </View>
+      </TouchableOpacity>
 
       <TextInput
         value={email}
@@ -62,11 +95,101 @@ export default function ExportPDFScreen() {
         placeholder="Enter email for sending report..."
         placeholderTextColor="#78909C"
         style={[styles.input, { backgroundColor: colors.card, color: colors.text }]}
+        keyboardType="email-address"
+        autoCapitalize="none"
       />
 
-      <TouchableOpacity style={styles.button} onPress={() => { /* TODO: implement export action */ }}>
-        <Text style={styles.buttonText}>Generate&Send report</Text>
+      <Text style={{ alignSelf: 'center', color: colors.text, marginBottom: 8 }}>Tap 'From' to load available dates from DB</Text>
+
+      <TouchableOpacity
+        style={styles.button}
+        onPress={async () => {
+          if (!email) return alert('Please enter an email');
+          try {
+            setLoading(true);
+            const res = await fetch(`${API_BASE_URL}/api/export/report`, {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ email, fromDate: new Date(fromDate).toISOString(), toDate: new Date(toDate).toISOString() }),
+            });
+            const json = await res.json();
+            setLoading(false);
+            if (res.ok && json.url) {
+              Linking.openURL(json.url);
+              // show success toast
+              setToastText('Report generated and sent');
+              Animated.timing(toastAnim, { toValue: 0, duration: 400, easing: Easing.out(Easing.cubic), useNativeDriver: true }).start(() => {
+                setTimeout(() => {
+                  Animated.timing(toastAnim, { toValue: 80, duration: 400, easing: Easing.in(Easing.cubic), useNativeDriver: true }).start();
+                }, 3000);
+              });
+            } else {
+              alert(json.error || 'Failed to generate report');
+            }
+          } catch (err) {
+            setLoading(false);
+            console.error(err);
+            alert('Network error');
+          }
+        }}
+      >
+        <Text style={styles.buttonText}>{loading ? 'Generating...' : 'Generate&Send report'}</Text>
       </TouchableOpacity>
+
+      {/* From picker modal */}
+      <Modal visible={showFromPicker} animationType="slide" transparent>
+        <View style={styles.modalBackdrop}>
+          <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>Select From date</Text>
+            <FlatList
+              data={availableDates}
+              keyExtractor={(i) => i}
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => { setFromDate(new Date(item).toDateString()); setShowFromPicker(false); }} style={styles.modalItem}>
+                  <Text style={{ color: colors.text }}>{new Date(item).toDateString()}</Text>
+                </TouchableOpacity>
+              )}
+            />
+            <TouchableOpacity onPress={() => setShowFromPicker(false)} style={styles.modalClose}>
+              <Text style={{ color: colors.text }}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* To picker modal */}
+      <Modal visible={showToPicker} animationType="slide" transparent>
+        <View style={styles.modalBackdrop}>
+          <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>Select To date</Text>
+            <FlatList
+              data={availableDates}
+              keyExtractor={(i) => i}
+              renderItem={({ item }) => (
+                <TouchableOpacity onPress={() => { setToDate(new Date(item).toDateString()); setShowToPicker(false); }} style={styles.modalItem}>
+                  <Text style={{ color: colors.text }}>{new Date(item).toDateString()}</Text>
+                </TouchableOpacity>
+              )}
+            />
+            <TouchableOpacity onPress={() => setShowToPicker(false)} style={styles.modalClose}>
+              <Text style={{ color: colors.text }}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Loading overlay */}
+      {loading && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#fff" />
+          <Text style={{ color: '#fff', marginTop: 12 }}>Generating report...</Text>
+        </View>
+      )}
+
+      {/* Toast */}
+      <Animated.View style={[styles.toast, { transform: [{ translateY: toastAnim }], backgroundColor: '#333' }]}>
+        <Text style={{ color: '#fff' }}>{toastText}</Text>
+      </Animated.View>
     </SafeAreaView>
   );
 }
@@ -159,5 +282,39 @@ const styles = StyleSheet.create({
     color: '#FFF',
     fontFamily: 'Jua_400Regular',
     fontSize: 18,
+  },
+  modalBackdrop: {
+    flex: 1,
+    backgroundColor: 'rgba(0,0,0,0.4)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    width: '90%',
+    maxHeight: '70%',
+    borderRadius: 12,
+    padding: 16,
+  },
+  modalTitle: { fontFamily: 'Jua_400Regular', fontSize: 18, marginBottom: 8 },
+  modalItem: { paddingVertical: 12, borderBottomWidth: 1, borderColor: '#eee' },
+  modalClose: { padding: 12, alignItems: 'center' },
+  loadingOverlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    top: 0,
+    bottom: 0,
+    backgroundColor: 'rgba(0,0,0,0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  toast: {
+    position: 'absolute',
+    left: 20,
+    right: 20,
+    bottom: 20,
+    padding: 12,
+    borderRadius: 8,
+    alignItems: 'center',
   },
 });

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
@@ -41,13 +41,40 @@ export default function SettingsScreen() {
       }
     }
 
+    try {
+      const token = await AsyncStorage.getItem('token');
+      // persist to server
+      await fetch('http://192.168.88.15:5000/api/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ notificationsEnabled: value }),
+      });
+    } catch (err) {
+      console.warn('Failed to persist notifications setting', err);
+    }
+
     setNotificationsEnabled(value);
 
-    await syncReminders(
-      value,
-      []
-    );
+    await syncReminders(value, []);
   };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) return;
+        const res = await fetch('http://192.168.88.15:5000/api/profile', { headers: { Authorization: `Bearer ${token}` } });
+        const data = await res.json();
+        setNotificationsEnabled(data.notificationsEnabled ?? true);
+        setAiAnalysisEnabled(data.aiAnalysisEnabled ?? false);
+      } catch (err) {
+        console.warn('Failed to load profile settings', err);
+      }
+    })();
+  }, []);
 
 
   const handleSignOut = () => {
@@ -154,7 +181,22 @@ export default function SettingsScreen() {
           </View>
           <CustomSwitch
             value={aiAnalysisEnabled}
-            onValueChange={setAiAnalysisEnabled}
+            onValueChange={async (value) => {
+              setAiAnalysisEnabled(value);
+              try {
+                const token = await AsyncStorage.getItem('token');
+                await fetch('http://192.168.88.15:5000/api/profile', {
+                  method: 'PUT',
+                  headers: {
+                    'Content-Type': 'application/json',
+                    Authorization: `Bearer ${token}`,
+                  },
+                  body: JSON.stringify({ aiAnalysisEnabled: value }),
+                });
+              } catch (err) {
+                console.warn('Failed to update AI analysis setting', err);
+              }
+            }}
             trackColor={{ false: '#363935', true: '#2DB200' }}
             thumbColor="#FFFFFF"
           />
