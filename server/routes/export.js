@@ -8,18 +8,20 @@ import JournalEntry from "../models/JournalEntry.js";
 import Meditation from "../models/Meditation.js";
 import ReportAnalysis from "../models/ReportAnalysis.js";
 import nodemailer from "nodemailer";
+import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/report", async (req, res) => {
+router.post("/report", authMiddleware, async (req, res) => {
   try {
-    const { email, fromDate, toDate } = req.body;
+    const { to: recipientEmail, fromDate, toDate } = req.body;
 
-    if (!email) {
-      return res.status(400).json({ error: "email is required" });
+    if (!recipientEmail) {
+      return res.status(400).json({ error: "recipient email (to) is required" });
     }
 
-    const user = await User.findOne({ email });
+    // Current user (from token)
+    const user = await User.findById(req.userId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
     const from = fromDate ? new Date(fromDate) : new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -194,7 +196,7 @@ router.post("/report", async (req, res) => {
 
           await transporter.sendMail({
             from: process.env.FROM_EMAIL,
-            to: email,
+            to: recipientEmail,
             subject: 'MindEasy Clinical Report',
             text: 'Attached is the requested clinical report.',
             attachments: [
@@ -220,12 +222,10 @@ router.post("/report", async (req, res) => {
   }
 });
 
-// return available dates (days) for a given user email based on Mood entries
-router.get('/dates', async (req, res) => {
+// return available dates for authenticated user based on Mood entries
+router.get('/dates', authMiddleware, async (req, res) => {
   try {
-    const { email } = req.query;
-    if (!email) return res.status(400).json({ error: 'email required' });
-    const user = await User.findOne({ email });
+    const user = await User.findById(req.userId);
     if (!user) return res.status(404).json({ error: 'User not found' });
 
     const dates = await Mood.find({ userId: user._id }).distinct('date');

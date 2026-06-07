@@ -20,6 +20,7 @@ import { useAppSettings } from '@/context/AppSettingsContext';
 import { Colors } from '@/constants/theme';
 import * as Linking from 'expo-linking';
 import { API_BASE_URL } from '@/constants/api';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ExportPDFScreen() {
   const router = useRouter();
@@ -37,6 +38,28 @@ export default function ExportPDFScreen() {
   const toastAnim = useRef(new Animated.Value(80)).current;
   const [toastText, setToastText] = useState('');
 
+  // Load available dates on mount
+  useEffect(() => {
+    const loadDates = async () => {
+      try {
+        const token = await AsyncStorage.getItem('token');
+        if (!token) return;
+        const res = await fetch(`${API_BASE_URL}/api/export/dates`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const json = await res.json();
+        if (res.ok && Array.isArray(json.dates) && json.dates.length > 0) {
+          setAvailableDates(json.dates);
+          setFromDate(new Date(json.dates[0]).toDateString());
+          setToDate(new Date(json.dates[json.dates.length - 1]).toDateString());
+        }
+      } catch (err) {
+        console.warn('Failed to load dates', err);
+      }
+    };
+    loadDates();
+  }, []);
+
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: bgColor }]}> 
       <View style={styles.header}> 
@@ -53,27 +76,7 @@ export default function ExportPDFScreen() {
         />
       </View>
 
-      <TouchableOpacity onPress={async () => {
-        // load available dates for entered email
-        if (!email) return alert('Enter email first to load available dates');
-        try {
-          const res = await fetch(`${API_BASE_URL}/api/export/dates?email=${encodeURIComponent(email)}`);
-          const json = await res.json();
-          if (res.ok && Array.isArray(json.dates)) {
-            setAvailableDates(json.dates);
-            if (json.dates.length > 0) {
-              setFromDate(new Date(json.dates[0]).toDateString());
-              setToDate(new Date(json.dates[json.dates.length-1]).toDateString());
-            }
-            setShowFromPicker(true);
-          } else {
-            alert(json.error || 'No dates available');
-          }
-        } catch (err) {
-          console.error(err);
-          alert('Failed to load dates');
-        }
-      }} style={[styles.dateCard, { backgroundColor: colors.card }]}> 
+      <TouchableOpacity onPress={() => setShowFromPicker(true)} style={[styles.dateCard, { backgroundColor: colors.card }]}> 
         <View style={styles.dateTextWrapper}>
           <Text style={[styles.dateLabel, { color: colors.text }]}>From:</Text>
           <Text style={[styles.dateValue, { color: colors.text }]}>{fromDate}</Text>
@@ -92,25 +95,24 @@ export default function ExportPDFScreen() {
       <TextInput
         value={email}
         onChangeText={setEmail}
-        placeholder="Enter email for sending report..."
+        placeholder="Enter recipient email..."
         placeholderTextColor="#78909C"
         style={[styles.input, { backgroundColor: colors.card, color: colors.text }]}
         keyboardType="email-address"
         autoCapitalize="none"
       />
 
-      <Text style={{ alignSelf: 'center', color: colors.text, marginBottom: 8 }}>Tap 'From' to load available dates from DB</Text>
-
       <TouchableOpacity
         style={styles.button}
         onPress={async () => {
-          if (!email) return alert('Please enter an email');
+          if (!email) return alert('Please enter recipient email');
           try {
             setLoading(true);
+            const token = await AsyncStorage.getItem('token');
             const res = await fetch(`${API_BASE_URL}/api/export/report`, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json' },
-              body: JSON.stringify({ email, fromDate: new Date(fromDate).toISOString(), toDate: new Date(toDate).toISOString() }),
+              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+              body: JSON.stringify({ to: email, fromDate: new Date(fromDate).toISOString(), toDate: new Date(toDate).toISOString() }),
             });
             const json = await res.json();
             setLoading(false);
@@ -316,5 +318,13 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',
+  },
+  messageBox: {
+    position: 'absolute',
+    bottom: 80,
+    left: 20,
+    right: 20,
+    padding: 16,
+    borderRadius: 8,
   },
 });
