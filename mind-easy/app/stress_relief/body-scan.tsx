@@ -128,7 +128,7 @@ export default function BodyScanScreen() {
             onPress={() => currentPart > 0 && setCurrentPart(currentPart - 1)}
             disabled={currentPart === 0}
           >
-            <Text style={styles.navButtonText}>← Previous</Text>
+            <Text style={styles.navButtonText}>Previous</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -143,7 +143,7 @@ export default function BodyScanScreen() {
             }}
           >
             <Text style={styles.navButtonText}>
-              {currentPart === bodyParts.length - 1 ? 'Complete ✓' : 'Next →'}
+              {currentPart === bodyParts.length - 1 ? 'Complete' : 'Next'}
             </Text>
           </TouchableOpacity>
         </View>
@@ -163,6 +163,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 10,
     height: 50,
+    marginTop: 30,
   },
   backButton: {
     width: 40,
@@ -220,10 +221,12 @@ const styles = StyleSheet.create({
   playIcon: {
     fontSize: 24,
     color: '#FFFFFF',
+    left: 2,
+    top: -1,
   },
   playerLabel: {
     fontFamily: 'IstokWeb_400Regular',
-    fontSize: 14,
+    fontSize: 16,
   },
   dotsContainer: {
     flexDirection: 'row',
