@@ -85,7 +85,11 @@ export default function StressReliefScreen() {
                   { backgroundColor: item.btnColor },
                   (item.id === 'grounding' || item.id === 'bodyscan') && styles.buttonLower,
                 ]}
-                onPress={() => {/*test*/}}
+                onPress={() => {
+                  if (item.id === 'grounding') router.push('/stress_relief/grounding');
+                  if (item.id === 'bodyscan') router.push('/stress_relief/body-scan');
+                  if (item.id === 'shake') router.push('/stress_relief/shake-it-off');
+                }}
               >
                 <Text style={styles.buttonText}>{item.buttonText}</Text>
               </TouchableOpacity>
