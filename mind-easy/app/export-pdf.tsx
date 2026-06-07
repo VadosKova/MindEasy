@@ -11,6 +11,7 @@ import {
   ActivityIndicator,
   Animated,
   Easing,
+  Alert,
 } from 'react-native';
 import { useRouter } from 'expo-router';
 import { BackIcon } from '@/components/icons/BackIcon';
@@ -37,27 +38,37 @@ export default function ExportPDFScreen() {
   const [showToPicker, setShowToPicker] = useState(false);
   const toastAnim = useRef(new Animated.Value(80)).current;
   const [toastText, setToastText] = useState('');
+  const [datesLoading, setDatesLoading] = useState(true);
 
   // Load available dates on mount
   useEffect(() => {
-    const loadDates = async () => {
+    (async () => {
       try {
         const token = await AsyncStorage.getItem('token');
-        if (!token) return;
+        if (!token) {
+          Alert.alert('Error', 'No token found');
+          return;
+        }
         const res = await fetch(`${API_BASE_URL}/api/export/dates`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         const json = await res.json();
-        if (res.ok && Array.isArray(json.dates) && json.dates.length > 0) {
+        if (res.ok && Array.isArray(json.dates)) {
           setAvailableDates(json.dates);
-          setFromDate(new Date(json.dates[0]).toDateString());
-          setToDate(new Date(json.dates[json.dates.length - 1]).toDateString());
+          if (json.dates.length > 0) {
+            setFromDate(new Date(json.dates[0]).toDateString());
+            setToDate(new Date(json.dates[json.dates.length-1]).toDateString());
+          }
+        } else {
+          Alert.alert('Error', json.error || 'Failed to load dates');
         }
       } catch (err) {
-        console.warn('Failed to load dates', err);
+        console.error(err);
+        Alert.alert('Error', 'Failed to load dates');
+      } finally {
+        setDatesLoading(false);
       }
-    };
-    loadDates();
+    })();
   }, []);
 
   return (
@@ -105,14 +116,22 @@ export default function ExportPDFScreen() {
       <TouchableOpacity
         style={styles.button}
         onPress={async () => {
-          if (!email) return alert('Please enter recipient email');
+          if (!email) return Alert.alert('Error', 'Please enter recipient email');
           try {
             setLoading(true);
             const token = await AsyncStorage.getItem('token');
+            if (!token) {
+              Alert.alert('Error', 'No token found');
+              setLoading(false);
+              return;
+            }
             const res = await fetch(`${API_BASE_URL}/api/export/report`, {
               method: 'POST',
-              headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-              body: JSON.stringify({ to: email, fromDate: new Date(fromDate).toISOString(), toDate: new Date(toDate).toISOString() }),
+              headers: { 
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`,
+              },
+              body: JSON.stringify({ recipientEmail: email, fromDate: new Date(fromDate).toISOString(), toDate: new Date(toDate).toISOString() }),
             });
             const json = await res.json();
             setLoading(false);
@@ -126,12 +145,12 @@ export default function ExportPDFScreen() {
                 }, 3000);
               });
             } else {
-              alert(json.error || 'Failed to generate report');
+              Alert.alert('Error', json.error || 'Failed to generate report');
             }
           } catch (err) {
             setLoading(false);
             console.error(err);
-            alert('Network error');
+            Alert.alert('Error', 'Network error');
           }
         }}
       >
@@ -318,13 +337,5 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     alignItems: 'center',
-  },
-  messageBox: {
-    position: 'absolute',
-    bottom: 80,
-    left: 20,
-    right: 20,
-    padding: 16,
-    borderRadius: 8,
   },
 });

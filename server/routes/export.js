@@ -14,13 +14,13 @@ const router = express.Router();
 
 router.post("/report", authMiddleware, async (req, res) => {
   try {
-    const { to: recipientEmail, fromDate, toDate } = req.body;
+    const { recipientEmail, fromDate, toDate } = req.body;
 
     if (!recipientEmail) {
-      return res.status(400).json({ error: "recipient email (to) is required" });
+      return res.status(400).json({ error: "recipientEmail is required" });
     }
 
-    // Current user (from token)
+    // user is current authenticated user
     const user = await User.findById(req.userId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
@@ -222,7 +222,7 @@ router.post("/report", authMiddleware, async (req, res) => {
   }
 });
 
-// return available dates for authenticated user based on Mood entries
+// return available dates (days) for current authenticated user based on Mood entries
 router.get('/dates', authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.userId);
