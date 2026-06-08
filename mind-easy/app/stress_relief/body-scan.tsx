@@ -266,7 +266,7 @@ const styles = StyleSheet.create({
   },
   navButtonText: {
     fontFamily: 'Jua_400Regular',
-    fontSize: 16,
+    fontSize: 18,
     color: '#FFFFFF',
   },
 });
