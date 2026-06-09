@@ -1,0 +1,575 @@
+import { ImageBackground, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View, Pressable } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Svg, { Circle } from 'react-native-svg';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { useFocusEffect, useRouter } from 'expo-router';
+
+import { MoodBadIcon } from '@/components/icons/MoodBadIcon';
+import { MoodLowIcon } from '@/components/icons/MoodLowIcon';
+import { MoodOkayIcon } from '@/components/icons/MoodOkayIcon';
+import { MoodGoodIcon } from '@/components/icons/MoodGoodIcon';
+import { MoodGreatIcon } from '@/components/icons/MoodGreatIcon';
+import { IntroMeditateIcon } from '@/components/icons/IntroMeditateIcon';
+import { IntroJournalIcon } from '@/components/icons/IntroJournalIcon';
+import { QuoteIcon } from '@/components/icons/QuoteIcon';
+import { HandIcon } from '@/components/icons/HandIcon';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+
+import * as Haptics from "expo-haptics";
+import { useAppSettings } from "@/context/AppSettingsContext";
+import { Colors } from "@/constants/theme";
+import { translations } from "@/constants/i18n";
+
+const introImage = require('@/assets/images/home-intro.png');
+
+type Mood = 'bad' | 'low' | 'okay' | 'good' | 'great';
+
+const MOOD_OPTIONS: { label: Mood; Icon: any }[] = [
+  { label: 'bad', Icon: MoodBadIcon },
+  { label: 'low', Icon: MoodLowIcon },
+  { label: 'okay', Icon: MoodOkayIcon },
+  { label: 'good', Icon: MoodGoodIcon },
+  { label: 'great', Icon: MoodGreatIcon },
+];
+
+interface Quote {
+  _id: string;
+  text: string;
+  author: string;
+}
+
+const shadowPurpleWeb: any =
+  Platform.OS === 'web'
+    ? { boxShadow: '0px 0px 4px 4px rgba(121, 116, 208, 0.5)' }
+    : {};
+
+const shadowGreenWeb: any =
+  Platform.OS === 'web'
+    ? { boxShadow: '0px 0px 4px 4px rgba(84, 181, 110, 0.5)' }
+    : {};
+
+function ProgressRing({ value }: { value: number }) {
+  const size = 80;
+  const strokeWidth = 8;
+  const radius = (size - strokeWidth) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const strokeDashoffset = circumference * (1 - value);
+
+  return (
+    <View style={styles.progressRingContainer}>
+      <Svg width={size} height={size}>
+        <Circle
+          stroke="#E0E0E0"
+          fill="transparent"
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          strokeWidth={strokeWidth}
+        />
+        <Circle
+          stroke="#7ACCC8"
+          fill="transparent"
+          cx={size / 2}
+          cy={size / 2}
+          r={radius}
+          strokeWidth={strokeWidth}
+          strokeDasharray={circumference}
+          strokeDashoffset={strokeDashoffset}
+          strokeLinecap="round"
+        />
+      </Svg>
+      <View style={styles.progressRingLabel}>
+        <Text style={styles.progressPercentText}>{Math.round(value * 100)}%</Text>
+      </View>
+    </View>
+  );
+}
+
+export default function HomeScreen() {
+  const [username, setUsername] = useState<string>('');
+  const [selectedMood, setSelectedMood] = useState<Mood | null>(null);
+  const [pressedMood, setPressedMood] = useState<Mood | null>(null);
+
+  const [progress, setProgress] = useState(0);
+  const [streak, setStreak] = useState(0);
+  const [totalDays, setTotalDays] = useState(0);
+  const [minutes, setMinutes] = useState(0);
+
+  const [quote, setQuote] = useState<Quote | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  const { theme, language } = useAppSettings();
+  const colors = Colors[theme];
+  const t = translations[language];
+
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hapticIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const [isHolding, setIsHolding] = useState(false);
+
+  const handlePressIn = () => {
+    setIsHolding(true);
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    let step = 0;
+    hapticIntervalRef.current = setInterval(() => {
+      step++;
+      if (step < 5) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      else if (step < 10) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      else Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    }, 200);
+
+    timerRef.current = setTimeout(() => {
+      cleanupSOS();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      router.replace("/sos");
+    }, 3000);
+  };
+
+  const cancelPress = () => {
+    setIsHolding(false);
+    cleanupSOS();
+  };
+
+  const cleanupSOS = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (hapticIntervalRef.current) clearInterval(hapticIntervalRef.current);
+  };
+
+  const loadProgress = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      if (!token) return;
+
+      const res = await fetch('http://192.168.88.15:5000/api/progress', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+
+      setProgress((data.percent ?? 0) / 100);
+      setStreak(data.streak ?? 0);
+      setTotalDays(data.totalDays ?? 0);
+      setMinutes(data.totalMeditationMinutes ?? 0);
+    } catch (e) {
+      console.log('Failed to load progress');
+    }
+  };
+
+  const loadProfile = async () => {
+    try {
+      const token = await AsyncStorage.getItem("token");
+      if (!token) return;
+
+      const res = await fetch('http://192.168.88.15:5000/api/profile', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      const data = await res.json();
+      if (data?.username) {
+        setUsername(data.username);
+      }
+    } catch (e) {
+      console.log('Failed to load profile');
+    }
+  };
+
+  useFocusEffect(
+    useCallback(() => {
+      loadProfile();
+    }, [])
+  );
+
+  useEffect(() => {
+    const fetchQuote = async () => {
+      try {
+        const res = await fetch("http://192.168.88.15:5000/api/quotes/random");
+        const data = await res.json();
+        setQuote(data);
+      } catch (error) {
+        console.log("Failed to load quote", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchQuote();
+  }, []);
+
+  useEffect(() => {
+    const loadMood = async () => {
+      try {
+        const token = await AsyncStorage.getItem("token");
+        if (!token) return;
+
+        const res = await fetch('http://192.168.88.15:5000/api/mood/today', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const data = await res.json();
+        if (data?.mood) setSelectedMood(data.mood);
+      } catch (e) {
+        console.log('Failed to load mood');
+      }
+    };
+
+    loadMood();
+  }, []);
+
+  useEffect(() => {
+    loadProgress();
+  }, []);
+
+  const handleMoodPress = async (mood: Mood) => {
+    setPressedMood(mood);
+    setSelectedMood(mood);
+
+    setTimeout(() => setPressedMood(null), 150);
+
+    try {
+      const token = await AsyncStorage.getItem("token");
+      if (!token) return;
+
+      await fetch('http://192.168.88.15:5000/api/mood', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ mood }),
+      });
+
+      await loadProgress();
+    } catch (e) {
+      console.log('Failed to save mood');
+    }
+  };
+  
+  return (
+    <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
+      {isHolding && (
+        <View style={styles.sosOverlay}>
+          <Text style={styles.sosOverlayText}>{t.holdForSOS}</Text>
+        </View>
+      )}
+
+      <Pressable 
+        style={{ flex: 1 }} 
+        onLongPress={handlePressIn}
+        delayLongPress={400}
+        onPressOut={cancelPress}
+      >
+        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={true}>
+          <ImageBackground source={introImage} style={styles.heroCard} imageStyle={styles.heroImage}>
+            <Text style={styles.heroGreeting} numberOfLines={1} ellipsizeMode="tail">{t.hello} {username || 'User'}! <HandIcon/></Text>
+            <Text style={styles.heroSubtitle}>{t.howFeeling}</Text>
+          </ImageBackground>
+
+          <View style={[styles.card, styles.shadowSoft, { backgroundColor: colors.card }]}>
+            <Text style={styles.sectionTitle}>{t.trackMood}</Text>
+            <View style={styles.moodRow}>
+              {MOOD_OPTIONS.map(({ label, Icon }) => (
+                <TouchableOpacity
+                  key={label}
+                  onPress={() => handleMoodPress(label)}
+                  style={[styles.moodItem, pressedMood === label && styles.moodPressed]}
+                >
+                  <Icon size={40} />
+                  <Text style={styles.moodLabel}>{label}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+
+          <View style={styles.quickRow}>
+            <TouchableOpacity
+              style={[styles.quickCard, styles.meditationCard, styles.shadowPurple, shadowPurpleWeb]} onPress={() => router.push('/calm-breathing')}>
+              <IntroMeditateIcon size={41} />
+              <Text style={styles.quickTitle}>{t.startMeditation}</Text>
+              <Text style={styles.quickSubtitle}>{t.guided5min}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.quickCard, styles.journalCard, styles.shadowGreen, shadowGreenWeb]} onPress={() => router.push('/tabs/journal')}>
+              <IntroJournalIcon size={41} />
+              <Text style={styles.quickTitle}>{t.dailyReflection}</Text>
+              <Text style={styles.quickSubtitle}>{t.writeThoughts}</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={[styles.card, styles.shadowSoft, { backgroundColor: colors.card }]}>
+            <Text style={[styles.sectionTitle, { color: colors.text }]}>{t.yourProgress}</Text>
+            <View style={styles.progressRow}>
+              <ProgressRing value={progress} />
+              <View style={styles.progressStats}>
+                <View style={styles.progressStatsRow}>
+                  <View style={styles.statBadge}>
+                    <Text style={styles.statLabel}>{t.streak}</Text>
+                    <Text style={styles.statValue}>{streak} {t.days}</Text>
+                  </View>
+                  <View style={styles.statBadge}>
+                    <Text style={styles.statLabel}>{t.totalDays}</Text>
+                    <Text style={styles.statValue}>{totalDays} {t.days}</Text>
+                  </View>
+                </View>
+                <View style={[styles.statBadge, styles.progressStatBottom]}>
+                  <Text style={styles.statLabel}>{t.meditated}</Text>
+                  <Text style={styles.statValue}>{minutes} {t.min}</Text>
+                </View>
+              </View>
+            </View>
+          </View>
+          
+          {quote && (
+            <View style={[styles.quoteCard, styles.shadowSoft]}>
+              <View style={styles.quoteIconContainer}>
+                <QuoteIcon />
+              </View>
+              <View style={styles.quoteContent}>
+                <Text style={styles.quoteText}>
+                  "{quote.text}"
+                </Text>
+                <Text style={styles.quoteAuthor}>– {quote.author}</Text>
+              </View>
+            </View>
+          )}
+        </ScrollView>
+      </Pressable>
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#F5F5DC',
+  },
+  content: {
+    paddingHorizontal: 20,
+    paddingTop: 20,
+    paddingBottom: 40,
+    gap: 18,
+  },
+  heroCard: {
+    width: '105%',
+    minHeight: 150,
+    borderRadius: 18,
+    overflow: 'hidden',
+    paddingVertical: 20,
+    paddingHorizontal: 20,
+    justifyContent: 'flex-end',
+  },
+  heroImage: {
+    borderRadius: 18,
+  },
+  heroGreeting: {
+    fontFamily: 'Jua_400Regular',
+    fontSize: 32,
+    color: '#FFFFFF',
+    marginBottom: 6,
+    flexShrink: 1,
+    maxWidth: '100%',
+  },
+  heroSubtitle: {
+    fontFamily: 'IstokWeb_400Regular',
+    fontSize: 20,
+    color: '#FFFFFF',
+  },
+  card: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    padding: 18,
+  },
+  sectionTitle: {
+    fontFamily: 'Jua_400Regular',
+    fontSize: 18,
+    color: '#263238',
+    marginBottom: 12,
+  },
+  moodRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  moodItem: {
+    alignItems: 'center',
+    gap: 6,
+  },
+  moodLabel: {
+    fontFamily: 'IstokWeb_400Regular',
+    fontSize: 12,
+    color: '#37474F',
+  },
+  moodActive: {
+    transform: [{ scale: 1.15 }],
+    opacity: 1,
+  },
+  moodPressed: {
+    transform: [{ scale: 1.25 }],
+  },
+  moodSelected: {
+    opacity: 1,
+  },
+  quickRow: {
+    flexDirection: 'row',
+    gap: 14,
+  },
+  quickCard: {
+    height: 117,
+    flex: 1,
+    borderRadius: 18,
+    paddingVertical: 18,
+    paddingHorizontal: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  meditationCard: {
+    backgroundColor: '#7974D0',
+  },
+  journalCard: {
+    backgroundColor: '#54B56E',
+  },
+  quickTitle: {
+    fontFamily: 'Jua_400Regular',
+    fontSize: 16,
+    color: '#FFFFFF',
+    textAlign: 'center',
+  },
+  quickSubtitle: {
+    fontFamily: 'IstokWeb_400Regular',
+    fontSize: 12,
+    color: '#E1F5FE',
+    textAlign: 'center',
+  },
+  progressRow: {
+    flexDirection: 'row',
+    marginTop: 16,
+    alignItems: 'center',
+    gap: 24,
+  },
+  progressRingContainer: {
+    width: 80,
+    height: 80,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  progressRingLabel: {
+    position: 'absolute',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  progressPercentText: {
+    fontFamily: 'Jua_400Regular',
+    fontSize: 18,
+    color: '#37474F',
+  },
+  progressStats: {
+    flex: 1,
+    justifyContent: 'center',
+    gap: 8,
+  },
+  progressStatsRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
+  progressStatBottom: {
+    alignSelf: 'center',
+    paddingHorizontal: 24,
+  },
+  statBadge: {
+    flex: 1,
+    height: 45,
+    backgroundColor: '#F4F499',
+    borderRadius: 7,
+    paddingVertical: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  statLabel: {
+    fontFamily: 'IstokWeb_400Regular',
+    fontSize: 12,
+    color: '#37474F',
+    marginBottom: 4,
+  },
+  statValue: {
+    fontFamily: 'Jua_400Regular',
+    fontSize: 14,
+    color: '#00000',
+  },
+  quoteCard: {
+    flexDirection: 'column',
+    backgroundColor: '#E4F2D4',
+    borderRadius: 18,
+    padding: 18,
+    alignItems: 'flex-start',
+    gap: 14,
+  },
+  quoteIconContainer: {
+    marginBottom: 8,
+    marginTop: 0,
+  },
+  quoteContent: {
+    width: '100%',
+    alignItems: 'flex-start',
+  },
+  quoteText: {
+    fontFamily: 'IstokWeb_400Regular',
+    fontStyle: 'italic',
+    fontSize: 14,
+    color: '#000000',
+    textAlign: 'left',
+    marginBottom: 8,
+    marginTop: -15,
+  },
+  quoteAuthor: {
+    fontFamily: 'Jua_400Regular',
+    fontSize: 14,
+    color: '#37474F',
+    textAlign: 'center',
+    width: '100%',
+  },
+  shadowPurple: {
+    shadowColor: '#7974D0',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+    elevation: 10,
+  },
+  shadowGreen: {
+    shadowColor: '#54B56E',
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.5,
+    shadowRadius: 8,
+    elevation: 10,
+  },
+  shadowSoft: {
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 4,
+  },
+  sosOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: 'rgba(229, 0, 0, 0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 999,
+    pointerEvents: 'none',
+  },
+  sosOverlayText: {
+    fontFamily: 'Jua_400Regular',
+    fontSize: 24,
+    color: '#E50000',
+    backgroundColor: 'rgba(255, 255, 255, 0.8)',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    overflow: 'hidden',
+  },
+});

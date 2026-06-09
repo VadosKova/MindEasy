@@ -1,0 +1,232 @@
+import { useState, useRef, useEffect } from 'react';
+import {
+  StyleSheet,
+  View,
+  Text,
+  ScrollView,
+  Dimensions,
+  TouchableOpacity,
+  Platform,
+  Image,
+} from 'react-native';
+import { LinearGradient } from 'expo-linear-gradient';
+import { router } from 'expo-router';
+import { Logo } from '@/components/Logo';
+import { GradientText } from '@/components/GradientText';
+import { SmileyIcon } from '@/components/icons/SmileyIcon';
+import { HeadphonesIcon } from '@/components/icons/HeadphonesIcon';
+import { JournalIcon } from '@/components/icons/JournalIcon';
+import { useCarousel } from '@/hooks/useCarousel';
+
+const { width: SCREEN_WIDTH } = Dimensions.get('window');
+
+const carouselImages = [
+  { uri: 'https://images.freeimages.com/images/large-previews/9b0/sunset-1344107.jpg' },
+  { uri: 'https://th.bing.com/th/id/R.ab48afc6bf0eefb07e7dd1e30f6dcba8?rik=CAZjNPpZe%2bV0wg&pid=ImgRaw&r=0' },
+  { uri: 'https://img.freepik.com/premium-photo/4k-desktop-wallpaper-hills-river-nature_485374-11875.jpg?w=740' },
+];
+
+export default function OnBoardingScreen() {
+  const { scrollViewRef, currentIndex, handleScroll, handleScrollBeginDrag, handleScrollEndDrag } =
+    useCarousel(carouselImages);
+
+  const handleGetStarted = () => {
+    router.replace('/login');
+  };
+
+  return (
+    <View style={styles.container}>
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        style={styles.mainScroll}>
+
+        <View style={styles.logoSection}>
+          <Logo size={120} />
+          <View style={styles.titleContainer}>
+            <GradientText colors={['#8CCAED', '#80CBC5']} style={styles.appName}>
+              MindEasy
+            </GradientText>
+          </View>
+          <Text style={styles.description}>
+            Your daily companion for mental health and mindfulness
+          </Text>
+        </View>
+
+        <View style={styles.featuresSection}>
+          <View style={styles.featureItem}>
+            <View style={[styles.featureIconContainer, { backgroundColor: '#FFC01E' }]}>
+              <SmileyIcon size={33} color="#37474F" />
+            </View>
+            <Text style={styles.featureText}>Mood tracking</Text>
+          </View>
+
+          <View style={styles.featureItem}>
+            <View style={[styles.featureIconContainer, { backgroundColor: '#81D4FA' }]}>
+              <HeadphonesIcon size={38} color="#37474F" />
+            </View>
+            <Text style={styles.featureText}>Meditations</Text>
+          </View>
+
+          <View style={styles.featureItem}>
+            <View style={[styles.featureIconContainer, { backgroundColor: '#A5D6A7' }]}>
+              <JournalIcon size={38} color="#37474F" />
+            </View>
+            <Text style={styles.featureText}>Journal</Text>
+          </View>
+        </View>
+
+        <TouchableOpacity onPress={handleGetStarted} activeOpacity={0.8} style={styles.buttonContainer}>
+          <LinearGradient
+            colors={['#8CCAED', '#80CBC5']}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 0 }}
+            style={styles.button}>
+            <Text style={styles.buttonText}>Get Started</Text>
+          </LinearGradient>
+        </TouchableOpacity>
+
+        <View style={styles.carouselSection}>
+          <ScrollView
+            ref={scrollViewRef}
+            horizontal
+            pagingEnabled
+            showsHorizontalScrollIndicator={false}
+            onScroll={handleScroll}
+            onScrollBeginDrag={handleScrollBeginDrag}
+            onScrollEndDrag={handleScrollEndDrag}
+            scrollEventThrottle={16}
+            style={styles.carousel}>
+            {carouselImages.map((image, index) => (
+              <View key={index} style={[styles.carouselItem, { width: SCREEN_WIDTH }]}> 
+                <Image source={image} style={styles.carouselImage} resizeMode="cover" />
+              </View>
+            ))}
+          </ScrollView>
+          <View style={styles.carouselIndicators}>
+            {carouselImages.map((_, index) => (
+              <View
+                key={index}
+                style={[
+                  styles.indicator,
+                  {
+                    backgroundColor: index === currentIndex ? '#37474F' : '#D1D1D1',
+                  },
+                ]}
+              />
+            ))}
+          </View>
+        </View>
+      </ScrollView>
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#F5F5DC",
+  },
+  mainScroll: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingHorizontal: 20,
+    paddingTop: Platform.OS === 'ios' ? 60 : 40,
+    paddingBottom: 20,
+  },
+  logoSection: {
+    alignItems: 'center',
+    marginBottom: 40,
+  },
+  titleContainer: {
+    marginTop: 20,
+    marginBottom: 12,
+  },
+  appName: {
+    fontSize: 36,
+    fontFamily: 'Jua_400Regular',
+  },
+  description: {
+    width: 300,
+    fontSize: 16,
+    fontFamily: 'IstokWeb_400Regular',
+    color: '#78909C',
+    textAlign: 'center',
+    paddingHorizontal: 20,
+    lineHeight: 20,
+  },
+  featuresSection: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    alignItems: 'center',
+    marginBottom: 40,
+    paddingHorizontal: 10,
+  },
+  featureItem: {
+    alignItems: 'center',
+    flex: 1,
+  },
+  featureIconContainer: {
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  featureText: {
+    fontSize: 12,
+    fontFamily: 'IstokWeb_400Regular',
+    color: '#37474F',
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    marginBottom: 30,
+    borderRadius: 25,
+    overflow: 'hidden',
+    alignSelf: 'center',
+  },
+  button: {
+    width: 306,
+    paddingVertical: 16,
+    borderRadius: 25,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  buttonText: {
+    fontSize: 18,
+    fontFamily: 'Jua_400Regular',
+    color: '#FFFFFF',
+  },
+  carouselSection: {
+    height: 200,
+    marginTop: 20,
+    marginBottom: 20,
+    marginHorizontal: -20,
+  },
+  carousel: {
+    flex: 1,
+  },
+  carouselItem: {
+    height: '100%',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  carouselImage: {
+    width: 225,
+    height: 165,
+  },
+  carouselIndicators: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    paddingVertical: 12,
+    gap: 8,
+  },
+  indicator: {
+    width: 11,
+    height: 11,
+    borderRadius: 5,
+  },
+});

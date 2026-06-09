@@ -1,0 +1,299 @@
+import { useEffect, useRef, useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View, ImageBackground, Animated } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
+import { useAudioPlayer } from 'expo-audio';
+import { BackIcon } from '@/components/icons/BackIcon';
+import { useAppSettings } from "@/context/AppSettingsContext";
+import { translations } from "@/constants/i18n";
+
+const TOTAL_TIME = 300;
+const PHASE_TIME = 4;
+
+const circleImg = require('@/assets/images/Ellipse 23.png');
+const soundFile = require('@/assets/sounds/relax.mp3');
+
+export default function CalmBreathing() {
+  const router = useRouter();
+  const { language } = useAppSettings();
+  const t = translations[language];
+
+  const [running, setRunning] = useState(false);
+  const [secondsLeft, setSecondsLeft] = useState(TOTAL_TIME);
+  const [phase, setPhase] = useState<'inhale' | 'exhale'>('inhale');
+
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const phaseRef = useRef(0);
+  const player = useAudioPlayer(soundFile);
+
+  const scale = useRef(new Animated.Value(1)).current;
+  const ripple1 = useRef(new Animated.Value(0)).current;
+  const ripple2 = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    player.loop = true;
+    player.volume = 0.35;
+  }, [player]);
+
+  useEffect(() => {
+    if (!running) return;
+
+    Animated.timing(scale, {
+      toValue: phase === 'inhale' ? 1.15 : 0.9,
+      duration: PHASE_TIME * 1000,
+      useNativeDriver: true,
+    }).start();
+  }, [phase, running]);
+
+  useEffect(() => {
+    if (!running) return;
+
+    const createRipple = (anim: Animated.Value, delay: number) => {
+      Animated.loop(
+        Animated.sequence([
+          Animated.delay(delay),
+          Animated.timing(anim, {
+            toValue: 1,
+            duration: 4000,
+            useNativeDriver: true,
+          }),
+          Animated.timing(anim, {
+            toValue: 0,
+            duration: 0,
+            useNativeDriver: true,
+          }),
+        ])
+      ).start();
+    };
+
+    createRipple(ripple1, 0);
+    createRipple(ripple2, 2000);
+  }, [running]);
+
+  useEffect(() => {
+    if (!running) return;
+
+    intervalRef.current = setInterval(() => {
+      setSecondsLeft(prev => {
+        if (prev <= 1) {
+          clearInterval(intervalRef.current!);
+          setRunning(false);
+          player.pause();
+          return TOTAL_TIME;
+        }
+        return prev - 1;
+      });
+
+      phaseRef.current += 1;
+      if (phaseRef.current >= PHASE_TIME) {
+        phaseRef.current = 0;
+        setPhase(p => (p === 'inhale' ? 'exhale' : 'inhale'));
+      }
+
+    }, 1000);
+
+    return () => clearInterval(intervalRef.current!);
+  }, [running]);
+
+  const format = (s: number) => {
+    const m = Math.floor(s / 60).toString().padStart(2, '0');
+    const sec = (s % 60).toString().padStart(2, '0');
+    return `${m}:${sec}`;
+  };
+
+  const handleStartPause = async () => {
+    if (running) {
+      setRunning(false);
+      player.pause();
+    } else {
+      setRunning(true);
+      player.play();
+    }
+  };
+
+  const handleRestart = async () => {
+    setRunning(false);
+    setSecondsLeft(TOTAL_TIME);
+    setPhase('inhale');
+    phaseRef.current = 0;
+    player.pause();
+    player.seekTo(0);
+  };
+
+  return (
+    <SafeAreaView style={styles.container}>
+      <View style={styles.header}>
+        <TouchableOpacity onPress={() => router.back()}>
+          <BackIcon />
+        </TouchableOpacity>
+      </View>
+
+      <Text style={styles.title}>{t.calmBreathing}</Text>
+      <Text style={styles.subtitle}>{t.breatheAndRelax}</Text>
+
+      <View style={styles.rippleContainer}>
+        <Animated.View
+          style={[
+            styles.ripple,
+            {
+              opacity: ripple1.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.35, 0],
+              }),
+              transform: [
+                {
+                  scale: ripple1.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [1, 2.5],
+                  }),
+                },
+              ],
+            },
+          ]}
+        />
+
+        <Animated.View
+          style={[
+            styles.ripple,
+            {
+              opacity: ripple2.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.35, 0],
+              }),
+              transform: [
+                {
+                  scale: ripple2.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [1, 2.5],
+                  }),
+                },
+              ],
+            },
+          ]}
+        />
+
+        <Animated.View style={{ transform: [{ scale }] }}>
+          <ImageBackground
+            source={circleImg}
+            style={styles.circle}
+            imageStyle={styles.circleImg}>
+            <Text style={styles.phase}>{t[phase]}</Text>
+          </ImageBackground>
+        </Animated.View>
+      </View>
+
+      <Text style={styles.timer}>
+        {format(TOTAL_TIME - secondsLeft)} / 05:00
+      </Text>
+
+      <View style={styles.buttons}>
+        <TouchableOpacity style={styles.start} onPress={handleStartPause}>
+          <Text style={styles.startText}>{running ? t.pause : t.start}</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity style={styles.stop} onPress={handleRestart}>
+          <Text style={styles.stopText}>{t.restart}</Text>
+        </TouchableOpacity>
+      </View>
+
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#F5F5DC',
+    alignItems: 'center',
+    paddingTop: 20,
+  },
+
+  header: {
+    width: '100%',
+    paddingHorizontal: 18,
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+
+  title: {
+    fontFamily: 'Jua_400Regular',
+    fontSize: 32,
+    color: '#37474F',
+  },
+
+  subtitle: {
+    marginTop: 6,
+    color: '#78909C',
+    fontSize: 18,
+  },
+
+  rippleContainer: {
+    marginTop: 40,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  ripple: {
+    position: 'absolute',
+    width: 220,
+    height: 220,
+    borderRadius: 999,
+    backgroundColor: '#E2A7FF55',
+  },
+
+  circle: {
+    width: 220,
+    height: 220,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  circleImg: {
+    resizeMode: 'contain',
+  },
+
+  phase: {
+    fontSize: 32,
+    fontFamily: 'Jua_400Regular',
+    color: '#263238',
+  },
+
+  timer: {
+    marginTop: 40,
+    fontSize: 25,
+    color: '#607D8B',
+  },
+
+  buttons: {
+    flexDirection: 'row',
+    gap: 16,
+    marginTop: 40,
+  },
+
+  start: {
+    backgroundColor: '#BEE8C8',
+    paddingHorizontal: 28,
+    paddingVertical: 12,
+    borderRadius: 14,
+  },
+
+  stop: {
+    backgroundColor: '#D9D9D9',
+    paddingHorizontal: 28,
+    paddingVertical: 12,
+    borderRadius: 14,
+  },
+
+  startText: {
+    fontFamily: 'Jua_400Regular',
+    fontSize: 28,
+    color: '#1D3D30',
+  },
+
+  stopText: {
+    fontFamily: 'Jua_400Regular',
+    fontSize: 28,
+    color: '#263238',
+  },
+});
