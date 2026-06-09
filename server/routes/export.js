@@ -20,7 +20,6 @@ router.post("/report", authMiddleware, async (req, res) => {
       return res.status(400).json({ error: "recipientEmail is required" });
     }
 
-    // user is current authenticated user
     const user = await User.findById(req.userId);
     if (!user) return res.status(404).json({ error: "User not found" });
 
@@ -31,7 +30,7 @@ router.post("/report", authMiddleware, async (req, res) => {
     const journals = await JournalEntry.find({ user: user._id, createdAt: { $gte: from, $lte: to } }).sort({ createdAt: 1 }).lean();
     const meditations = await Meditation.find({ user: user._id, createdAt: { $gte: from, $lte: to } }).lean();
 
-    // Prepare directories
+
     const reportsDir = path.resolve("uploads", "reports");
     if (!fs.existsSync(reportsDir)) fs.mkdirSync(reportsDir, { recursive: true });
 
@@ -42,7 +41,6 @@ router.post("/report", authMiddleware, async (req, res) => {
     const stream = fs.createWriteStream(filepath);
     doc.pipe(stream);
 
-    // Title page
     doc.addPage({ size: 'A4', margin: 50 });
     doc.fontSize(20).text('Clinical Report', { align: 'center' });
     doc.moveDown();
@@ -50,13 +48,11 @@ router.post("/report", authMiddleware, async (req, res) => {
     doc.moveDown();
     doc.text(`Report period: ${from.toDateString()} — ${to.toDateString()}`, { align: 'center' });
 
-    // Average mood
     const scores = moods.map(m => m.score || 0);
     const avg = scores.length ? (scores.reduce((a,b)=>a+b,0)/scores.length).toFixed(2) : 'N/A';
     doc.moveDown();
     doc.fontSize(14).text(`Average mood score: ${avg}`, { align: 'center' });
 
-    // Mood Heatmap (calendar-style heatmap per month)
     const drawHeatmap = (doc, moods, from, to) => {
       const byDate = {};
       moods.forEach(m => { const d = new Date(m.date).toISOString().slice(0,10); byDate[d] = m.score || 0; });
@@ -72,7 +68,6 @@ router.post("/report", authMiddleware, async (req, res) => {
         }
       };
 
-      // iterate months between from and to
       let cur = new Date(from.getFullYear(), from.getMonth(), 1);
       const end = new Date(to.getFullYear(), to.getMonth(), 1);
       while (cur <= end) {
@@ -86,7 +81,6 @@ router.post("/report", authMiddleware, async (req, res) => {
         let x = startX;
         let y = doc.y + 10;
 
-        // week headers
         const weekdays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
         weekdays.forEach((wd, i) => {
           doc.fontSize(9).fillColor('#444').text(wd, x + i * (cellSize + gap), y - 12);
@@ -97,7 +91,6 @@ router.post("/report", authMiddleware, async (req, res) => {
         const firstDay = new Date(year, month, 1);
         const daysInMonth = new Date(year, month+1, 0).getDate();
 
-        // compute week rows
         let week = 0;
         for (let d = 1; d <= daysInMonth; d++) {
           const date = new Date(year, month, d);
@@ -119,7 +112,6 @@ router.post("/report", authMiddleware, async (req, res) => {
 
     drawHeatmap(doc, moods, from, to);
 
-    // Trigger analysis (basic: count moods)
     const moodCounts = moods.reduce((acc, cur) => { acc[cur.mood] = (acc[cur.mood]||0)+1; return acc; }, {});
     doc.addPage({ size: 'A4', margin: 50 });
     doc.fontSize(16).fillColor('black').text('Trigger Analysis', { underline: true });
@@ -128,7 +120,6 @@ router.post("/report", authMiddleware, async (req, res) => {
       doc.fontSize(12).fillColor('black').text(`${k}: ${moodCounts[k]} occurrences`);
     });
 
-    // Include stored AI analysis if exists
     const analysis = await ReportAnalysis.findOne({ user: user._id }).sort({ createdAt: -1 }).lean();
     if (analysis && analysis.results) {
       doc.addPage({ size: 'A4', margin: 50 });
@@ -143,7 +134,6 @@ router.post("/report", authMiddleware, async (req, res) => {
       });
     }
 
-    // Journal logs with strong emotions (low/great)
     doc.addPage({ size: 'A4', margin: 50 });
     doc.fontSize(16).text('Journal Logs (strong emotions)', { underline: true });
     doc.moveDown(0.5);
@@ -158,15 +148,12 @@ router.post("/report", authMiddleware, async (req, res) => {
       });
     }
 
-    // Behavioral metrics
     doc.addPage({ size: 'A4', margin: 50 });
     doc.fontSize(16).text('Behavioral Metrics', { underline: true });
     doc.moveDown(0.5);
     doc.fontSize(12).text(`Completed meditations: ${meditations.length}`);
-    // Pomodoro not tracked — note absent metric
     doc.fontSize(11).fillColor('gray').text('Pomodoro sessions: data not available', { oblique: true });
 
-    // Therapist notes (blank space)
     doc.addPage({ size: 'A4', margin: 50 });
     doc.fontSize(16).text("Therapist Notes", { underline: true });
     doc.moveDown(1);
@@ -180,7 +167,6 @@ router.post("/report", authMiddleware, async (req, res) => {
     stream.on('finish', async () => {
       const downloadUrl = `${req.protocol}://${req.get('host')}/uploads/reports/${filename}`;
 
-      // Try to send email with attachment if SMTP is configured
       const smtpHost = process.env.SMTP_HOST;
       if (smtpHost && process.env.SMTP_USER && process.env.SMTP_PASS && process.env.FROM_EMAIL) {
         try {
@@ -222,14 +208,12 @@ router.post("/report", authMiddleware, async (req, res) => {
   }
 });
 
-// return available dates (days) for current authenticated user based on Mood entries
 router.get('/dates', authMiddleware, async (req, res) => {
   try {
     const user = await User.findById(req.userId);
     if (!user) return res.status(404).json({ error: 'User not found' });
 
     const dates = await Mood.find({ userId: user._id }).distinct('date');
-    // normalize to YYYY-MM-DD
     const uniq = Array.from(new Set(dates.map(d => new Date(d).toISOString().slice(0,10)))).sort();
     return res.json({ dates: uniq });
   } catch (err) {

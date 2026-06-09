@@ -18,12 +18,10 @@ router.put("/", authMiddleware, async (req, res) => {
 
   const user = await User.findByIdAndUpdate(req.userId, updates, { new: true }).select("-password");
 
-  // If aiAnalysisEnabled was just turned on, run a one-off analysis and store results
   try {
     if (aiAnalysisEnabled) {
       const from = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
       const to = new Date();
-      // Simple analysis: tag frequencies from journal entries and mood distribution
       const JournalEntry = (await import("../models/JournalEntry.js")).default;
       const Mood = (await import("../models/Mood.js")).default;
 
@@ -32,7 +30,6 @@ router.put("/", authMiddleware, async (req, res) => {
 
       const tagCounts = {};
       journals.forEach(j => {
-        // naive tag extraction: split by hashtags or comma-separated words (placeholder)
         if (j.text) {
           const words = j.text.match(/#\w+/g) || j.text.split(/[,\.\s]+/).slice(0,10);
           words.forEach(w => { tagCounts[w] = (tagCounts[w] || 0) + 1; });
