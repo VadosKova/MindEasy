@@ -108,6 +108,16 @@ export const translations = {
     off: "OFF",
     startSession: "Start session",
     readyToBreathe: "Ready to breathe",
+    exportPDF: "Export PDF report",
+    recipientEmail: "Enter recipient email...",
+    selectDates: "Select dates",
+    generateSend: "Generate&Send report",
+    generating: "Generating report...",
+    reportSent: "Report generated and sent",
+    chatbot: "MindEasy chatbot",
+    aiAnalysis: "AI Journal Analysis",
+    fromDate: "From",
+    toDate: "To",
     sosPoems: [
       {
         author: "Lina Kostenko",
@@ -271,6 +281,16 @@ export const translations = {
     hold: "Утримувати",
     pause: "Пауза",
     restart: "Перезапустити",
+    exportPDF: "Експортувати PDF-звіт",
+    recipientEmail: "Введи email отримувача...",
+    selectDates: "Вибери дати",
+    generateSend: "Генерувати та надіслати звіт",
+    generating: "Генеруємо звіт...",
+    reportSent: "Звіт згенерований та надісланий",
+    chatbot: "Чат-бот MindEasy",
+    aiAnalysis: "AI аналіз щоденника",
+    fromDate: "З",
+    toDate: "По",
     sosPoems: [
       {
         author: "Ліна Костенко",

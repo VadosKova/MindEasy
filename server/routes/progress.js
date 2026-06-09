@@ -9,17 +9,21 @@ const router = express.Router();
 router.get("/", authMiddleware, async (req, res) => {
   try {
     const userId = req.userId;
-    const today = new Date().toISOString().slice(0, 10);
+    
+    // Get today's date range in UTC
+    const today = new Date();
+    const startOfToday = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 0, 0, 0, 0));
+    const endOfToday = new Date(Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), today.getUTCDate(), 23, 59, 59, 999));
 
     const journals = await JournalEntry.find({
       user: userId,
-      createdAt: { $gte: new Date(today) },
+      createdAt: { $gte: startOfToday, $lte: endOfToday },
     });
     const journalScore = journals.length * 5;
 
     const meditationsToday = await Meditation.find({
       user: userId,
-      createdAt: { $gte: new Date(today) },
+      createdAt: { $gte: startOfToday, $lte: endOfToday },
     });
 
     const meditationScore = meditationsToday.reduce(
@@ -29,9 +33,12 @@ router.get("/", authMiddleware, async (req, res) => {
 
     const moods = await Mood.find({ userId }).sort({ date: -1 });
 
-    const moodScore = moods.some(
-      m => m.date.toISOString().slice(0, 10) === today
-    )
+    // Check if mood exists for today
+    const todayISO = today.toISOString().slice(0, 10);
+    const moodScore = moods.some((m) => {
+      const moodDateISO = new Date(m.date).toISOString().slice(0, 10);
+      return moodDateISO === todayISO;
+    })
       ? 5
       : 0;
 
@@ -48,6 +55,35 @@ router.get("/", authMiddleware, async (req, res) => {
     let dayCursor = startOfDay(new Date());
 
     for (const m of moods) {
+      const moodDay = startOfDay(m.date);
+
+      if (moodDay.getTime() === dayCursor.getTime()) {
+        streak++;
+        dayCursor.setDate(dayCursor.getDate() - 1);
+      } else {
+        break;
+      }
+    }
+
+    const totalDays = await Mood.countDocuments({ userId });
+
+    const meditations = await Meditation.find({ user: userId });
+    const totalMeditationMinutes = meditations.reduce(
+      (sum, m) => sum + Math.floor(m.duration / 60),
+      0
+    );
+
+    res.json({
+      percent,
+      streak,
+      totalDays,
+      totalMeditationMinutes,
+    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ message: "Failed to calculate progress" });
+  }
+});
       const moodDay = startOfDay(m.date);
 
       if (moodDay.getTime() === dayCursor.getTime()) {

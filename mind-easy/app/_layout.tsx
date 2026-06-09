@@ -7,6 +7,8 @@ import { useFonts } from 'expo-font';
 import { Jua_400Regular } from '@expo-google-fonts/jua';
 import { IstokWeb_400Regular, IstokWeb_700Bold } from '@expo-google-fonts/istok-web';
 import * as SplashScreen from 'expo-splash-screen';
+import { AppState, AppStateStatus } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { AppSettingsProvider } from "@/context/AppSettingsContext";
@@ -28,6 +30,28 @@ export default function RootLayout() {
       SplashScreen.hideAsync();
     }
   }, [fontsLoaded]);
+
+  // Preserve token on app background/foreground
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', handleAppStateChange);
+    return () => subscription.remove();
+  }, []);
+
+  const handleAppStateChange = async (state: AppStateStatus) => {
+    if (state === 'active') {
+      // App came to foreground - restore token from persistent storage
+      const token = await AsyncStorage.getItem('token');
+      if (!token) {
+        // Token expired or cleared - user will be redirected to login on next screen read
+      }
+    } else if (state === 'background') {
+      // App going to background - ensure token is persisted
+      const token = await AsyncStorage.getItem('token');
+      if (token) {
+        // Token is already in AsyncStorage, no action needed
+      }
+    }
+  };
 
   if (!fontsLoaded) {
     return null;

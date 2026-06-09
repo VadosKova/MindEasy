@@ -12,21 +12,25 @@ import {
   Animated,
   Easing,
   Alert,
+  Pressable,
 } from 'react-native';
 import { useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { BackIcon } from '@/components/icons/BackIcon';
 import { DownArrowIcon } from '@/components/icons/DownArrowIcon';
 import { Image } from 'react-native';
 import { useAppSettings } from '@/context/AppSettingsContext';
 import { Colors } from '@/constants/theme';
+import { translations } from '@/constants/i18n';
 import * as Linking from 'expo-linking';
 import { API_BASE_URL } from '@/constants/api';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function ExportPDFScreen() {
   const router = useRouter();
-  const { theme } = useAppSettings();
+  const { theme, language } = useAppSettings();
   const colors = Colors[theme];
+  const t = translations[language];
   const bgColor = '#F5F5DC';
 
   const [fromDate, setFromDate] = useState('Jan 20, 2025');
@@ -39,6 +43,40 @@ export default function ExportPDFScreen() {
   const toastAnim = useRef(new Animated.Value(80)).current;
   const [toastText, setToastText] = useState('');
   const [datesLoading, setDatesLoading] = useState(true);
+
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hapticIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const handlePressIn = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    let step = 0;
+    hapticIntervalRef.current = setInterval(() => {
+      step++;
+      if (step < 5) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      else if (step < 10) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      else Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    }, 200);
+
+    timerRef.current = setTimeout(() => {
+      cleanupSOS();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      router.replace("/sos");
+    }, 3000);
+  };
+
+  const cancelPress = () => {
+    cleanupSOS();
+  };
+
+  const cleanupSOS = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (hapticIntervalRef.current) clearInterval(hapticIntervalRef.current);
+  };
+
+  useEffect(() => {
+    return () => cleanupSOS();
+  }, []);
 
   // Load available dates on mount
   useEffect(() => {
@@ -72,12 +110,18 @@ export default function ExportPDFScreen() {
   }, []);
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: bgColor }]}> 
+    <SafeAreaView style={[styles.container, { backgroundColor: bgColor }]}>
+      <Pressable 
+        style={{ flex: 1 }} 
+        onLongPress={handlePressIn}
+        delayLongPress={500}
+        onPressOut={cancelPress}
+      > 
       <View style={styles.header}> 
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <BackIcon size={32} color={colors.text} />
         </TouchableOpacity>
-        <Text style={[styles.title, { color: colors.text }]}>Export PDF report</Text>
+        <Text style={[styles.title, { color: colors.text }]}>{t.exportPDF}</Text>
       </View>
 
       <View style={styles.iconWrapper}>
@@ -89,7 +133,7 @@ export default function ExportPDFScreen() {
 
       <TouchableOpacity onPress={() => setShowFromPicker(true)} style={[styles.dateCard, { backgroundColor: colors.card }]}> 
         <View style={styles.dateTextWrapper}>
-          <Text style={[styles.dateLabel, { color: colors.text }]}>From:</Text>
+          <Text style={[styles.dateLabel, { color: colors.text }]}>{t.fromDate}</Text>
           <Text style={[styles.dateValue, { color: colors.text }]}>{fromDate}</Text>
         </View>
         <DownArrowIcon size={18} color={colors.text} />
@@ -97,7 +141,7 @@ export default function ExportPDFScreen() {
 
       <TouchableOpacity onPress={() => setShowToPicker(true)} style={[styles.dateCard, { backgroundColor: colors.card }]}> 
         <View style={styles.dateTextWrapper}>
-          <Text style={[styles.dateLabel, { color: colors.text }]}>To:</Text>
+          <Text style={[styles.dateLabel, { color: colors.text }]}>{t.toDate}</Text>
           <Text style={[styles.dateValue, { color: colors.text }]}>{toDate}</Text>
         </View>
         <DownArrowIcon size={18} color={colors.text} />
@@ -106,7 +150,7 @@ export default function ExportPDFScreen() {
       <TextInput
         value={email}
         onChangeText={setEmail}
-        placeholder="Enter recipient email..."
+        placeholder={t.recipientEmail}
         placeholderTextColor="#78909C"
         style={[styles.input, { backgroundColor: colors.card, color: colors.text }]}
         keyboardType="email-address"
@@ -154,14 +198,14 @@ export default function ExportPDFScreen() {
           }
         }}
       >
-        <Text style={styles.buttonText}>{loading ? 'Generating...' : 'Generate&Send report'}</Text>
+        <Text style={styles.buttonText}>{loading ? t.generating : t.generateSend}</Text>
       </TouchableOpacity>
 
       {/* From picker modal */}
       <Modal visible={showFromPicker} animationType="slide" transparent>
         <View style={styles.modalBackdrop}>
           <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
-            <Text style={[styles.modalTitle, { color: colors.text }]}>Select From date</Text>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>{t.selectDates} ({t.fromDate})</Text>
             <FlatList
               data={availableDates}
               keyExtractor={(i) => i}
@@ -182,7 +226,7 @@ export default function ExportPDFScreen() {
       <Modal visible={showToPicker} animationType="slide" transparent>
         <View style={styles.modalBackdrop}>
           <View style={[styles.modalContent, { backgroundColor: colors.card }]}>
-            <Text style={[styles.modalTitle, { color: colors.text }]}>Select To date</Text>
+            <Text style={[styles.modalTitle, { color: colors.text }]}>{t.selectDates} ({t.toDate})</Text>
             <FlatList
               data={availableDates}
               keyExtractor={(i) => i}
@@ -211,6 +255,7 @@ export default function ExportPDFScreen() {
       <Animated.View style={[styles.toast, { transform: [{ translateY: toastAnim }], backgroundColor: '#333' }]}>
         <Text style={{ color: '#fff' }}>{toastText}</Text>
       </Animated.View>
+      </Pressable>
     </SafeAreaView>
   );
 }

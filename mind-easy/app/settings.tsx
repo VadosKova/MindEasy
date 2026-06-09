@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Alert } from 'react-native';
+import { useState, useEffect, useRef } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Alert, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { BackIcon } from '@/components/icons/BackIcon';
@@ -17,6 +17,7 @@ import { requestNotificationPermission } from '@/utils/notifications';
 import { syncReminders } from '@/utils/notifications';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { cancelAllNotifications } from '@/utils/notifications';
+import * as Haptics from "expo-haptics";
 import { useAppSettings, Theme, Language } from "@/context/AppSettingsContext";
 import { Colors } from '@/constants/theme';
 import { translations } from "@/constants/i18n";
@@ -31,6 +32,40 @@ export default function SettingsScreen() {
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   const [aiAnalysisEnabled, setAiAnalysisEnabled] = useState(false);
+
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hapticIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const handlePressIn = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    let step = 0;
+    hapticIntervalRef.current = setInterval(() => {
+      step++;
+      if (step < 5) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      else if (step < 10) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      else Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    }, 200);
+
+    timerRef.current = setTimeout(() => {
+      cleanupSOS();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      router.replace("/sos");
+    }, 3000);
+  };
+
+  const cancelPress = () => {
+    cleanupSOS();
+  };
+
+  const cleanupSOS = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (hapticIntervalRef.current) clearInterval(hapticIntervalRef.current);
+  };
+
+  useEffect(() => {
+    return () => cleanupSOS();
+  }, []);
 
   const toggleNotifications = async (value: boolean) => {
     if (value) {
@@ -101,7 +136,13 @@ export default function SettingsScreen() {
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
-      <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
+      <Pressable 
+        style={{ flex: 1 }} 
+        onLongPress={handlePressIn}
+        delayLongPress={500}
+        onPressOut={cancelPress}
+      >
+        <ScrollView contentContainerStyle={styles.content} showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text style={[styles.headerTitle, { color: colors.text }]}>{t.settings}</Text>
           <TouchableOpacity onPress={() => router.back()}>
@@ -234,7 +275,8 @@ export default function SettingsScreen() {
         <TouchableOpacity style={styles.signOutButton} onPress={handleSignOut}>
           <Text style={styles.signOutButtonText}>{t.signOut}</Text>
         </TouchableOpacity>
-      </ScrollView>
+        </ScrollView>
+      </Pressable>
     </SafeAreaView>
   );
 }

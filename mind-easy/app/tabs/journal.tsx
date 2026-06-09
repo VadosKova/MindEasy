@@ -7,9 +7,7 @@ import { SearchIcon } from '@/components/icons/SearchIcon';
 import { MicIcon } from '@/components/icons/MicIcon';
 import { LinearGradient } from 'expo-linear-gradient';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { AudioModule, useAudioRecorder } from "expo-audio";
-import { File } from "expo-file-system/next";
-import AudioPlayer from "@/components/AudioPlayer";
+import { Audio } from "expo-av";
 
 import { useAppSettings } from "@/context/AppSettingsContext";
 import { Colors } from "@/constants/theme";
@@ -39,27 +37,49 @@ export default function JournalScreen() {
 
   const [audioUri, setAudioUri] = useState<string | null>(null);
   const [isRecording, setIsRecording] = useState(false);
+  const recordingRef = useRef<Audio.Recording | null>(null);
 
-  // const recorder = useAudioRecorder({
-  //   extension: ".m4a",
-  //   sampleRate: 44100,
-  //   numberOfChannels: 1,
-  //   bitRate: 128000,
+  const startRecording = async () => {
+    try {
+      const perm = await Audio.requestPermissionsAsync();
+      if (perm.status !== 'granted') {
+        Alert.alert('Permission required', 'Microphone permission is required to record audio');
+        return;
+      }
 
-  //   android: {
-  //     outputFormat: AudioModule.AndroidOutputFormat.MPEG_4,
-  //     audioEncoder: AudioModule.AndroidAudioEncoder.AAC,
-  //   },
+      await Audio.setAudioModeAsync({
+        allowsRecordingIOS: true,
+        playsInSilentModeIOS: true,
+      });
 
-  //   ios: {
-  //     outputFormat: AudioModule.IOSOutputFormat.MPEG4AAC,
-  //     audioQuality: AudioModule.IOSAudioQuality.HIGH,
-  //   },
+      const recording = new Audio.Recording();
+      await recording.prepareToRecordAsync({
+        ...Audio.RecordingOptionsPresets.HIGH_QUALITY,
+      });
+      await recording.startAsync();
+      recordingRef.current = recording;
+      setIsRecording(true);
+      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    } catch (e) {
+      Alert.alert('Recording error', 'Failed to start recording');
+      console.error(e);
+    }
+  };
 
-  //   web: {
-  //     mimeType: "audio/webm",
-  //   },
-  // });
+  const stopRecording = async () => {
+    try {
+      if (!recordingRef.current) return;
+      await recordingRef.current.stopAndUnloadAsync();
+      const uri = recordingRef.current.getURI();
+      setAudioUri(uri);
+      recordingRef.current = null;
+      setIsRecording(false);
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    } catch (e) {
+      Alert.alert('Recording error', 'Failed to stop recording');
+      console.error(e);
+    }
+  };
 
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const hapticIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
@@ -169,8 +189,6 @@ export default function JournalScreen() {
   // };
 
   const handleSaveEntry = async () => {
-    //const audioBase64 = await getAudioBase64();
-
     if (!selectedMood) {
       Alert.alert('Please select your mood');
       return;
@@ -187,17 +205,26 @@ export default function JournalScreen() {
       const token = await AsyncStorage.getItem("token");
       if (!token) return;
 
+      const body: any = {
+        mood: selectedMood,
+        text: journalText,
+      };
+
+      // If audio is recorded, convert to base64
+      if (audioUri) {
+        const audioBase64 = await convertAudioToBase64(audioUri);
+        if (audioBase64) {
+          body.audioUrl = audioBase64;
+        }
+      }
+
       const response = await fetch(API_URL, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({
-          mood: selectedMood,
-          text: journalText,
-          //audio: audioBase64,
-        }),
+        body: JSON.stringify(body),
       });
 
       if (!response.ok) {
@@ -214,6 +241,23 @@ export default function JournalScreen() {
       Alert.alert("Error saving journal entry");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const convertAudioToBase64 = async (uri: string): Promise<string | null> => {
+    try {
+      const response = await fetch(uri);
+      const blob = await response.blob();
+      return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          resolve(reader.result as string);
+        };
+        reader.readAsDataURL(blob);
+      });
+    } catch (e) {
+      console.error('Error converting audio to base64:', e);
+      return null;
     }
   };
 
@@ -292,7 +336,11 @@ export default function JournalScreen() {
               />
 
               <View style={styles.actionButtons}>
-                <TouchableOpacity style={[styles.voiceButton, isRecording && { backgroundColor: "#FF6B6B" }]} activeOpacity={0.7}>
+                <TouchableOpacity 
+                  style={[styles.voiceButton, isRecording && { backgroundColor: "#FF6B6B" }]} 
+                  onPress={isRecording ? stopRecording : startRecording}
+                  activeOpacity={0.7}
+                >
                   <View style={styles.voiceButtonContent}>
                     <MicIcon />
                     <Text style={styles.voiceButtonText}>{isRecording ? "Recording..." : t.voiceNote}</Text>

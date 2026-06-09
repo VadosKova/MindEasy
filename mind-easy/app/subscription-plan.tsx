@@ -1,21 +1,64 @@
-import React from 'react';
-import { ScrollView, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import React, { useRef, useEffect } from 'react';
+import { ScrollView, StyleSheet, Text, TouchableOpacity, View, Pressable } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
+import * as Haptics from 'expo-haptics';
 import { BackIcon } from '@/components/icons/BackIcon';
 import { UnlockIcon } from '@/components/icons/UnlockIcon';
 import { StarIcon } from '@/components/icons/StarIcon';
 import { Colors } from '@/constants/theme';
 import { useAppSettings } from '@/context/AppSettingsContext';
+import { translations } from '@/constants/i18n';
 
 export default function SubscriptionPlanScreen() {
   const router = useRouter();
-  const { theme } = useAppSettings();
+  const { theme, language } = useAppSettings();
   const colors = Colors[theme];
+  const t = translations[language];
+
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const hapticIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const handlePressIn = () => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+
+    let step = 0;
+    hapticIntervalRef.current = setInterval(() => {
+      step++;
+      if (step < 5) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      else if (step < 10) Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      else Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    }, 200);
+
+    timerRef.current = setTimeout(() => {
+      cleanupSOS();
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      router.replace("/sos");
+    }, 3000);
+  };
+
+  const cancelPress = () => {
+    cleanupSOS();
+  };
+
+  const cleanupSOS = () => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    if (hapticIntervalRef.current) clearInterval(hapticIntervalRef.current);
+  };
+
+  useEffect(() => {
+    return () => cleanupSOS();
+  }, []);
 
   return (
     <SafeAreaView style={[styles.safeArea, { backgroundColor: colors.background }]}>
-      <View style={styles.header}>
+      <Pressable 
+        style={{ flex: 1 }} 
+        onLongPress={handlePressIn}
+        delayLongPress={500}
+        onPressOut={cancelPress}
+      >
+        <View style={styles.header}>
         <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
           <BackIcon size={28} color={colors.text} />
         </TouchableOpacity>
@@ -45,6 +88,7 @@ export default function SubscriptionPlanScreen() {
             <StarIcon size={40} color="#0D3B8C" />
           </View>
           <Text style={[styles.planTitle, { color: colors.text }]}>Standard</Text>
+          <Text style={[styles.priceText, { color: colors.text }]}>159 ₴/month</Text>
           <View style={styles.rowCenter}>
             <UnlockIcon size={25} color="#37474F" />
             <Text style={styles.planSubtitleWithIcon}>Export PDF report</Text>
@@ -59,6 +103,7 @@ export default function SubscriptionPlanScreen() {
             <StarIcon size={40} color="#FFC01E" />
           </View>
           <Text style={[styles.planTitle, { color: colors.text }]}>Premium</Text>
+          <Text style={[styles.priceText, { color: colors.text }]}>269 ₴/year</Text>
           <View style={styles.rowCenter}>
             <UnlockIcon size={25} color="#37474F" />
             <Text style={styles.planSubtitleWithIcon}>Unlock everything</Text>
@@ -68,6 +113,7 @@ export default function SubscriptionPlanScreen() {
           </TouchableOpacity>
         </View>
       </ScrollView>
+      </Pressable>
     </SafeAreaView>
   );
 }
@@ -135,6 +181,13 @@ const styles = StyleSheet.create({
     color: '#000',
     fontSize: 32,
     marginTop: 4,
+  },
+  priceText: {
+    fontFamily: 'IstokWeb_700Bold',
+    fontSize: 20,
+    color: '#1465E7',
+    marginTop: 6,
+    marginBottom: 12,
   },
   planSubtitle: {
     fontFamily: 'IstokWeb_400Regular',
